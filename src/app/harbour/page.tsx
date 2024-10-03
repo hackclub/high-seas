@@ -128,7 +128,7 @@ export default function Harbour({ session }: { session: JwtPayload }) {
                         </Link>{" "}
                         activity from you yet.
                         <br />
-                        {tab.name} will unlock once we see you've set it up! If you have already used hackatime dm <a href="https://hackclub.slack.com/team/U062UG485EE">@krn</a> and he will migrate your acount :)
+                        {tab.name} {"will unlock once we see you've set it up! If you have already used hackatime dm "} <a href="https://hackclub.slack.com/team/U062UG485EE">@krn</a> {" and he will migrate your acount :)"}
                       </p>
 
                       <Button
