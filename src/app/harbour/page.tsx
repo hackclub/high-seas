@@ -15,7 +15,7 @@ import { getUserShips, Ship } from "./shipyard/ship-utils";
 import { /*Gallery,*/ ShipsObject } from "./gallery/gallery";
 import { JwtPayload } from "jsonwebtoken";
 import SignPost from "./signpost/signpost";
-import { getWaka, WakaSignupResponse } from "../utils/waka";
+import { getWaka } from "../utils/waka";
 import Image from "next/image";
 import SignpostImage from "/public/signpost.png";
 import { hasRecvFirstHeartbeat } from "../utils/waka";
@@ -36,7 +36,6 @@ export default function Harbour({ session }: { session: JwtPayload }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log("Your session is", session);
     getUserShips(session.payload.sub).then((ships) => setMyShips(ships));
 
     getShop().then((shop) => setShopItems(shop));
@@ -107,7 +106,11 @@ export default function Harbour({ session }: { session: JwtPayload }) {
                 ),
               )}
               <div className="right-px absolute mr-2 text-green-400">
-                <div className="flex flex-row"><Image src={scales} alt="scales" width={25} height={25} /><span className="mr-2">{personTicketBalance} Scales</span></div></div>
+                <div className="flex flex-row">
+                  <Image src={scales} alt="scales" width={25} height={25} />
+                  <span className="mr-2">{personTicketBalance} Scales</span>
+                </div>
+              </div>
             </TabsList>
             <div
               className="flex-1 overflow-auto p-3"
@@ -128,7 +131,13 @@ export default function Harbour({ session }: { session: JwtPayload }) {
                         </Link>{" "}
                         activity from you yet.
                         <br />
-                        {tab.name} {"will unlock once we see you've set it up! If you have already used hackatime dm "} <a href="https://hackclub.slack.com/team/U062UG485EE">@krn</a> {" and he will migrate your acount :)"}
+
+                        {tab.name} will unlock once we see you{"'"}ve set it up!
+                        If you have already used hackatime dm{" "}
+                        <a href="https://hackclub.slack.com/team/U062UG485EE">
+                          @krn
+                        </a>{" "}
+                        and he will migrate your acount :)
                       </p>
 
                       <Button
