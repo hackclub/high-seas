@@ -185,7 +185,7 @@ export default async function Marketing() {
                     >
                       Cider
                     </a>
-                    : Develop an iOS app, we'll cover the $100 AppStore fee.
+                    : Develop an iOS app, we&apos;ll cover the $100 AppStore fee.
                   </li>
                   <li>
                     Or, go though plenty of other workshops{" "}
