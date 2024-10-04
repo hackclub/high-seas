@@ -167,28 +167,6 @@ export default async function Marketing() {
                   </li>
                   <li>
                     <a
-                      href="https://sprig.hackclub.com/"
-                      target="_blank"
-                      rel="noopenner noreferrer"
-                      className="aboutLink"
-                    >
-                      Sprig
-                    </a>
-                    : Ship a game, we'll ship you a game console.
-                  </li>
-                  <li>
-                    <a
-                      href="https://hackclub.com/onboard/"
-                      target="_blank"
-                      rel="noopenner noreferrer"
-                      className="aboutLink"
-                    >
-                      OnBoard
-                    </a>
-                    : Design a PCB, get a $100 grant to get it built.
-                  </li>
-                  <li>
-                    <a
                       href="https://fraps.hackclub.com/"
                       target="_blank"
                       rel="noopenner noreferrer"
