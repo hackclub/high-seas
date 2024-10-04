@@ -167,17 +167,6 @@ export default async function Marketing() {
                   </li>
                   <li>
                     <a
-                      href="https://fraps.hackclub.com/"
-                      target="_blank"
-                      rel="noopenner noreferrer"
-                      className="aboutLink"
-                    >
-                      Hackaccino
-                    </a>
-                    : Ship a 3D website, get a free Frappuccino!
-                  </li>
-                  <li>
-                    <a
                       href="https://sprig.hackclub.com/"
                       target="_blank"
                       rel="noopenner noreferrer"
@@ -200,6 +189,17 @@ export default async function Marketing() {
                   </li>
                   <li>
                     <a
+                      href="https://fraps.hackclub.com/"
+                      target="_blank"
+                      rel="noopenner noreferrer"
+                      className="aboutLink"
+                    >
+                      Hackaccino
+                    </a>
+                    : Ship a 3D website, get a free Frappuccino!
+                  </li>
+                  <li>
+                    <a
                       href="https://cider.hackclub.com/"
                       target="_blank"
                       rel="noopenner noreferrer"
@@ -207,7 +207,7 @@ export default async function Marketing() {
                     >
                       Cider
                     </a>
-                    : Develop an iOS app, we'll cover the $100 AppStore fee
+                    : Develop an iOS app, we'll cover the $100 AppStore fee.
                   </li>
                   <li>
                     Or, go though plenty of other workshops{" "}
