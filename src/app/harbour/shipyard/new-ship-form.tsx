@@ -38,6 +38,9 @@ export default function NewShipForm({
   const [projects, setProjects] = useState<{ key: string; total: number }[]>(
     [],
   );
+  const [labels, setLabels] = useState<{ key: string; total: number }[]>(
+    [],
+  );
   const [selectedProject, setSelectedProject] = useState<{
     key: string;
     total: number;
@@ -54,7 +57,6 @@ export default function NewShipForm({
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const slackId = session.payload.sub;
         const res = await getWakaSessions();
         const shippedShips = ships
           .map((s) => s.wakatimeProjectName)
@@ -62,6 +64,13 @@ export default function NewShipForm({
         setProjects(
           res.projects.filter(
             (p) => p.key != "<<LAST_PROJECT>>" && !shippedShips.includes(p.key),
+          ),
+        );
+
+        // Set labels
+        setLabels(
+          res.labels.filter(
+            (p) => p.key != "default" && !shippedShips.includes(p.key),
           ),
         );
 
@@ -173,6 +182,31 @@ export default function NewShipForm({
                 <CommandList>
                   <CommandEmpty>No WakaTime projects found 😭</CommandEmpty>
                   <CommandGroup>
+                    <h3>Labels:</h3>
+                    {labels.map((label) => (
+                      <CommandItem
+                        key={label.key}
+                        value={(label.total / 60 / 60).toFixed(2)}
+                        onSelect={() => {
+                          setSelectedProject(label);
+                          setOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedProject &&
+                              selectedProject.key === label.key
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
+                        {label.key} ({(label.total / 60 / 60).toFixed(1)}{" "}
+                        hrs)
+                     </CommandItem>
+                    ))}
+                    <hr />
+                    <h3>Projects:</h3>
                     {projects.map((project) => (
                       <CommandItem
                         key={project.key}
