@@ -85,7 +85,7 @@ export default function NewShipForm({
   const handleForm = async (formData: FormData) => {
     // Append the selected project's hours to the form data
     if (selectedProject) {
-      formData.append("hours", selectedProject.key.toString());
+      formData.set("wakatimeProjectName", selectedProject.key.toString());
     }
 
     await createShip(formData);

@@ -60,13 +60,13 @@ export async function getUserShips(slackId: string): Promise<Ship[]> {
                 // rating: record.get("rating") as number,
                 hours: record.get("hours") as number,
                 voteRequirementMet: Boolean(
-                  record.get("vote_requirement_met"),
+                  record.get("vote_requirement_met")
                 ) as boolean,
                 doubloonPayout: record.get("doubloon_payout") as number,
                 shipType: record.get("ship_type") as string,
                 shipStatus: record.get("ship_status") as string,
                 wakatimeProjectName: record.get(
-                  "wakatime_project_name",
+                  "wakatime_project_name"
                 ) as string,
               });
             }
@@ -76,7 +76,7 @@ export async function getUserShips(slackId: string): Promise<Ship[]> {
         (err) => {
           console.error(ships);
           return err ? reject(err) : resolve(ships);
-        },
+        }
       );
   });
 }
@@ -85,7 +85,7 @@ export async function createShip(formData: FormData) {
   const session = await getSession();
   if (!session) {
     const error = new Error(
-      "Tried to submit a ship with no Slack OAuth session",
+      "Tried to submit a ship with no Slack OAuth session"
     );
     console.log(error);
     throw error;
@@ -97,7 +97,14 @@ export async function createShip(formData: FormData) {
   console.log(formData, slackId, entrantId);
 
   const isShipUpdate = formData.get("isShipUpdate");
-  const [hourCount, wakatimeProjectName] = formData.get("hours");
+  const hourCount = formData.get("hours");
+  const wakatimeProjectName = formData.get("wakatimeProjectName");
+  console.log(
+    hourCount,
+    wakatimeProjectName,
+    formData,
+    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  );
 
   base()(shipsTableName).create(
     [
@@ -125,7 +132,7 @@ export async function createShip(formData: FormData) {
         return;
       }
       if (!records) console.error("No records!");
-    },
+    }
   );
 }
 
@@ -133,7 +140,7 @@ export async function updateShip(ship: Ship) {
   const session = await getSession();
   if (!session) {
     const error = new Error(
-      "Tried to submit a ship with no Slack OAuth session",
+      "Tried to submit a ship with no Slack OAuth session"
     );
     console.log(error);
     throw error;
@@ -160,7 +167,7 @@ export async function updateShip(ship: Ship) {
         return;
       }
       if (!records) console.error("No records!");
-    },
+    }
   );
 }
 
@@ -168,7 +175,7 @@ export async function stagedToShipped(ship: Ship) {
   const session = await getSession();
   if (!session) {
     const error = new Error(
-      "Tried to submit a ship with no Slack OAuth session",
+      "Tried to submit a ship with no Slack OAuth session"
     );
     console.log(error);
     throw error;
@@ -192,6 +199,6 @@ export async function stagedToShipped(ship: Ship) {
         return;
       }
       if (!records) console.error("No records!");
-    },
+    }
   );
 }
