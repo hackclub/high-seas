@@ -83,11 +83,6 @@ export default function NewShipForm({
   }, [session.payload.sub]);
 
   const handleForm = async (formData: FormData) => {
-    // Append the selected project's hours to the form data
-    if (selectedProject) {
-      formData.set("wakatimeProjectName", selectedProject.key.toString());
-    }
-
     await createShip(formData);
     confettiRef.current?.addConfetti();
     closeForm();
