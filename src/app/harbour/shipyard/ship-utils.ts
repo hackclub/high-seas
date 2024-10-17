@@ -2,6 +2,7 @@
 
 import { getSelfPerson, getSelfPersonId } from "@/app/utils/airtable";
 import { getSession } from "@/app/utils/auth";
+import { getWakaSessions } from "@/app/utils/waka";
 import Airtable from "airtable";
 
 const peopleTableName = "people";
@@ -22,7 +23,7 @@ export interface Ship {
   readmeUrl: string;
   screenshotUrl: string;
   // doubloonsPaid?: number;
-  hours: number;
+  hours: number | null;
   voteRequirementMet: boolean;
   doubloonPayout: number;
   shipType: string;
@@ -33,9 +34,9 @@ export interface Ship {
 export async function getUserShips(slackId: string): Promise<Ship[]> {
   console.log("getting ships of", slackId);
   const ships: Ship[] = [];
-  const personId = await getSelfPerson(slackId).then((p) => p.id);
 
-  return new Promise((resolve, reject) => {
+  const [wakaData, records] = await Promise.all([
+    getWakaSessions(),
     base()(shipsTableName)
       .select({
         filterByFormula: `AND(
@@ -98,13 +99,7 @@ export async function createShip(formData: FormData) {
 
   const isShipUpdate = formData.get("isShipUpdate");
   const hourCount = formData.get("hours");
-  const wakatimeProjectName = formData.get("wakatimeProjectName");
-  console.log(
-    hourCount,
-    wakatimeProjectName,
-    formData,
-    "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  );
+  const wakatimeProjectName = formData.get("wakatime_project_name");
 
   base()(shipsTableName).create(
     [

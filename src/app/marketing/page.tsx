@@ -33,7 +33,7 @@ export default async function Marketing() {
           <div className="landing-left container">
             <p className="text-6xl lg:text-8xl uppercase">Low Skies</p>
             <div className="my-4 lg:text-3xl xl:text-4xl text-lg">
-              <p className="">{"A two week event by Hack Club"}</p>
+              <p className="">{"A three week event by Hack Club"}</p>
               <p className="">Build stuff, battle others, get stuff!</p>
             </div>
 
@@ -49,7 +49,7 @@ export default async function Marketing() {
             </div>*/}
             <SignIn session={session} />
             <p className="mt-2 max-w-72 lg:max-w-xl">
-              Low Skies is free for teens to participate in, running Oct 3-17!
+              Low Skies is free for teens to participate in, running Oct 3-24!
             </p>
           </div>
           <div className="landing-right">

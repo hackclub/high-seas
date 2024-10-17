@@ -18,7 +18,7 @@ const Card = React.forwardRef<
     default: // paper
       backgroundColor = "#fffffff0";
       backgroundImage = "url(/textures/paper.png)";
-      backgroundSize = "auto 500%";
+      backgroundSize = "10rem 100%";
       backgroundRepeat = "repeat-x";
   }
 

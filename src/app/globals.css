@@ -88,6 +88,11 @@ main {
     }
 }
 
+
+:marker {
+    content: none;
+}
+
 @font-face {
     font-family: '0Enchanted_Land';
     src: url('https://cloud-dv1senge8-hack-club-bot.vercel.app/0enchanted_land.otf') format('truetype');
@@ -96,3 +101,4 @@ main {
 .enchanted {
     font-family: '0Enchanted_Land', cursive;
 }
+

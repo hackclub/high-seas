@@ -83,7 +83,7 @@ export default function EditShipForm({
       </div>
 
       <div>
-        <label htmlFor="deploymentUrl">Deployment URL</label>
+        <label htmlFor="deploymentUrl">Demo Link (Project / Video URL)</label>
         <input
           id="deploymentUrl"
           name="deploymentUrl"

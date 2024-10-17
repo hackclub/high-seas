@@ -69,13 +69,20 @@ export default function Harbour({
       name: "📮",
       path: "signpost",
       component: (
-        <SignPost session={session} wakaToken={wakaToken} email={wakaEmail} />
+        <SignPost
+          session={session}
+          wakaToken={wakaToken}
+          email={wakaEmail}
+          hasWakaHb={hasWakaHb}
+        />
       ),
     },
     {
       name: "The Keep",
       path: "the-keep",
-      component: <Shipyard session={session} ships={myShips} setShips={setMyShips} />,
+      component: (
+        <Shipyard session={session} ships={myShips} setShips={setMyShips} />
+      ),
       lockOnNoHb: true,
     },
     {
@@ -113,9 +120,9 @@ export default function Harbour({
             </TabsTrigger>
           ),
         )}
-        <div className="right-px absolute mr-2 text-green-400">
-          <div className="flex flex-row">
-            <img src="scales.svg" alt="scales" width={25} height={25} />
+        <div className="right-px absolute mr-px text-green-400 text-sm">
+          <div className="flex items-center gap-1">
+            <img src="scales.svg" alt="scales" width={24} height={24} />
             <span className="mr-2">{personTicketBalance} Scales</span>
           </div>
         </div>

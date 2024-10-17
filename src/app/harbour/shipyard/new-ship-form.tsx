@@ -183,9 +183,9 @@ export default function NewShipForm({
                   <CommandEmpty>No WakaTime projects found 😭</CommandEmpty>
                   <CommandGroup>
                     <h3>Labels:</h3>
-                    {labels.map((label) => (
+                    {labels.map((label, idx) => (
                       <CommandItem
-                        key={label.key}
+                        key={`${label.key}-${idx}`}
                         value={(label.total / 60 / 60).toFixed(2)}
                         onSelect={() => {
                           setSelectedProject(label);
@@ -207,10 +207,9 @@ export default function NewShipForm({
                     ))}
                     <hr />
                     <h3>Projects:</h3>
-                    {projects.map((project) => (
+                    {projects.map((project, idx) => (
                       <CommandItem
-                        key={project.key}
-                        value={(project.total / 60 / 60).toFixed(2)}
+                        key={`${project.key}-${idx}`}
                         onSelect={() => {
                           setSelectedProject(project);
                           setOpen(false);
@@ -236,11 +235,18 @@ export default function NewShipForm({
           </Popover>
           {/* Hidden input to include in formData */}
           {selectedProject && (
-            <input
-              type="hidden"
-              name="hours"
-              value={(selectedProject.total / 60 / 60).toFixed(2)}
-            />
+            <>
+              <input
+                type="hidden"
+                name="hours"
+                value={(selectedProject.total / 60 / 60).toFixed(3)}
+              />
+              <input
+                type="hidden"
+                name="wakatime_project_name"
+                value={selectedProject.key}
+              />
+            </>
           )}
         </div>
 
@@ -267,7 +273,7 @@ export default function NewShipForm({
         </div>
 
         <div>
-          <label htmlFor="deployment_url">Deployment URL</label>
+          <label htmlFor="deployment_url">Demo Link (Project / Video URL)</label>
           <input
             type="url"
             id="deployment_url"
