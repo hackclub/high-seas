@@ -40,46 +40,49 @@ export async function getUserShips(slackId: string): Promise<Ship[]> {
     base()(shipsTableName)
       .select({
         filterByFormula: `AND(
-        TRUE(),
-        '${slackId}' = {entrant__slack_id},
-        {project_source} != 'arcade'
-        )`,
+      TRUE(),
+      '${slackId}' = {entrant__slack_id},
+      {project_source} != 'arcade'
+      )`,
       })
-      .eachPage(
-        (records, fetchNextPage) => {
-          records.forEach((record) => {
-            const entrant = record.get("entrant") as string[];
-            if (entrant && entrant.includes(personId)) {
-              console.log(record);
-              ships.push({
-                id: record.id,
-                title: record.get("title") as string,
-                repoUrl: record.get("repo_url") as string,
-                deploymentUrl: record.get("deploy_url") as string,
-                readmeUrl: record.get("readme_url") as string,
-                screenshotUrl: record.get("screenshot_url") as string,
-                // rating: record.get("rating") as number,
-                hours: record.get("hours") as number,
-                voteRequirementMet: Boolean(
-                  record.get("vote_requirement_met")
-                ) as boolean,
-                doubloonPayout: record.get("doubloon_payout") as number,
-                shipType: record.get("ship_type") as string,
-                shipStatus: record.get("ship_status") as string,
-                wakatimeProjectName: record.get(
-                  "wakatime_project_name"
-                ) as string,
-              });
-            }
-          });
-          fetchNextPage();
-        },
-        (err) => {
-          console.error(ships);
-          return err ? reject(err) : resolve(ships);
-        }
-      );
+      .all(),
+  ]);
+
+  if (!wakaData || !records) {
+    throw new Error("No Waka data or Airtable records");
+  }
+
+  const hoursForProject = (projectName: string): number | null => {
+    const seconds = wakaData.projects.find(
+      (p: { key: string; total: number }) => p.key == projectName
+    )?.total;
+    if (!seconds) return null;
+    return seconds / 60 / 60;
+  };
+
+  records.forEach((r) => {
+    const projectRecord = {
+      id: r.id as string,
+      title: r.get("title") as string,
+      repoUrl: r.get("repo_url") as string,
+      deploymentUrl: r.get("deploy_url") as string,
+      readmeUrl: r.get("readme_url") as string,
+      screenshotUrl: r.get("screenshot_url") as string,
+      voteRequirementMet: Boolean(r.get("vote_requirement_met")),
+      doubloonPayout: r.get("doubloon_payout") as number,
+      shipType: r.get("ship_type") as string,
+      shipStatus: r.get("ship_status") as string,
+      wakatimeProjectName: r.get("wakatime_project_name") as string,
+      hours: r.get("hours") as number | null,
+    };
+
+    if (projectRecord.hours === null) {
+      projectRecord.hours = hoursForProject(projectRecord.wakatimeProjectName);
+    }
+
+    ships.push(projectRecord);
   });
+  return ships;
 }
 
 export async function createShip(formData: FormData) {
