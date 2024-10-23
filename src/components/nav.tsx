@@ -13,7 +13,7 @@ export default async function Nav() {
   const session = await getSession();
 
   return (
-    <Card className="fixed flex items-center justify-between top-0 left-0 right-0 h-14 px-8 m-1 bg-neutral-100 z-10 drop-shadow-lg">
+    <Card className="fixed flex items-center justify-between top-0 left-0 right-0 h-14 px-8 m-2 bg-neutral-100 z-10 drop-shadow-lg">
       <div className="flex gap-3 items-center">
         <Image
           src={Flag}

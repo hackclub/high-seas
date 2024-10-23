@@ -20,13 +20,41 @@ import ShipPillCluster from "@/components/ui/ship-pill-cluster";
 import NoImgDino from "/public/no-img-dino.png";
 import NoImgBanner from "/public/no-img-banner.png";
 import ReadmeHelperImg from "/public/readme-helper.png";
+import NewUpdateForm from "./new-update-form";
+
+function ago(date) {
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  const intervals = [
+    { label: "year", seconds: 31536000 },
+    { label: "month", seconds: 2592000 },
+    { label: "day", seconds: 86400 },
+    { label: "hour", seconds: 3600 },
+    { label: "minute", seconds: 60 },
+    { label: "second", seconds: 1 },
+  ];
+
+  for (let i = 0; i < intervals.length; i++) {
+    const interval = intervals[i];
+    const count = Math.floor(diffInSeconds / interval.seconds);
+
+    if (count >= 1) {
+      return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
+    }
+  }
+
+  return "just now";
+}
 
 export default function Ships({
   ships,
+  shipChains,
   bareShips = false,
   setShips,
 }: {
   ships: Ship[];
+  shipChains: Map<string, string[]>;
   bareShips: boolean;
   setShips: any;
 }) {
@@ -37,6 +65,7 @@ export default function Ships({
 
   const [readmeText, setReadmeText] = useState<string | null>(null);
   const [newShipVisible, setNewShipVisible] = useState(false);
+  const [newUpdateShip, setNewUpdateShip] = useState<Ship | null>(null);
   const [session, setSession] = useState<JwtPayload | null>(null);
   const [isEditingShip, setIsEditingShip] = useState(false);
   const canvasRef = useRef(null);
@@ -85,51 +114,93 @@ export default function Ships({
     (ship: Ship) => ship.shipStatus === "staged",
   );
   const shippedShips = ships.filter(
-    (ship: Ship) => ship.shipStatus === "shipped",
+    (ship: Ship) =>
+      ship.shipStatus === "shipped" && ship.shipType === "project",
   );
 
-  const SingleShip = ({ s }: { s: Ship }) => (
-    <motion.div
+  const shipMap = new Map();
+  ships.forEach((s: Ship) => shipMap.set(s.id, s));
+
+  // let selectedProjectWakatimeProjectShipChain;
+
+  // if (selectedShip) {
+  //   try {
+  //     selectedProjectWakatimeProjectShipChain = shipChains.get(
+  //       selectedShip.wakatimeProjectName,
+  //     );
+  //   } catch (e) {
+  //     console.error("err with selectedProjectWakatimeProjectShipChain: ", e);
+  //   }
+  // }
+
+  const SingleShip = ({
+    s,
+    setNewShipVisible,
+  }: {
+    s: Ship;
+    setNewShipVisible: any;
+  }) => (
+    <div
       key={s.id}
       onClick={() => setSelectedShip(s)}
       className="cursor-pointer"
-      whileHover={{ rotate: "3deg" }}
-      whileTap={{ rotate: "-2deg" }}
     >
-      <Card className="flex items-center p-4 hover:bg-gray-100 transition-colors duration-200">
-        <div className="w-16 h-16 relative mr-4">
-          <img
-            src={s.screenshotUrl}
-            alt={`Screenshot of ${s.title}`}
-            className="object-cover w-full h-full absolute top-0 left-0 rounded"
-            onError={({ target }) => {
-              target.src = NoImgDino.src;
-            }}
-          />
+      <Card className="flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 hover:bg-gray-100 transition-colors duration-200">
+        <div className="flex gap-4 items-center">
+          <div className="w-16 h-16 relative mb-4 sm:mb-0 sm:mr-4 flex-shrink-0">
+            <img
+              src={s.screenshotUrl}
+              alt={`Screenshot of ${s.title}`}
+              className="object-cover w-full h-full absolute top-0 left-0 rounded"
+              onError={({ target }) => {
+                target.src = NoImgDino.src;
+              }}
+            />
+          </div>
+          <h2 className="text-xl font-semibold text-left mb-2 sm:hidden block">
+            {s.title}
+          </h2>
         </div>
-        <div>
-          <h2 className="text-xl font-semibold text-left">{s.title}</h2>
-          <div className="flex items-stretch gap-4 text-sm mt-1 h-7">
-            <ShipPillCluster ship={s} />
+        <div className="flex-grow">
+          <h2 className="text-xl font-semibold text-left mb-2 sm:block hidden">
+            {s.title}
+          </h2>
+
+          <div className="flex flex-wrap items-start gap-2 text-sm">
+            <ShipPillCluster ship={s} shipChains={shipChains} />
           </div>
         </div>
 
-        {s.shipStatus === "staged" ? (
-          <div className="ml-auto">
-            <Button
-              onClick={async (e) => {
-                e.stopPropagation();
-                console.log("Shippingg", s);
-                await stagedToShipped(s);
-                location.reload();
-              }}
-            >
-              SHIP SHIP!
-            </Button>
+        {bareShips ? null : (
+          <div className="mt-4 sm:mt-0 sm:ml-auto">
+            {s.shipStatus === "staged" ? (
+              <Button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  console.log("Shipping", s);
+                  await stagedToShipped(s);
+                  location.reload();
+                }}
+              >
+                SHIP SHIP!
+              </Button>
+            ) : (
+              <Button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  console.log("Shipping an update...", s);
+                  setNewUpdateShip(s);
+                  // await stagedToShipped(s);
+                  // location.reload();
+                }}
+              >
+                Ship an update!
+              </Button>
+            )}
           </div>
-        ) : null}
+        )}
       </Card>
-    </motion.div>
+    </div>
   );
 
   return (
@@ -141,7 +212,7 @@ export default function Ships({
 
       {bareShips ? null : (
         <motion.div
-          className="w-fit mx-auto mb-10 mt-3"
+          className="w-fit mx-auto mb-0 mt-3"
           whileHover={{ rotate: "-5deg", scale: 1.02 }}
         >
           <Button className="text-xl" onClick={() => setNewShipVisible(true)}>
@@ -151,7 +222,7 @@ export default function Ships({
       )}
 
       {stagedShips.length === 0 ? null : (
-        <div className={`w-full ${bareShips ? "" : "mb-10"}`}>
+        <div className={`w-full mt-8`}>
           {bareShips ? null : (
             <h2 className="text-center text-2xl mb-2 text-blue-500">
               Draft Ships
@@ -160,44 +231,62 @@ export default function Ships({
 
           <div className="space-y-4">
             {stagedShips.map((ship: Ship, idx: number) => (
-              <SingleShip s={ship} key={ship.id} />
+              <SingleShip
+                s={ship}
+                key={ship.id}
+                setNewShipVisible={setNewShipVisible}
+              />
             ))}
           </div>
         </div>
       )}
 
-      <div className={`w-full ${bareShips ? "" : "mb-10"}`}>
-        {bareShips ? null : (
-          <h2 className="text-center text-2xl mb-2 text-blue-500">
-            Shipped Ships
-          </h2>
-        )}
+      <div className="w-full relative">
+        {shippedShips.length > 0 ? (
+          <div className={`space-y-4 ${bareShips ? "" : "mt-8"}`}>
+            {bareShips ? null : (
+              <h2 className="text-center text-2xl text-blue-500">
+                Shipped Ships
+              </h2>
+            )}
 
-        <div className="space-y-4">
-          {shippedShips.length === 0 ? (
-            <div className="mx-auto w-fit">
-              <p className="text-center mb-3">No Ships yet!</p>
-              <img src="/dino_debugging.svg" alt="" width="100" />
+            {shippedShips.map((ship: Ship, idx: number) => (
+              <SingleShip
+                s={ship}
+                key={ship.id}
+                setNewShipVisible={setNewShipVisible}
+              />
+            ))}
+          </div>
+        ) : null}
+
+        {shippedShips.length < 1 && stagedShips.length < 1 ? (
+          <>
+            <div className="mx-auto w-fit flex absolute -left-28 right-0 -top-28 pointer-events-none">
+              <img src="/curly-arrow.svg" alt="" width="64" className="" />
+              <div className="flex flex-col justify-between">
+                <p></p>
+                <p className="-translate-x-3 translate-y-2">
+                  Ship your first project!
+                </p>
+              </div>
             </div>
-          ) : (
-            shippedShips.map((ship: Ship, idx: number) => (
-              <SingleShip s={ship} key={ship.id} />
-            ))
-          )}
-        </div>
+            <div className="mt-24"></div>
+          </>
+        ) : null}
       </div>
 
       <AnimatePresence>
         {newShipVisible && session && (
-          <div
-            // initial={{ opacity: 0 }}
-            // animate={{ opacity: 1 }}
-            // exit={{ opacity: 0 }}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
             onClick={() => setNewShipVisible(false)}
           >
             <Card
-              className="relative w-full max-w-2xl"
+              className="relative w-full max-w-2xl max-h-[80vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <NewShipForm
@@ -216,7 +305,40 @@ export default function Ships({
                 <Icon glyph="view-close" />
               </motion.button>
             </Card>
-          </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {newUpdateShip && session && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={() => setNewUpdateShip(null)}
+          >
+            <Card
+              className="relative w-full max-w-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <NewUpdateForm
+                shipToUpdate={newUpdateShip}
+                canvasRef={canvasRef}
+                closeForm={() => setNewUpdateShip(null)}
+                session={session}
+              />
+
+              <motion.button
+                className="absolute top-2 right-2 p-1 rounded-full bg-white shadow-md z-20"
+                onClick={() => setNewUpdateShip(null)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Icon glyph="view-close" />
+              </motion.button>
+            </Card>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -253,6 +375,16 @@ export default function Ships({
                 <div className="overflow-y-auto flex-grow pt-48">
                   <CardHeader className="relative">
                     <h2 className="text-3xl font-bold">{selectedShip.title}</h2>
+                    <p className="opacity-50">
+                      {selectedShip.wakatimeProjectName ? (
+                        `Wakatime project name: ${selectedShip.wakatimeProjectName}`
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <Icon glyph="important" />
+                          No Wakatime project name!
+                        </div>
+                      )}
+                    </p>
                   </CardHeader>
 
                   <CardContent className="space-y-4">
@@ -318,8 +450,79 @@ export default function Ships({
                       </AnimatePresence>
 
                       <motion.div className="flex items-center gap-4 mt-4">
-                        <ShipPillCluster ship={selectedShip} />
+                        <ShipPillCluster
+                          ship={selectedShip}
+                          shipChains={shipChains}
+                        />
                       </motion.div>
+
+                      {/* {bareShips ? null : (
+                        <div>
+                          <hr className="my-5" />
+                          <h3>Ship update chain</h3>
+                          <ol className="flex flex-col">
+                            {selectedProjectWakatimeProjectShipChain ? (
+                              selectedProjectWakatimeProjectShipChain.map(
+                                (shipChainId: string, shipChainIdx: number) => {
+                                  const foundShip = ships.find(
+                                    (s: Ship) => s.id === shipChainId,
+                                  );
+
+                                  if (!foundShip)
+                                    return (
+                                      <p key={shipChainIdx}>
+                                        {
+                                          "selectedProjectWakatimeProjectShipChain -> foundShip is None"
+                                        }
+                                      </p>
+                                    );
+
+                                  return (
+                                    <li
+                                      className={`inline-flex items-center gap-3 ${shipChainIdx === 0 ? "" : "ml-7"}`}
+                                      key={shipChainIdx}
+                                    >
+                                      {shipChainIdx === 0 ? (
+                                        <Icon glyph="home" />
+                                      ) : (
+                                        <Icon
+                                          glyph="reply"
+                                          style={{
+                                            transform: "scaleX(-1) scaleY(-1)",
+                                          }}
+                                        />
+                                      )}
+                                      <span>
+                                        {foundShip.title} ({foundShip.shipType})
+                                      </span>
+                                      <span className="text-sm opacity-50">
+                                        {foundShip.shipType === "update"
+                                          ? foundShip.updateDescription
+                                          : null}
+                                      </span>
+                                      <span className="text-sm opacity-50">
+                                        {ago(foundShip.createdTime)}
+                                      </span>
+                                    </li>
+                                  );
+                                },
+                              )
+                            ) : (
+                              <p>wat</p>
+                            )}
+                          </ol>
+                        </div>
+                      )} */}
+
+                      {selectedShip.shipType === "update" ? (
+                        <>
+                          <hr className="my-5" />
+                          <div>
+                            <h3 className="text-xl">Update description</h3>
+                            <p>{selectedShip.updateDescription}</p>
+                          </div>
+                        </>
+                      ) : null}
 
                       <hr className="my-5" />
 
@@ -345,12 +548,15 @@ export default function Ships({
                               />
                             </div>
                           ) : (
-                            <ReactMarkdown
-                              components={markdownComponents}
-                              rehypePlugins={[rehypeRaw]}
-                            >
-                              {readmeText}
-                            </ReactMarkdown>
+                            <>
+                              <h3 className="text-xl">Main Project README</h3>
+                              <ReactMarkdown
+                                components={markdownComponents}
+                                rehypePlugins={[rehypeRaw]}
+                              >
+                                {readmeText}
+                              </ReactMarkdown>
+                            </>
                           )}
                         </div>
                       ) : (

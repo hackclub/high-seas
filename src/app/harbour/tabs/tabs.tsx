@@ -25,10 +25,12 @@ export default function Harbour({
   session: JwtPayload;
 }) {
   // All the content management for all the tabs goes here.
-  const [myShips, setMyShips] = useLocalStorageState<Ship[] | null>(
-    "cache.myShips",
+  const [myShips, setMyShips] = useLocalStorageState("cache.myShips", null);
+  const [myShipChains, setMyShipChains] = useLocalStorageState(
+    "cache.myShipChains",
     null,
   );
+
   const [wakaToken, setWakaToken] = useLocalStorageState(
     "cache.wakaToken",
     null,
@@ -51,7 +53,10 @@ export default function Harbour({
   };
 
   useEffect(() => {
-    getUserShips(session.payload.sub).then((ships) => setMyShips(ships));
+    getUserShips(session.payload.sub).then(({ ships, shipChains }) => {
+      setMyShips(ships);
+      setMyShipChains(shipChains);
+    });
 
     hasRecvFirstHeartbeat().then((hasHb) => setHasWakaHb(hasHb));
 
@@ -63,6 +68,13 @@ export default function Harbour({
 
     getWakaEmail().then((email) => email && setWakaEmail(email));
   }, [session]);
+
+  // Keep ships and shipChain in sync
+  useEffect(() => {
+    getUserShips(session.payload.sub).then(({ shipChains }) =>
+      setMyShipChains(shipChains),
+    );
+  }, [myShips]);
 
   const tabs = [
     {
@@ -81,7 +93,12 @@ export default function Harbour({
       name: "The Keep",
       path: "the-keep",
       component: (
-        <Shipyard session={session} ships={myShips} setShips={setMyShips} />
+        <Shipyard
+          session={session}
+          ships={myShips}
+          shipChains={myShipChains}
+          setShips={setMyShips}
+        />
       ),
       lockOnNoHb: true,
     },

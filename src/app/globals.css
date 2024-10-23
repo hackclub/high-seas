@@ -88,17 +88,25 @@ main {
     }
 }
 
-
 :marker {
     content: none;
 }
 
 @font-face {
-    font-family: '0Enchanted_Land';
-    src: url('https://cloud-dv1senge8-hack-club-bot.vercel.app/0enchanted_land.otf') format('truetype');
+    font-family: "0Enchanted_Land";
+    src: url("https://cloud-dv1senge8-hack-club-bot.vercel.app/0enchanted_land.otf")
+        format("truetype");
 }
 
 .enchanted {
-    font-family: '0Enchanted_Land', cursive;
+    font-family: "0Enchanted_Land", cursive;
 }
 
+@font-face {
+    font-family: "Minecraft";
+    src: url("/fonts/minecraft_font.ttf") format("truetype");
+}
+
+.minecraft {
+    font-family: "Minecraft", monospace;
+}
