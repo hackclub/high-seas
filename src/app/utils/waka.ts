@@ -16,6 +16,8 @@ export async function getWaka(): Promise<WakaSignupResponse | null> {
     await createWaka();
     key = cookies().get("waka-key");
     if (!key) return null;
+  } else {
+    console.log("there was alr a waka key: ", key);
   }
 
   return JSON.parse(key.value) as WakaSignupResponse;
@@ -91,7 +93,7 @@ export async function getWakaSessions(): Promise<any> {
 
   const summaryRes = await fetch(
     // TODO: this date needs to change dynamically and can't be too far in the future
-    `https://waka.hackclub.com/api/summary?interval=low_skies&user=${slackId}&recompute=true`,
+    `https://waka.hackclub.com/api/summary?interval=low_skies&user=${slackId}`,
     {
       headers: {
         Authorization: `Bearer ${WAKA_API_KEY}`,

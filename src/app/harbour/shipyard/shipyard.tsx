@@ -16,7 +16,7 @@ const exampleShips: Ship[] = [
       "https://cloud-hkx2soawz-hack-club-bot.vercel.app/0image.png",
     readmeUrl:
       "https://raw.githubusercontent.com/kaj07/FLIP-SLASH--sprig-/refs/heads/main/README.md",
-    hours: 8.184,
+    hours: 8,
     voteRequirementMet: true,
     doubloonPayout: 421,
     shipType: "project",
@@ -33,7 +33,7 @@ const exampleShips: Ship[] = [
       "https://cloud-pfbh20k1i-hack-club-bot.vercel.app/0image.png",
     readmeUrl:
       "https://github.com/GalexY727/cotl-music-player/blob/main/README.md",
-    hours: 5.195,
+    hours: 5,
     voteRequirementMet: true,
     doubloonPayout: 428,
     shipType: "project",
@@ -49,7 +49,7 @@ const exampleShips: Ship[] = [
       "https://cloud-ma98mn299-hack-club-bot.vercel.app/0image.png",
     readmeUrl:
       "https://github.com/Beenana02/Portoise_USB_Hub/blob/main/README.md",
-    hours: 15.994,
+    hours: 15,
     voteRequirementMet: true,
     doubloonPayout: 2121,
     shipType: "project",
@@ -65,7 +65,7 @@ const exampleShips: Ship[] = [
       "https://cloud-j29zpdbig-hack-club-bot.vercel.app/0image.png",
     readmeUrl:
       "https://github.com/MONKEYFACE678/Programming-Theory-Repo/blob/main/ReadMe.txt",
-    hours: 11.018,
+    hours: 11,
     voteRequirementMet: true,
     doubloonPayout: 731,
     shipType: "project",
@@ -74,12 +74,7 @@ const exampleShips: Ship[] = [
   },
 ];
 
-export default function Shipyard({
-  ships,
-  shipChains,
-  setShips,
-  session,
-}: any) {
+export default function Shipyard({ ships, setShips, session }: any) {
   const [voteBalance, setVoteBalance] = useLocalStorageState(
     "cache.voteBalance",
     0,
@@ -96,14 +91,8 @@ export default function Shipyard({
     return (
       <div>
         <div className="text-center">
-          <h1 className="font-heading text-5xl font-bold text-blue-500 mb-6 text-center relative w-fit mx-auto">
+          <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold text-indigo-600 dark:text-indigo-300 mb-4">
             The Keep
-            <span
-              className="absolute text-sm animate-pulse mb-6 rotate-[-15deg] inline-block text-yellow-500 minecraft w-full pointer-events-none"
-              style={{ textShadow: "#404100 3px 3px", translate: "-6em 1.5em" }}
-            >
-              Manage yer ships!
-            </span>
           </h1>
         </div>
         {voteBalance > 0 && (
@@ -115,12 +104,12 @@ export default function Shipyard({
             />
           </div>
         )}
-        <Ships ships={ships} shipChains={shipChains} setShips={setShips} />
+        <Ships ships={ships} setShips={setShips} />
 
-        <div className="flex flex-col justify-center items-center mt-8">
-          <h2 className="text-xl mb-2 text-blue-500">
+        <div className="flex flex-col justify-center items-center">
+          <p className="text-2xl mb-2 text-blue-500">
             Here are some example projects others have submitted!
-          </h2>
+          </p>
           <Ships ships={exampleShips} bareShips={true} />
         </div>
       </div>
