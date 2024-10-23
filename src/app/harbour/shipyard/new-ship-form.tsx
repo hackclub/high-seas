@@ -196,7 +196,6 @@ export default function NewShipForm({
                         hrs)
                       </CommandItem>
                       ))}
-                    ))}
                   </CommandGroup>
                 </CommandList>
               </Command>
