@@ -171,7 +171,7 @@ export default function NewShipForm({
               <Command>
                 <CommandInput placeholder="Search projects..." />
                 <CommandList>
-                  <CommandEmpty>No WakaTime projects found 😭</CommandEmpty>
+                  <CommandEmpty className="p-5">No WakaTime projects found 😭</CommandEmpty>
                   <CommandGroup>
                     {projects
                       .filter((project) => (project.total / 60 / 60) >= 1)
