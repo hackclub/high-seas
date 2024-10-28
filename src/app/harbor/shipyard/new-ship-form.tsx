@@ -70,8 +70,8 @@ export default function NewShipForm({
           setProjects(
             res.projects.filter(
               (p: { key: string; total: number }) =>
-                p.key != "<<LAST_PROJECT>>" && !shippedShips.includes(p.key),
-            ),
+                p.key != "<<LAST_PROJECT>>" && !shippedShips.includes(p.key)
+            )
           );
         }
       } catch (error) {
@@ -91,7 +91,7 @@ export default function NewShipForm({
     const deploymentUrl = formData.get("deployment_url") as string;
     if (
       ["github.com", "gitlab.com", "bitbucket.org", "testflight.com"].some(
-        (domain) => deploymentUrl.includes(domain),
+        (domain) => deploymentUrl.includes(domain)
       )
     ) {
       toast({
@@ -204,7 +204,7 @@ export default function NewShipForm({
                 href="https://waka.hackclub.com"
                 target="_blank"
               >
-                Wakatime dashboard
+                Hackatime dashboard
               </Link>
             </span>
           </label>
@@ -219,10 +219,14 @@ export default function NewShipForm({
                 disabled={!projects}
               >
                 {selectedProject
-                  ? `${selectedProject.key} (${(selectedProject.total / 60 / 60).toFixed(1)} hrs)`
+                  ? `${selectedProject.key} (${(
+                      selectedProject.total /
+                      60 /
+                      60
+                    ).toFixed(1)} hrs)`
                   : projects
-                    ? "Select project..."
-                    : "Loading projects..."}
+                  ? "Select project..."
+                  : "Loading projects..."}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -260,7 +264,7 @@ export default function NewShipForm({
                               selectedProject &&
                                 selectedProject.key === project.key
                                 ? "opacity-100"
-                                : "opacity-0",
+                                : "opacity-0"
                             )}
                           />
                           {project.key} ({(project.total / 60 / 60).toFixed(1)}{" "}
@@ -292,7 +296,9 @@ export default function NewShipForm({
             name="repo_url"
             required
             className="w-full p-2 border rounded"
-            onChange={({ target }) => setIsGithubRepo(target.value.includes("github.com"))}
+            onChange={({ target }) =>
+              setIsGithubRepo(target.value.includes("github.com"))
+            }
           />
         </div>
 
