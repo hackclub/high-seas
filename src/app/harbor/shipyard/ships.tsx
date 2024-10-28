@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Ship, stagedToShipped } from "./ship-utils";
+import { type Ship, stagedToShipped } from "./ship-utils";
 import Image from "next/image";
 import Icon from "@hackclub/icons";
 import ReactMarkdown from "react-markdown";
@@ -10,7 +10,7 @@ import { markdownComponents } from "@/components/markdown";
 import { Button, buttonVariants } from "@/components/ui/button";
 import NewShipForm from "./new-ship-form";
 import EditShipForm from "./edit-ship-form";
-import { getSession } from "@/app/utils/auth";
+import { getSession, type HsSession } from "@/app/utils/auth";
 import Link from "next/link";
 
 import ShipPillCluster from "@/components/ui/ship-pill-cluster";
@@ -32,7 +32,7 @@ export default function Ships({
 }) {
   const [selectedShip, setSelectedShip] = useState<Ship | null>(null);
   const [previousSelectedShip, setPreviousSelectedShip] = useState<Ship | null>(
-    null,
+    null
   );
 
   const [readmeText, setReadmeText] = useState<string | null>(null);
@@ -68,7 +68,7 @@ export default function Ships({
     }
 
     setPreviousSelectedShip(selectedShip);
-  }, [selectedShip]);
+  }, [selectedShip, previousSelectedShip]);
 
   const fetchReadme = async () => {
     if (selectedShip && !readmeText) {
@@ -83,15 +83,16 @@ export default function Ships({
   };
 
   const stagedShips = ships.filter(
-    (ship: Ship) => ship.shipStatus === "staged",
+    (ship: Ship) => ship.shipStatus === "staged"
   );
   const shippedShips = ships.filter(
-    (ship: Ship) =>
-      ship.shipStatus === "shipped" && ship.shipType === "project",
+    (ship: Ship) => ship.shipStatus === "shipped" && ship.shipType === "project"
   );
 
   const shipMap = new Map();
-  ships.forEach((s: Ship) => shipMap.set(s.id, s));
+  for (const s of ships) {
+    shipMap.set(s.id, s);
+  }
 
   // let selectedProjectWakatimeProjectShipChain;
 
@@ -409,7 +410,9 @@ export default function Ships({
                         <Link
                           id="selected-ship-repo-button"
                           target="_blank"
-                          className={`${buttonVariants({ variant: "outline" })} h-full`}
+                          className={`${buttonVariants({
+                            variant: "outline",
+                          })} h-full`}
                           href={selectedShip.repoUrl}
                           prefetch={false}
                         >
@@ -418,7 +421,9 @@ export default function Ships({
 
                         <Button
                           id="selected-ship-edit-button"
-                          className={`${buttonVariants({ variant: "outline" })} w-fit p-2 h-full text-black`}
+                          className={`${buttonVariants({
+                            variant: "outline",
+                          })} w-fit p-2 h-full text-black`}
                           onClick={() => setIsEditingShip((p) => !p)}
                         >
                           <Icon glyph="edit" width={24} /> Edit

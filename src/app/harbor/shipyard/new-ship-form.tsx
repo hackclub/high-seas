@@ -1,7 +1,7 @@
 // Import necessary modules and components
 import React from "react";
 import Link from "next/link";
-import { createShip, Ship } from "./ship-utils";
+import { createShip, type Ship } from "./ship-utils";
 import { Button } from "@/components/ui/button";
 import JSConfetti from "js-confetti";
 import { useEffect, useRef, useState } from "react";
@@ -33,7 +33,7 @@ export default function NewShipForm({
   ...props
 }: {
   ships: Ship[];
-  canvasRef: any;
+  canvasRef: HTMLCanvasElement;
   closeForm: any;
   session: any;
 }) {
@@ -70,7 +70,7 @@ export default function NewShipForm({
           setProjects(
             res.projects.filter(
               (p: { key: string; total: number }) =>
-                p.key != "<<LAST_PROJECT>>" && !shippedShips.includes(p.key)
+                p.key !== "<<LAST_PROJECT>>" && !shippedShips.includes(p.key)
             )
           );
         }
@@ -79,7 +79,7 @@ export default function NewShipForm({
       }
     }
     fetchProjects();
-  }, [session?.slackId]);
+  }, [ships]);
 
   const handleForm = async (formData: FormData) => {
     setStaging(true);
@@ -176,7 +176,7 @@ export default function NewShipForm({
                 minLength={10}
                 required
                 className="w-full p-2 border rounded"
-              ></textarea>
+              />
             </motion.div>
           ) : null}
         </AnimatePresence>
@@ -249,28 +249,27 @@ export default function NewShipForm({
                     />
                   </CommandEmpty>
                   <CommandGroup>
-                    {projects &&
-                      projects.map((project, idx) => (
-                        <CommandItem
-                          key={`${project.key}-${idx}`}
-                          onSelect={() => {
-                            setSelectedProject(project);
-                            setOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedProject &&
-                                selectedProject.key === project.key
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {project.key} ({(project.total / 60 / 60).toFixed(1)}{" "}
-                          hrs)
-                        </CommandItem>
-                      ))}
+                    {projects?.map((project, idx) => (
+                      <CommandItem
+                        key={`${project.key}-${idx}`}
+                        onSelect={() => {
+                          setSelectedProject(project);
+                          setOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedProject &&
+                              selectedProject.key === project.key
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {project.key} ({(project.total / 60 / 60).toFixed(1)}{" "}
+                        hrs)
+                      </CommandItem>
+                    ))}
                   </CommandGroup>
                 </CommandList>
               </Command>

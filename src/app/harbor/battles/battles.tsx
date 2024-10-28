@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Ships } from "../../../../types/battles/airtable";
+import type { Ships } from "../../../../types/battles/airtable";
 import Icon from "@hackclub/icons";
 import Pill from "@/components/ui/pill";
 import Link from "next/link";
 import Image from "next/image";
-import ReactMarkdown, { Components } from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 
 import { LoadingSpinner } from "../../../components/ui/loading_spinner.js";
 import { getVotesRemainingForNextPendingShip } from "@/app/utils/airtable";
 import useLocalStorageState from "../../../../lib/useLocalStorageState";
 import { useToast } from "@/hooks/use-toast";
-import { HsSession } from "@/app/utils/auth";
+import type { HsSession } from "@/app/utils/auth";
 
 interface Matchup {
   project1: Ships;
@@ -102,7 +102,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </a>
           )}
           {project.readme_url && (
-            <button onClick={onReadmeClick} id="readme-button">
+            <button type="button" onClick={onReadmeClick} id="readme-button">
               <Pill
                 msg="README"
                 color="purple"
@@ -115,6 +115,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       </div>
       <div className="p-4 bg-gray-100 dark:bg-gray-700">
         <button
+          type="button"
           id="vote-button"
           onClick={onVote}
           className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
@@ -223,7 +224,7 @@ export default function Matchups({ session }: { session: HsSession }) {
 
   const [voteBalance, setVoteBalance] = useLocalStorageState<number>(
     "cache.voteBalance",
-    0,
+    0
   );
 
   const { toast } = useToast();
@@ -237,7 +238,7 @@ export default function Matchups({ session }: { session: HsSession }) {
   };
 
   const fetchMatchup = async (
-    { retryTimeout }: { retryTimeout: number } = { retryTimeout: 4000 },
+    { retryTimeout }: { retryTimeout: number } = { retryTimeout: 4000 }
   ) => {
     setLoading(true);
     try {
@@ -262,7 +263,7 @@ export default function Matchups({ session }: { session: HsSession }) {
             fetchMatchup({
               retryTimeout: Math.min(1000 * 60 * 5, retryTimeout * 2),
             }),
-          retryTimeout,
+          retryTimeout
         );
       }
     } catch (error) {
@@ -327,7 +328,7 @@ export default function Matchups({ session }: { session: HsSession }) {
       } catch (error) {
         console.error("Error submitting vote:", error);
         setError(
-          "An error occurred while submitting your vote. Please try again.",
+          "An error occurred while submitting your vote. Please try again."
         );
       } finally {
         setIsSubmitting(false);
