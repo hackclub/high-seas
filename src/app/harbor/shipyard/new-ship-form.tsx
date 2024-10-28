@@ -1,5 +1,5 @@
 // Import necessary modules and components
-import React from "react";
+import type React from "react";
 import Link from "next/link";
 import { createShip, type Ship } from "./ship-utils";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import { getWakaSessions } from "@/app/utils/waka";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import Icon from "@hackclub/icons";
+import type { HsSession } from "@/app/utils/auth";
 
 export default function NewShipForm({
   ships,
@@ -33,9 +34,9 @@ export default function NewShipForm({
   ...props
 }: {
   ships: Ship[];
-  canvasRef: HTMLCanvasElement;
-  closeForm: any;
-  session: any;
+  canvasRef: React.MutableRefObject<null>;
+  closeForm: (value: React.SetStateAction<boolean>) => void;
+  session: HsSession;
 }) {
   const [staging, setStaging] = useState(false);
   const confettiRef = useRef<JSConfetti | null>(null);
@@ -52,7 +53,9 @@ export default function NewShipForm({
 
   // Initialize confetti on mount
   useEffect(() => {
-    confettiRef.current = new JSConfetti({ canvas: canvasRef.current });
+    if (canvasRef.current) {
+      confettiRef.current = new JSConfetti({ canvas: canvasRef.current });
+    }
   }, [canvasRef.current]);
 
   // Fetch projects from the API using the Slack ID
@@ -117,7 +120,7 @@ export default function NewShipForm({
     await createShip(formData);
     const isTutorial = sessionStorage.getItem("tutorial") === "true";
     confettiRef.current?.addConfetti();
-    closeForm();
+    closeForm(true);
     window.location.reload();
     setStaging(false);
   };
