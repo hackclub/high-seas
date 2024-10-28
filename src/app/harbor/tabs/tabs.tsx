@@ -11,7 +11,7 @@ import SignPost from "../signpost/signpost";
 import { getWaka } from "../../utils/waka";
 import { hasRecvFirstHeartbeat, getWakaEmail } from "../../utils/waka";
 import { getPersonTicketBalanceAndTutorialStatutWowThisMethodNameSureIsLongPhew } from "../../utils/airtable";
-import { WakaLock } from "../../../components/ui/waka-lock.js";
+import { WakaLock } from "../../../components/ui/waka-lock";
 import { tour } from "./tour";
 import useLocalStorageState from "../../../../lib/useLocalStorageState";
 import { useRouter } from "next/navigation";
@@ -84,20 +84,30 @@ export default function Harbor({
   };
 
   useEffect(() => {
+    console.log("running tabs useeffect");
     getUserShips(session.slackId).then(({ ships, shipChains }) => {
       setMyShips(ships);
+      console.warn("shipchains", ships, shipChains);
       setMyShipChains(shipChains);
     });
 
-    hasRecvFirstHeartbeat().then((hasHb) => setHasWakaHb(hasHb));
+    (async () => {
+      while (!hasWakaHb) {
+        console.log("Checking hb");
+        hasRecvFirstHeartbeat().then((hasHb) => setHasWakaHb(hasHb));
+
+        await new Promise((r) => setTimeout(r, 5_000));
+      }
+    })();
 
     getPersonTicketBalanceAndTutorialStatutWowThisMethodNameSureIsLongPhew(
       session.slackId,
     ).then(({ tickets, hasCompletedTutorial }) => {
       setPersonTicketBalance(tickets.toString());
 
+      sessionStorage.setItem("tutorial", (!hasCompletedTutorial).toString());
+
       if (!hasCompletedTutorial) {
-        sessionStorage.setItem("tutorial", "true");
         tour();
       }
     });

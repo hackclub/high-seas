@@ -21,7 +21,7 @@ export default function Page({
       if (s) {
         setSession(s);
       } else {
-        window.location.pathname = "/?msg=Oi oi oi, you can't be going there";
+        window.location.pathname = "/?msg='Oi oi oi, you can't be going there'";
       }
     });
   }, []);

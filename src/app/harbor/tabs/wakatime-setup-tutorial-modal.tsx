@@ -3,115 +3,109 @@ import { Card } from "@/components/ui/card";
 import Icon from "@hackclub/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import {
+  getInstallCommand,
+  Os,
+  osFromAgent,
+  SinglePlatform,
+} from "./tutorial-utils.client";
 import { hasHb } from "./tutorial-utils";
 import { buttonVariants } from "../../../components/ui/button";
+import {
+  handleEmailSubmission,
+  markArrpheusReadyToInvite,
+} from "../../marketing/marketing-utils";
+import JSConfetti from "js-confetti";
 
 export default function WakatimeSetupTutorialModal({
   isOpen,
   setIsOpen,
-  isSubmitting,
-  wakaKey,
-  handleContinueFromModal,
-  wakatimeUsername,
+  email,
 }: {
   isOpen: boolean;
   setIsOpen: any;
-  isSubmitting: boolean;
-  wakaKey: string;
-  handleContinueFromModal: any;
-  wakatimeUsername: string;
+  email?: string;
 }) {
-  const [userOS, setUserOS] = useState<
-    "windows" | "macos" | "linux" | "unknown"
-  >("unknown");
+  const [userOs, setUserOs] = useState<Os>("unknown");
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const [hasRecvHb, setHasRecvHb] = useState(false);
+  const [wakaKey, setWakaKey] = useState<string | null>(null);
+  const [instructions, setInstructions] = useState<any | null>(null);
 
-  const getInstallCommand = (platform: string) => {
-    switch (platform) {
-      case "windows":
-        return {
-          label: "Windows PowerShell",
-          command: "irm https://wakatime.com/install.ps1 | iex",
-          lang: "powershell",
-        };
-      case "macos":
-        return {
-          label: "macOS Terminal",
-          command: `export BEARER_TOKEN="${wakaKey}" && curl -fsSL https://hack.club/waka-setup.sh | sh`,
-          lang: "bash",
-        };
-      case "linux":
-        return {
-          label: "Linux Terminal",
-          command: `export BEARER_TOKEN="${wakaKey}" && curl -fsSL https://hack.club/waka-setup.sh | sh`,
-          lang: "bash",
-        };
-      default:
-        return {
-          label: "Unknown Platform",
-          command: `export BEARER_TOKEN="${wakaKey}" && curl -fsSL https://hack.club/waka-setup.sh | sh`,
-          lang: "bash",
-        };
+  const [personRecId, setPersonRecId] = useState<string | null>(null);
+  const confettiRef = useRef<JSConfetti | null>(null);
+
+  const triggerConfetti = () => {
+    confettiRef.current?.addConfetti({
+      emojis: ["🌟", "✨", "💫", "🎉"],
+      emojiSize: 50,
+      confettiNumber: 50,
+    });
+  };
+
+  const handleContinueFromModal = async () => {
+    console.log("running handleContinueFromModal");
+    const precid = sessionStorage.getItem("personRecordId");
+
+    try {
+      if (!precid) throw new Error("No person record ID set yet!");
+
+      await markArrpheusReadyToInvite(precid);
+      triggerConfetti();
+    } catch (err) {
+      console.error("Error while handling modal continue:", err);
     }
   };
 
   useEffect(() => {
-    const ua = window.navigator.userAgent.toLowerCase();
-    if (ua.includes("win")) {
-      setUserOS("windows");
-    } else if (ua.includes("mac")) {
-      setUserOS("macos");
-    } else if (ua.includes("linux")) {
-      setUserOS("linux");
-    } else {
-      setUserOS("unknown");
-      setShowAllPlatforms(true); // Move the setState here
-    }
+    confettiRef.current = new JSConfetti();
+
+    const os = osFromAgent();
+    setUserOs(os);
+    setShowAllPlatforms(os === "unknown");
 
     (async () => {
+      const emailSubmissionResult = await handleEmailSubmission(email);
+      if (!emailSubmissionResult) {
+        console.log("Falsy emailSubmissionResult:", emailSubmissionResult);
+        return;
+      }
+
+      setPersonRecId(emailSubmissionResult.personRecordId);
+      sessionStorage.setItem(
+        "personRecordId",
+        emailSubmissionResult.personRecordId,
+      );
+      console.log(
+        "prid test",
+        emailSubmissionResult.personRecordId,
+        personRecId,
+        sessionStorage.getItem("personRecordId"),
+      );
+      setWakaKey(emailSubmissionResult.apiKey);
+      setInstructions(getInstallCommand(userOs, emailSubmissionResult.apiKey));
+
+      if (!emailSubmissionResult.username) {
+        console.error("no username while trying to sign up");
+        return;
+      }
+
       while (true) {
-        if (wakatimeUsername) {
-          const hasData = await hasHb(wakatimeUsername, wakaKey);
-          if (hasData && !isSubmitting) {
-            await handleContinueFromModal();
-            setHasRecvHb(true);
-            break;
-          }
+        const hasData = await hasHb(
+          emailSubmissionResult.username,
+          emailSubmissionResult.apiKey,
+        );
+        console.log("Hb check:", hasData);
+        if (hasData) {
+          await handleContinueFromModal();
+          setHasRecvHb(true);
+          break;
         }
 
         await new Promise((r) => setTimeout(r, 1_000));
       }
     })();
   }, []);
-
-  const installInfo = getInstallCommand(userOS);
-
-  const SinglePlatform = ({ platform }: { platform: any }) => {
-    return (
-      <div>
-        <p className="mb-1 inline-flex items-end gap-2">
-          <Icon glyph="terminal" size={26} />
-          <span>Install instructions for {platform.label}</span>
-        </p>
-        <div className="flex flex-col sm:flex-row items-stretch gap-2">
-          <pre className="text-sm bg-gray-200 rounded-lg p-5 overflow-x-auto w-full flex-grow relative">
-            <span className="absolute left-1.5 top-0.5 text-xs opacity-40 select-none pointer-events-none">
-              {platform.lang}
-            </span>
-            <code>{platform.command}</code>
-          </pre>
-          <Button
-            className="h-full px-8"
-            onClick={() => navigator.clipboard.writeText(platform.command)}
-          >
-            Copy
-            <Icon glyph="copy" size={26} />
-          </Button>
-        </div>
-      </div>
-    );
-  };
 
   const InstallInstructions = () => (
     <>
@@ -127,16 +121,16 @@ export default function WakatimeSetupTutorialModal({
 
         {showAllPlatforms ? (
           <div>
-            <SinglePlatform platform={getInstallCommand("windows")} />
-            <SinglePlatform platform={getInstallCommand("macos")} />
-            <SinglePlatform platform={getInstallCommand("linux")} />
+            <SinglePlatform os={"windows"} wakaKey={wakaKey} />
+            <SinglePlatform os={"macos"} wakaKey={wakaKey} />
+            <SinglePlatform os={"linux"} wakaKey={wakaKey} />
             <p onClick={() => setShowAllPlatforms(false)}>nevermind</p>
           </div>
         ) : (
           <>
-            <SinglePlatform platform={installInfo} />
+            <SinglePlatform os={userOs} wakaKey={wakaKey} />
             <p className="text-xs mt-1">
-              Not using {installInfo?.label}?{" "}
+              Not using {userOs}?{" "}
               <span
                 onClick={() => setShowAllPlatforms(true)}
                 className="underline text-blue-500 cursor-pointer"
@@ -159,10 +153,10 @@ export default function WakatimeSetupTutorialModal({
       <p className="text-center mt-2 text-base">
         Waiting for the setup script to be pasted into your terminal...
         <br />
+        <p className="text-sm">{personRecId}</p>
         <br />
         <Button
           className={`${buttonVariants({ variant: "outline" })}`}
-          disabled={isSubmitting}
           onClick={async () => {
             await handleContinueFromModal();
             setHasRecvHb(true);
@@ -195,7 +189,7 @@ export default function WakatimeSetupTutorialModal({
 
   return (
     <AnimatePresence>
-      {isOpen && wakaKey && (
+      {isOpen ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -209,7 +203,7 @@ export default function WakatimeSetupTutorialModal({
             {hasRecvHb ? <CheckUrEmail /> : <InstallInstructions />}
           </Card>
         </motion.div>
-      )}
+      ) : null}
     </AnimatePresence>
   );
 }

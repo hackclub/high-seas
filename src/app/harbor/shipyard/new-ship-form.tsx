@@ -25,6 +25,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import Icon from "@hackclub/icons";
 import type { HsSession } from "@/app/utils/auth";
+import { MultiSelect } from "../../../components/ui/multi-select";
 
 export default function NewShipForm({
   ships,
@@ -43,13 +44,19 @@ export default function NewShipForm({
   const [projects, setProjects] = useState<
     { key: string; total: number }[] | null
   >(null);
-  const [selectedProject, setSelectedProject] = useState<{
-    key: string;
-    total: number;
-  } | null>(null);
+  const [selectedProjects, setSelectedProjects] = useState<
+    | [
+        {
+          key: string;
+          total: number;
+        },
+      ]
+    | null
+  >(null);
   const [open, setOpen] = useState(false);
   const [isShipUpdate, setIsShipUpdate] = useState(false);
   const [isGithubRepo, setIsGithubRepo] = useState(false);
+  const { toast } = useToast();
 
   // Initialize confetti on mount
   useEffect(() => {
@@ -112,8 +119,8 @@ export default function NewShipForm({
         "readme_url",
         repoUrl.replace(
           /https:\/\/github.com\/(.*?)\/(.*?)\/?$/,
-          "https://raw.githubusercontent.com/$1/$2/refs/heads/main/README.md"
-        )
+          "https://raw.githubusercontent.com/$1/$2/refs/heads/main/README.md",
+        ),
       );
     }
 
@@ -124,7 +131,12 @@ export default function NewShipForm({
     setStaging(false);
   };
 
-  const { toast } = useToast();
+  const projectDropdownList = projects?.map((p: any) => ({
+    label: `${p.key} (${(p.total / 60 / 60).toFixed(2)} hrs)`,
+    value: p.key,
+    icon: () => <Icon glyph="clock" size={24} />,
+  }));
+
   return (
     <div className="p-4" {...props}>
       <h1 className="text-2xl font-bold mb-4">
@@ -211,7 +223,20 @@ export default function NewShipForm({
             </span>
           </label>
 
-          <Popover open={open} onOpenChange={setOpen}>
+          {projects ? (
+            <MultiSelect
+              options={projectDropdownList}
+              onValueChange={(p) => setSelectedProjects(p)}
+              defaultValue={[]}
+              placeholder="Select projects"
+              variant="inverted"
+              maxCount={3}
+            />
+          ) : (
+            <p>Loading projects...</p>
+          )}
+
+          {/* <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -276,17 +301,15 @@ export default function NewShipForm({
                 </CommandList>
               </Command>
             </PopoverContent>
-          </Popover>
+          </Popover> */}
 
           {/* Hidden input to include in formData */}
-          {/* {selectedProject && ( */}
           <input
             type="hidden"
             id="wakatime-project-name"
             name="wakatime_project_name"
-            value={selectedProject?.key || ""}
+            value={selectedProjects?.join("$$xXseparatorXx$$") ?? ""}
           />
-          {/* )} */}
         </div>
 
         <div id="repo-field">

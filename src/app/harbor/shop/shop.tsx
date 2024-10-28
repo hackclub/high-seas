@@ -26,7 +26,7 @@ export default function Shop({ session }: { session: HsSession }) {
   const [bannerText, setBannerText] = useState("");
   const verificationStatus = /*session.verificationStatus[0] ||*/ "Eligible L1";
   const slackId = session.slackId;
-
+  const isTutorial = sessionStorage.getItem("tutorial");
   useEffect(() => {
     setBannerText(sample(shopBanner));
     getShop().then((shop) => setShopItems(shop));
@@ -87,15 +87,16 @@ export default function Shop({ session }: { session: HsSession }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {shopItems.filter(getFilter()).map((item: any) => (
-          <ShopItemComponent
+        {shopItems.filter(getFilter()).map((item: any) => {
+          if(item.id == "item_free_stickers_41" && !isTutorial) return null
+          return (<ShopItemComponent
             id={item.id}
             key={item.id}
             item={item}
             filterIndex={filterIndex}
             personTicketBalance={personTicketBalance}
           />
-        ))}
+        )})}
       </div>
     </motion.div>
   );

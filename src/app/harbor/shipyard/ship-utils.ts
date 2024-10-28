@@ -33,7 +33,7 @@ export interface Ship {
   doubloonPayout: number;
   shipType: ShipType;
   shipStatus: ShipStatus;
-  wakatimeProjectName: string;
+  wakatimeProjectNames: string[];
   createdTime: string;
   updateDescription: string | null;
   reshippedFromId: string | null;
@@ -49,7 +49,7 @@ const shipToFields = (ship: Ship, entrantId: string) => ({
   screenshot_url: ship.screenshotUrl,
   ship_type: ship.shipType,
   update_description: ship.updateDescription,
-  wakatime_project_name: ship.wakatimeProjectName,
+  wakatime_project_name: ship.wakatimeProjectNames.join("$$xXseparatorXx$$"),
 });
 
 export async function getUserShips(
@@ -64,11 +64,14 @@ export async function getUserShips(
         filterByFormula: `AND(
       TRUE(),
       '${slackId}' = {entrant__slack_id},
-      {project_source} != 'arcade'
+      {project_source} != 'arcade',
+      {ship_status} != 'deleted'
       )`,
       })
       .all(),
   ]);
+
+  console.log("osntoiearsntiersntne333", records);
 
   if (!wakaData || !records)
     throw new Error("No Waka data or Airtable records");
@@ -88,6 +91,11 @@ export async function getUserShips(
     const reshippedFromIdRaw = r.get("reshipped_from") as [string] | null;
     const reshippedFromId = reshippedFromIdRaw ? reshippedFromIdRaw[0] : null;
 
+    console.log("attempting", r.get("wakatime_project_name"));
+    const wakatimeProjectNames = (
+      r.get("wakatime_project_name") as string
+    ).split("$$xXseparatorXx$$");
+
     const projectRecord = {
       id: r.id as string,
       title: r.get("title") as string,
@@ -100,7 +108,7 @@ export async function getUserShips(
       doubloonPayout: r.get("doubloon_payout") as number,
       shipType: r.get("ship_type") as ShipType,
       shipStatus: r.get("ship_status") as ShipStatus,
-      wakatimeProjectName: r.get("wakatime_project_name") as string,
+      wakatimeProjectNames,
       hours: r.get("hours") as number | null,
       credited_hours: r.get("credited_hours") as number | null,
       createdTime: r.get("created_time") as string,
@@ -108,36 +116,39 @@ export async function getUserShips(
       reshippedFromId,
       reshippedToId,
     };
-
-    if (projectRecord.shipStatus !== "deleted") ships.push(projectRecord);
+    ships.push(projectRecord);
   });
 
-  // I'm going to construct the ship chains based on wakatime project names
-  const shipChains = new Map<string, string[]>(); // <wakatime_project_name, ship_id[]>
+  // Now we'll create ship chains for each Wakatime project
+  const shipChains = new Map<string, string[]>();
 
-  // Step 1: Get the wakatime project names
-  const wakatimeProjectNames = new Set(
-    ships.map((s: Ship) => s.wakatimeProjectName).filter((p) => p),
-  );
-  console.info("Step 1:", wakatimeProjectNames);
+  // Step 1: Get all unique Wakatime project names across all ships
+  const allWakatimeProjectNames = new Set<string>();
+  ships.forEach((ship) => {
+    ship.wakatimeProjectNames.forEach((wpn) => {
+      allWakatimeProjectNames.add(wpn);
+    });
+  });
+  console.info("Step 1: All Wakatime project names:", allWakatimeProjectNames);
 
-  // For every wakatime project, get the root, ie the ship without a reshippedFromId.
-  // There should only be 1.
-  wakatimeProjectNames.forEach((wpn) => {
+  // Step 2: For each Wakatime project name, find the root ship and build its chain
+  allWakatimeProjectNames.forEach((wpn) => {
+    // Find the root ship - it should be a ship that:
+    // 1. Contains this Wakatime project name
+    // 2. Has no reshippedFromId
     const rootShip = ships.find(
-      (s: Ship) => s.wakatimeProjectName === wpn && !s.reshippedFromId,
+      (s) => s.wakatimeProjectNames.includes(wpn) && !s.reshippedFromId,
     );
-    console.info(`Step 2: rootShip for ${wpn}: "${rootShip.title}"`);
+    console.info(`Step 2: rootShip for ${wpn}: "${rootShip?.title}"`);
 
     if (rootShip) {
       const chain = [rootShip.id];
 
       let nextShip: Ship | undefined = ships.find(
-        (s: Ship) => s.id === rootShip?.reshippedToId,
+        (s) => s.id === rootShip.reshippedToId,
       );
       while (nextShip) {
         if (chain.length >= 10_000) {
-          // What.
           const err = new Error(
             `Ship chain max got too long (rootshipId: ${rootShip.id})`,
           );
@@ -153,7 +164,6 @@ export async function getUserShips(
           throw err;
         }
 
-        // Avoid circular references
         if (chain.includes(nextShip.id)) {
           const err = new Error(
             `Circular ship chain reference detected in (rootshipId: ${rootShip.id}) ship chain (${nextShip.id} was detected twice)`,
@@ -163,34 +173,39 @@ export async function getUserShips(
         }
 
         chain.push(nextShip.id);
-        nextShip = ships.find((s: Ship) => s.id === nextShip?.reshippedToId);
+        nextShip = ships.find((s) => s.id === nextShip?.reshippedToId);
       }
 
-      shipChains.set(rootShip.wakatimeProjectName, chain);
+      shipChains.set(wpn, chain);
     } else {
       console.error("No rootship for", wpn);
     }
   });
 
-  // Proper hours assignment for staged ships
+  // Update hours for staged ships
   for (const ship of ships) {
     console.log(`RAW HOURS: ${ship.id}: ${ship.total_hours}`);
-    if (ship.shipStatus !== "staged") continue; // Shipped records have a static hours value that pulls from its airtable column.
+    if (ship.shipStatus !== "staged") continue;
 
-    const rawWakaHours = hoursForProject(ship.wakatimeProjectName) ?? 0;
+    // Sum up hours across all Wakatime projects for this ship
+    const rawWakaHours = ship.wakatimeProjectNames.reduce((total, wpn) => {
+      return total + (hoursForProject(wpn) ?? 0);
+    }, 0);
 
     if (ship.shipType === "project") {
       ship.credited_hours = rawWakaHours;
     } else if (ship.shipType === "update") {
-      // Get the sum of the shipped hours
+      // Get the sum of shipped hours for all Wakatime projects
       const shippedSum = ships
         .filter(
-          (s: Ship) =>
-            s.wakatimeProjectName === ship.wakatimeProjectName &&
+          (s) =>
+            s.wakatimeProjectNames.some((wpn) =>
+              ship.wakatimeProjectNames.includes(wpn),
+            ) &&
             s.shipStatus === "shipped" &&
             s.id !== ship.id,
         )
-        .reduce((acc, s: Ship) => acc + (s.total_hours ?? 0), 0);
+        .reduce((acc, s) => acc + (s.total_hours ?? 0), 0);
 
       const hoursForDraftShip = rawWakaHours - shippedSum;
       console.log(`\t\t\t${ship.id} ${shippedSum} of ${rawWakaHours}`);

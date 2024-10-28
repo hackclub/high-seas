@@ -108,6 +108,7 @@ export default function Shipyard({
   setShips,
   session,
 }: any) {
+  console.warn(ships);
   const [voteBalance, setVoteBalance] = useLocalStorageState(
     "cache.voteBalance",
     0,

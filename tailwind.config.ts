@@ -56,6 +56,7 @@ const config: Config = {
 			},
   		colors: {
         	green: '#10B981',
+			pink: '#F567D7',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

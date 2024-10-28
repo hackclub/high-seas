@@ -383,8 +383,7 @@ export default function Matchups({ session }: { session: HsSession }) {
 
           {voteBalance > 0 && (
             <div className="flex justify-center items-center space-x-4">
-              {voteBalance} vote(s) remaining for your next ship to enter the
-              Wonderdome!
+              {voteBalance} more vote{voteBalance == 1 ? '' : 's'} until your next ship's payout!
             </div>
           )}
         </header>

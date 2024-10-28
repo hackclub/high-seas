@@ -53,18 +53,18 @@ export default async function Marketing() {
         
         <div className="relative h-screen flex items-center justify-center">
           <div className="flex flex-col justify-center items-center text-center">
-            <div className=" flex flex-col justify-center items-center mb-24">
+            <div className=" flex flex-col justify-center items-center mb-20">
               <img
                 src="/highlogo.svg"
                 alt="high seas logo"
                 className="xl:max-w-3xl md:max-w-xl max-w-sm"
               />
-              <p className="text-2xl md:text-4xl text-white mx-16">
+              <p className="text-2xl md:text-4xl text-white mx-8 drop-shadow-lg">
                 Build personal projects. Get free stuff.
               </p>
-              <div className="flex flex-wrap text-xl md:text-xl mt-6 justify-center items-center mx-4 rounded-xl border-[#3852CD] border-4 bg-[#3852CD]">
+              <div className="flex flex-wrap text-xl md:text-xl mt-6 justify-center items-center mx-4 rounded-xl ">
                 {session ? (
-                    <Link href="/signpost" className="p-4 rounded-lg text-md text-white">
+                    <Link href="/signpost" className="p-4 rounded-lg text-md text-white bg-[#3852CD]">
                       <img src="/signpost.png" width={32} className="inline-block mr-4" />
                       Enter the harbor
                     </Link>
@@ -72,6 +72,7 @@ export default async function Marketing() {
                   <EmailSubmissionForm />
                 )}
               </div>
+              <p className="mt-2 text-white bg-[#3852CD] bg-opacity-50 px-4 py-2 rounded-lg">New sailors get free stickers!</p>
             </div>
             <Link href="#howthisworks">
               <img src="/arrows.svg" className="w-16 h-14 mb-6 opacity-60 bobble" />
@@ -517,9 +518,8 @@ export default async function Marketing() {
 
               <div className="flex flex-wrap justify-center items-center gap-10">
                 <div>
-                  <img src="/pictures/pic4.png" alt="hack clubbers!" className="max-w-96 border-dashed border-4 p-4 border-blue-800"/>
-                  <div className="relative"></div>
-                  <p className="flex flex-col justify-center items-center text-center">Hack Club is an open-source nonprofit!</p>
+                  <img src="/pictures/pic7.png" alt="hack clubbers!" className="md:max-w-[500px] border-dashed border-4 p-4 border-blue-800"/>
+                  <p className="flex flex-col justify-center items-center text-center">Hack Clubbers at the Boreal Express Hackathon!</p>
                 </div>
                 
                 <iframe width="640" height="360"
@@ -877,7 +877,7 @@ interface FaqItem {
 const faqData: FaqItem[] = [
   {
     question: "Who is eligible?",
-    answer: `You need to be a high schooler (or younger). You just need a <Link href="https://waka.hackclub.com/" target="_blank" ref="noopenner noreferrer" class="faqLink">Hackatime</Link> account to participate. Different prizes have different country restrictions. Sign in with Hack Club Slack to get started!`,
+    answer: `You need to be a high schooler (or younger). Different prizes have different country restrictions. Enter your email then sign in with Hack Club Slack to get started!`,
   },
   {
     question: "How much does it cost?",
@@ -994,7 +994,7 @@ interface PrizeItem {
 }
 
 const PrizeData = [
-  {
+  /*{
     name: "Micro SD Card",
     doubloons: 202,
     image: "https://cloud-6d9peiend-hack-club-bot.vercel.app/0image.png",
@@ -1008,6 +1008,11 @@ const PrizeData = [
     name: "Bite Sized Linux",
     doubloons: 400,
     image: "https://cloud-8mlynfu76-hack-club-bot.vercel.app/0image.png",
+  }, */
+  {
+    name: "Free stickers!",
+    doubloons: 0,
+    image: "https://noras-secret-cdn.hackclub.dev/shop/free_stickers.png",
   },
   {
     name: "Domain",
@@ -1048,6 +1053,31 @@ const PrizeData = [
     name: "YubiKey",
     doubloons: 1512,
     image: "https://cloud-oc60fts8l-hack-club-bot.vercel.app/0image.png",
+  },
+  {
+    name: "Raspberry Pi 5",
+    doubloons: 2710,
+    image: "https://noras-secret-cdn.hackclub.dev/shop/raspberry_pi_5.png",
+  },
+  {
+    name: "GitHub Backpack",
+    doubloons: 46000,
+    image: "https://noras-secret-cdn.hackclub.dev/shop/gh_miir_backpack.png",
+  },
+  {
+    name: "Bambu A1 Mini",
+    doubloons: 14196,
+    image: "https://noras-secret-cdn.hackclub.dev/shop/bambu_a1_mini.png",
+  },
+  {
+    name: "iPad",
+    doubloons: 28003,
+    image: "https://noras-secret-cdn.hackclub.dev/shop/ipad.png",
+  },
+  {
+    name: "Framework Laptop",
+    doubloons: 46000,
+    image: "https://noras-secret-cdn.hackclub.dev/shop/fw_13.png",
   },
 ];
 

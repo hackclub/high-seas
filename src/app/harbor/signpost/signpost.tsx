@@ -43,7 +43,7 @@ export default function SignPost({
       {...motionProps}
       className="container mx-auto px-4 py-8 max-w-prose"
     >
-      <h1 className="font-heading text-5xl font-bold text-blue-500 mb-6 text-center">
+      <h1 className="font-heading text-5xl font-bold text-white mb-6 text-center">
         Welcome to the signpost
       </h1>
 
@@ -58,13 +58,13 @@ export default function SignPost({
         <KeyPlacesInstructions />
       </div>
 
-      <p className="mt-4 text-center">
+      <p className="mt-4 text-center text-white">
         Have questions? Need help? Reach out to us in{" "}
         <Link
           className="text-blue-500"
           href="https://hackclub.slack.com/archives/C07PZNMBPBN"
         >
-          #low-skies-help
+          #high-seas-help
         </Link>
         !
       </p>

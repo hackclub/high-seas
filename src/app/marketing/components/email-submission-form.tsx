@@ -1,25 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import {
-  handleEmailSubmission,
-  markArrpheusReadyToInvite,
-} from "../marketing-utils";
 import WakatimeSetupTutorialModal from "@/app/harbor/tabs/wakatime-setup-tutorial-modal";
-import JSConfetti from "js-confetti";
 
 export default function EmailSubmissionForm() {
   const [isOpen, setIsOpen] = useState(false);
-  const [wakaKey, setWakaKey] = useState(null);
-  const [wakaUsername, setWakaUsername] = useState(null);
-  const [personRecId, setPersonRecId] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const confettiRef = useRef<JSConfetti | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const submissionTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    confettiRef.current = new JSConfetti();
-
     // Cleanup timeout on unmount
     return () => {
       if (submissionTimeoutRef.current) {
@@ -28,63 +17,16 @@ export default function EmailSubmissionForm() {
     };
   }, []);
 
-  const triggerConfetti = () => {
-    confettiRef.current?.addConfetti({
-      emojis: ["🌟", "✨", "💫", "🎉"],
-      emojiSize: 50,
-      confettiNumber: 50,
-    });
-  };
-
   const handleForm = async (formData: FormData) => {
-    // Prevent multiple submissions
-    if (isSubmitting) return;
-    console.log("running handleForm");
-
-    setIsSubmitting(true);
-
-    try {
-      const email = formData.get("email") as string;
-      if (!email) throw new Error("No email submitted!");
-      formRef.current?.reset();
-
-      setIsOpen(true);
-
-      const { created, apiKey, personRecordId, username } =
-        await handleEmailSubmission(email);
-      console.log("Waka account response:", {
-        created,
-        apiKey,
-        personRecordId,
-        username,
-      });
-
-      setPersonRecId(personRecordId);
-      setWakaKey(apiKey);
-      setWakaUsername(username);
-    } catch (error) {
-      console.error("Error submitting email:", error);
-    } finally {
-      setIsSubmitting(false);
+    const emailStr = formData.get("email") as string;
+    if (!emailStr) {
+      alert("You need to input an email.");
+      return;
     }
-  };
 
-  const handleContinueFromModal = async () => {
-    // Prevent multiple submissions
-    if (isSubmitting) return;
-    console.log("running handleContinueFromModal");
-    setIsSubmitting(true);
-
-    try {
-      if (!personRecId) throw new Error("No person record ID set yet!");
-
-      await markArrpheusReadyToInvite(personRecId);
-      triggerConfetti();
-    } catch (err) {
-      console.error("Error while handling modal continue:", err);
-    } finally {
-      setIsSubmitting(false);
-    }
+    setEmail(emailStr);
+    setIsOpen(true);
+    formRef.current?.reset();
   };
 
   return (
@@ -92,31 +34,23 @@ export default function EmailSubmissionForm() {
       <form
         ref={formRef}
         action={handleForm}
-        className="flex flex-wrap text-xl md:text-xl justify-center items-center mx-4 rounded-xl border-[#3852CD] border-4 bg-[#3852CD]"
+        className="flex flex-wrap text-xl md:text-xl justify-center items-center rounded-xl gap-2"
       >
         <input
           type="text"
           name="email"
           placeholder="name@email.com"
-          className="p-4 rounded-lg text-md"
-          disabled={isSubmitting}
+          className="px-6 py-2 rounded-lg text-md border-2 border-[#3852CD]"
         />
-        <button
-          disabled={isSubmitting}
-          className="bg-[#3852CD] p-4 text-white text-2xl disabled:opacity-50"
-        >
-          {isSubmitting
-            ? "Processing..."
-            : "Get started + get free stickers! →"}
+        <button className="px-6 py-2 text-white text-2xl disabled:opacity-50 bg-[#3852CD] rounded-xl">
+          Get started →
         </button>
       </form>
-      {wakaKey && personRecId ? (
+      {email ? (
         <WakatimeSetupTutorialModal
-          wakaKey={wakaKey}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          handleContinueFromModal={handleContinueFromModal}
-          wakatimeUsername={wakaUsername}
+          email={email}
         />
       ) : null}
     </>

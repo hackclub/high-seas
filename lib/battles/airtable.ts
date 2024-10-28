@@ -1,6 +1,6 @@
 import Airtable from "airtable";
 // import { Ships, Battles, Person } from '../types/airtable';
-import { Ships, Person, Battles } from '../../types/battles/airtable';
+import { Ships, Person, Battles } from "../../types/battles/airtable";
 
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.BASE_ID!,
@@ -24,7 +24,8 @@ export const getProjects = async (userId: string): Promise<Ships[]> => {
 
 export const getAllProjects = async (): Promise<Ships[]> => {
   const records = await base("ships")
-    .select({ filterByFormula: `AND(
+    .select({
+      filterByFormula: `AND(
       NOT(hidden),
       {project_source} != 'test',
       {project_source} != 'tutorial',
@@ -32,7 +33,8 @@ export const getAllProjects = async (): Promise<Ships[]> => {
       {ship_status} != 'deleted',
       {ship_type} != 'update',
       {project_source} != 'tutorial_battle'
-      )` })
+      )`,
+    })
     .all();
   return records.map((record) => ({
     id: record.id,
@@ -109,6 +111,7 @@ export const submitVote = async (voteData: {
     winner_adjustment: newWinnerRating - voteData.winnerRating,
     loser_rating: voteData.loserRating,
     loser_adjustment: newLoserRating - voteData.loserRating,
+    is_tutorial_vote: !person.user_has_graduated
   });
 
   return {
@@ -122,20 +125,22 @@ export const ensureUniqueVote = async (
   project2: string,
 ): Promise<boolean> => {
   console.log("ensureUniqueVote", slackId, project1, project2);
-  const records = await base("battles").select({
-    filterByFormula: `AND(
+  const records = await base("battles")
+    .select({
+      filterByFormula: `AND(
       {voter__slack_id} = '${slackId}',
       OR(
         AND({winner__record_id} = '${project1}', {loser__record_id} = '${project2}'),
         AND({winner__record_id} = '${project2}', {loser__record_id} = '${project1}')
       )
     )`,
-    maxRecords: 1
-  }).all()
+      maxRecords: 1,
+    })
+    .all();
   console.log("ensureUniqueVote", records);
 
   return records.length === 0;
-}
+};
 
 export const getPersonBySlackId = async (
   slackId: string,
@@ -155,13 +160,4 @@ export const getPersonBySlackId = async (
   }
 
   return null;
-};
-
-export const createPerson = async (
-  personData: Person,
-): Promise<Person> => {
-  const record = await base("people").create(personData);
-  return {
-    ...(record.fields as Person),
-  };
 };

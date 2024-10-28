@@ -25,15 +25,15 @@ export async function getWaka(): Promise<WakaSignupResponse | null> {
   return JSON.parse(key.value) as WakaSignupResponse;
 }
 
-async function setWaka(resp: WakaSignupResponse) {
-  console.log("setting waka key: ", resp);
-
+async function setWaka(username: string, resp: WakaSignupResponse) {
   cookies().set("waka-key", JSON.stringify(resp), {
     secure: process.env.NODE_ENV !== "development",
     httpOnly: true,
   });
-
-  console.log("set the waka key!", cookies().get("waka-key"));
+  cookies().set("waka-username", JSON.stringify(username), {
+    secure: process.env.NODE_ENV !== "development",
+    httpOnly: true,
+  });
 }
 
 const errRedir = (err: any) => redirect("/slack-error?err=" + err.toString());
@@ -79,8 +79,10 @@ export async function createWaka(
 
   console.log("created a new wakatime token: ", signupResponse);
 
-  await setWaka(signupResponse);
-  return { ...signupResponse, username: payload["username"] };
+  const username = payload["username"];
+  await setWaka(username, signupResponse);
+
+  return { ...signupResponse, username };
 }
 
 export async function getWakaSessions(): Promise<any> {
@@ -104,10 +106,12 @@ export async function getWakaSessions(): Promise<any> {
 
   const key = cookies().get("waka-key")?.value;
   if (!key) {
-    throw new Error("No WakaTime key found while trying to get WakaTime sessions.");
+    throw new Error(
+      "No WakaTime key found while trying to get WakaTime sessions.",
+    );
   }
-  const parsedKey = JSON.parse(key)
-  
+  const parsedKey = JSON.parse(key);
+
   const summaryRes = await fetch(
     `https://waka.hackclub.com/api/summary?interval=low_skies&user=${slackId}&recompute=true`,
     {
