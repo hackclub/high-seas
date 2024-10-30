@@ -1,0 +1,30 @@
+/* .idea-generator {} */
+.idea-generator .idle {
+  cursor: pointer;
+  animation: idle 2s infinite alternate;
+  filter: contrast(60%);
+}
+.idea-generator .thinking {
+  cursor: wait;
+  animation: idle 2s infinite alternate;
+}
+.idea-generator .typing {
+  cursor: wait;
+  animation: talking 0.5s infinite alternate;
+}
+
+@keyframes idle {
+  from {
+    transform: translateY(0%);
+  } to {
+    transform: translateY(2%);
+  }
+}
+
+@keyframes talking {
+  from {
+    transform: scale(1.01, 0.99) translateY(2%);
+  } to {
+    transform: scale(0.99, 1.01) translateY(0%);
+  }
+}
