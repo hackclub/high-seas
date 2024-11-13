@@ -81,6 +81,15 @@ export default function EditShipForm({
     setDeleting(true)
 
     e.preventDefault()
+
+    // Add delete confirmation dialog
+    const confirmation = window.confirm(`Are you sure you want to delete "${ship.title}"? This action cannot be undone.`)
+
+    if (!confirmation) {
+      setDeleting(false)
+      return
+    }
+
     console.log('trying to delete ', ship.id, ship.title)
     await deleteShip(ship.id)
 
