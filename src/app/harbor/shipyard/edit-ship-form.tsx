@@ -200,32 +200,34 @@ export default function EditShipForm({
           Save edits
         </Button>
 
-        <Button
-          className={`${buttonVariants({ variant: 'destructive' })} ml-auto`}
-          disabled={deleting}
-        >
-          {deleting ? <Icon glyph="more" /> : <Icon glyph="forbidden" />}
-          <Dialog>
-            <DialogTrigger>Delete Ship</DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone.
-                </DialogDescription>
-                <DialogFooter>
-                  <Button
-                    type="submit"
-                    variant="secondary"
-                    onClick={handleDelete}
-                  >
-                    I'm sure! Delete it.
-                  </Button>
-                </DialogFooter>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-        </Button>
+        <Dialog>
+          <DialogTrigger>
+            <Button
+              className={`${buttonVariants({ variant: 'destructive' })} ml-auto`}
+              disabled={deleting}
+            >
+              {deleting ? <Icon glyph="more" /> : <Icon glyph="forbidden" />}
+              Delete ship
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Are you absolutely sure?</DialogTitle>
+              <DialogDescription>
+                This action cannot be undone.
+              </DialogDescription>
+              <DialogFooter>
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  onClick={handleDelete}
+                >
+                  I'm sure! Delete it.
+                </Button>
+              </DialogFooter>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </form>
   )
