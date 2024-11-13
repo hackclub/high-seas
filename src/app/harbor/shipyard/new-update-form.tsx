@@ -2,6 +2,14 @@
 import { createShipUpdate } from './ship-utils'
 import type { Ship } from '@/app/utils/data'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import JSConfetti from 'js-confetti'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getWakaSessions } from '@/app/utils/waka'
