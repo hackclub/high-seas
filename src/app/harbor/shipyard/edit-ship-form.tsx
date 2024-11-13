@@ -202,7 +202,6 @@ export default function EditShipForm({
 
         <Button
           className={`${buttonVariants({ variant: 'destructive' })} ml-auto`}
-          onClick={handleDelete}
           disabled={deleting}
         >
           {deleting ? <Icon glyph="more" /> : <Icon glyph="forbidden" />}
