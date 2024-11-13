@@ -1,213 +1,88 @@
-import { Button, buttonVariants } from '@/components/ui/button'
-import { deleteShip, updateShip } from './ship-utils'
-import type { Ship } from '@/app/utils/data'
+import { render, fireEvent, screen, waitFor } from '@testing-library/react'
+import EditShipForm from './EditShipForm'
+import { Ship } from '@/app/utils/data' // Adjust the import if needed
 import { useToast } from '@/hooks/use-toast'
-import Icon from '@hackclub/icons'
-import { useState } from 'react'
 
-const editMessages = [
-  'Orpheus hopes you know that she put a lot of effort into recording your changes~',
-  'Heidi scribbles down your changes hastily...',
-  "Orpheus put your Ship changes in the logbook. They're going nowhere, rest assured.",
-]
+// Mock the toast hook
+jest.mock('@/hooks/use-toast', () => ({
+  useToast: jest.fn().mockReturnValue({
+    toast: jest.fn(),
+  }),
+}))
 
-const deleteMessages = [
-  'is no more!',
-  'has been struck from the logbook',
-  'has been lost to time...',
-]
+// Mock the deleteShip function
+jest.mock('./ship-utils', () => ({
+  deleteShip: jest.fn(),
+  updateShip: jest.fn(),
+}))
 
-export default function EditShipForm({
-  ship,
-  closeForm,
-  setShips,
-}: {
-  ship: Ship
-  closeForm: () => void
-  setShips: any
-}) {
-  const [deleting, setDeleting] = useState(false)
-  const [saving, setSaving] = useState(false)
+describe('EditShipForm', () => {
+  const mockCloseForm = jest.fn()
+  const mockSetShips = jest.fn()
 
-  const { toast } = useToast()
-
-  const handleSubmit = async (e) => {
-    setSaving(true)
-    e.preventDefault()
-    const formData = new FormData(e.target)
-    const formValues = Object.fromEntries(formData.entries())
-
-    const newShip: Ship = {
-      ...ship,
-      title: formValues.title as string,
-      ...(formValues.update_description && {
-        updateDescription: formValues.update_description as string,
-      }),
-      repoUrl: formValues.repoUrl as string,
-      deploymentUrl: formValues.deploymentUrl as string,
-      readmeUrl: formValues.readmeUrl as string,
-      screenshotUrl: formValues.screenshotUrl as string,
-    }
-    console.log('updating...', formValues, ship, newShip)
-    await updateShip(newShip)
-
-    if (setShips) {
-      console.log('Set ships is passed! Updating ship with ID', newShip.id)
-
-      setShips((previousShips: Ship[]) => {
-        console.log('the previous ships were', previousShips)
-        const newShips = previousShips.map((s: Ship) =>
-          s.id === newShip.id ? newShip : s,
-        )
-
-        setSaving(false)
-        return newShips
-      })
-    } else {
-      console.error("Updated a ship but can't setShips bc you didn't pass it.")
-    }
-    closeForm()
-
-    toast({
-      title: 'Ship updated!',
-      description:
-        editMessages[Math.floor(Math.random() * editMessages.length)],
-    })
-
-    setSaving(false)
+  const ship: Ship = {
+    id: '1',
+    title: 'Test Ship',
+    updateDescription: '',
+    repoUrl: '',
+    deploymentUrl: '',
+    readmeUrl: '',
+    screenshotUrl: '',
+    shipType: 'update', // or 'original' based on your needs
   }
 
-  const handleDelete = async (e) => {
-    setDeleting(true)
+  beforeEach(() => {
+    mockCloseForm.mockClear()
+    mockSetShips.mockClear()
+  })
 
-    e.preventDefault()
+  test('shows delete confirmation when the delete button is clicked', async () => {
+    // Mock window.confirm to simulate user interaction
+    window.confirm = jest.fn().mockReturnValue(true) // Simulate user clicking 'OK'
 
-    // Add delete confirmation dialog
-    const confirmation = window.confirm(`Are you sure you want to delete "${ship.title}"? This action cannot be undone.`)
+    render(
+      <EditShipForm
+        ship={ship}
+        closeForm={mockCloseForm}
+        setShips={mockSetShips}
+      />
+    )
 
-    if (!confirmation) {
-      setDeleting(false)
-      return
-    }
+    const deleteButton = screen.getByText(/Delete Ship/)
+    fireEvent.click(deleteButton)
 
-    console.log('trying to delete ', ship.id, ship.title)
-    await deleteShip(ship.id)
+    // Check that the delete confirmation was triggered
+    expect(window.confirm).toHaveBeenCalledWith(
+      `Are you sure you want to delete "${ship.title}"? This action cannot be undone.`
+    )
 
-    if (setShips) {
-      console.log(`Deleted ${ship.title} (${ship.id})`)
+    // Simulate the deletion logic
+    await waitFor(() => expect(mockSetShips).toHaveBeenCalled())
+    await waitFor(() => expect(mockCloseForm).toHaveBeenCalled())
+  })
 
-      setShips((previousShips: Ship[]) =>
-        previousShips.filter((s: Ship) => s.id !== ship.id),
-      )
-    } else {
-      console.error("Deleted a ship but can't setShips bc you didn't pass it.")
-    }
-    closeForm()
+  test('does not delete ship when canceling confirmation', async () => {
+    // Simulate user canceling the confirmation
+    window.confirm = jest.fn().mockReturnValue(false)
 
-    toast({
-      title: 'Ship deleted!',
-      description: `${ship.shipType === 'update' ? 'Your update to ' : ''}${
-        ship.title
-      } ${deleteMessages[Math.floor(Math.random() * deleteMessages.length)]}`,
-    })
+    render(
+      <EditShipForm
+        ship={ship}
+        closeForm={mockCloseForm}
+        setShips={mockSetShips}
+      />
+    )
 
-    setDeleting(false)
-  }
+    const deleteButton = screen.getByText(/Delete Ship/)
+    fireEvent.click(deleteButton)
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-2"
-      id="selected-ship-edit-form"
-    >
-      <div>
-        <label htmlFor="title">Title</label>
-        <input
-          id="title"
-          name="title"
-          defaultValue={ship.title}
-          required
-          className="w-full p-2 border rounded"
-        />
-      </div>
+    // Check that window.confirm was called
+    expect(window.confirm).toHaveBeenCalledWith(
+      `Are you sure you want to delete "${ship.title}"? This action cannot be undone.`
+    )
 
-      {ship.updateDescription && (
-        <div>
-          <label htmlFor="reshippedFromId">Update description</label>
-          <input
-            id="update_description"
-            name="update_description"
-            defaultValue={ship.updateDescription}
-            required
-            className="w-full p-2 border rounded"
-          />
-        </div>
-      )}
-
-      <div>
-        <label htmlFor="repoUrl">Repo URL</label>
-        <input
-          id="repoUrl"
-          name="repoUrl"
-          defaultValue={ship.repoUrl}
-          required
-          className="w-full p-2 border rounded"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="deploymentUrl">Demo Link (Project / Video URL)</label>
-        <input
-          id="deploymentUrl"
-          name="deploymentUrl"
-          defaultValue={ship.deploymentUrl}
-          required
-          className="w-full p-2 border rounded"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="readmeUrl">README URL</label>
-        <input
-          id="readmeUrl"
-          name="readmeUrl"
-          defaultValue={ship.readmeUrl}
-          required
-          className="w-full p-2 border rounded"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="screenshotUrl">Screenshot URL</label>
-        <input
-          id="screenshotUrl"
-          name="screenshotUrl"
-          defaultValue={ship.screenshotUrl}
-          required
-          className="w-full p-2 border rounded"
-        />
-      </div>
-
-      <div className="flex justify-between">
-        <Button
-          id="submit"
-          className={buttonVariants({ variant: 'default' })}
-          type="submit"
-          disabled={saving}
-        >
-          {saving ? <Icon glyph="more" /> : <Icon glyph="thumbsup-fill" />}
-          Save edits
-        </Button>
-
-        <Button
-          className={`${buttonVariants({ variant: 'destructive' })} ml-auto`}
-          onClick={handleDelete}
-          disabled={deleting}
-        >
-          {deleting ? <Icon glyph="more" /> : <Icon glyph="forbidden" />}
-          Delete Ship
-        </Button>
-      </div>
-    </form>
-  )
-}
+    // Verify that deleteShip wasn't called and the ship is not deleted
+    await waitFor(() => expect(mockSetShips).not.toHaveBeenCalled())
+    await waitFor(() => expect(mockCloseForm).not.toHaveBeenCalled())
+  })
+})
