@@ -395,16 +395,78 @@ export default async function Marketing() {
             <div className="flex flex-wrap justify-center items-center">
               <Prizes />
             </div>
-            <div className="flex flex-col justify-center items-center mt-4 m-10">
-              {/*<div className="bg-blue-500 rounded-md p-4 px-16 pop mb-2">
-              <p className="text-3xl text-center">
-                Get the full list of items when you sign in!
+            <div className="flex flex-col justify-center items-center mt-0 md:mt-8 mx-4">
+              <h3 className="text-3xl md:text-4xl mb-2">
+                ✨ Special Prizes ✨
+              </h3>
+              <p className="text-sm md:text-lg text-center">
+                We'll pick a winner for each of these at the end,
+                <br className="inline lg:hidden"></br> so get cracking now on
+                something extra-awesome!
               </p>
-            </div>*/}
-              <p className="text-xl text-center mx-5 mb-5">
-                This is just a sneak peak... new items will be added over the
-                winter!
-              </p>
+            </div>
+            <div className="flex flex-wrap justify-center items-center mt-4 m-10">
+              <div className="relative p-6 px-4 rounded-lg m-4 pop">
+                <img
+                  src="/shopback.svg"
+                  alt="card backs"
+                  className="absolute w-full h-full inset-0 object-cover opacity-80"
+                />{' '}
+                <div className="relative my-2">
+                  <p className="flex justify-center text-center text-3xl px-4">
+                    1v1 call with Guido van Rossum
+                  </p>
+                  <p className="flex justify-center text-center">
+                    This is the creator of Python!
+                  </p>
+                  <img
+                    src="/divider.svg"
+                    className="w-full object-cover absolute mt-2 opacity-60"
+                  />
+                  <div className="relative flex justify-center mt-4">
+                    <div className="w-80 h-auto my-4 rounded-sm flex flex-col justify-center items-center">
+                      <Image
+                        src="/special1.png"
+                        alt="Shop item"
+                        className="w-full h-auto"
+                        width="300"
+                        height="300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative p-6 px-4 rounded-lg m-4 pop">
+                <img
+                  src="/shopback.svg"
+                  alt="card backs"
+                  className="absolute w-full h-full inset-0 object-cover opacity-80"
+                />{' '}
+                <div className="relative my-2">
+                  <p className="flex justify-center text-center text-3xl px-4">
+                    1v1 call with Anders Hejlsberg
+                  </p>
+                  <p className="flex justify-center text-center">
+                    This is the creator of C# and Typescript!
+                  </p>
+                  <img
+                    src="/divider.svg"
+                    className="w-full object-cover absolute mt-2 opacity-60"
+                  />
+                  <div className="relative flex justify-center mt-4">
+                    <div className="w-80 h-auto my-4 rounded-sm flex flex-col justify-center items-center">
+                      <Image
+                        src="/special2.png"
+                        alt="Shop item"
+                        className="w-full h-auto"
+                        width="300"
+                        height="300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

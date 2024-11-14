@@ -3,7 +3,8 @@ import { deleteShip, updateShip } from './ship-utils'
 import type { Ship } from '@/app/utils/data'
 import { useToast } from '@/hooks/use-toast'
 import Icon from '@hackclub/icons'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import Modal from '../../../components/ui/modal'
 
 const editMessages = [
   'Orpheus hopes you know that she put a lot of effort into recording your changes~',
@@ -27,6 +28,7 @@ export default function EditShipForm({
   setShips: any
 }) {
   const [deleting, setDeleting] = useState(false)
+  const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [saving, setSaving] = useState(false)
   const allowDeletion = ship.shipStatus === 'staged'
 
@@ -194,7 +196,10 @@ export default function EditShipForm({
         {allowDeletion && (
           <Button
             className={`${buttonVariants({ variant: 'destructive' })} ml-auto`}
-            onClick={handleDelete}
+            onClick={(e) => {
+              e.preventDefault()
+              setOpenDeleteModal(true)
+            }}
             disabled={deleting}
           >
             {deleting ? <Icon glyph="more" /> : <Icon glyph="forbidden" />}
@@ -202,6 +207,28 @@ export default function EditShipForm({
           </Button>
         )}
       </div>
+
+      <Modal isOpen={openDeleteModal} close={() => setOpenDeleteModal(false)}>
+        <div className="flex flex-col gap-3">
+          <p className="text-xl">
+            Are you sure you want to delete <b>{ship.title}</b>?
+          </p>
+          <div className="flex gap-1">
+            <Button
+              onClick={() => setOpenDeleteModal(false)}
+              className={`${buttonVariants({ variant: 'outline' })} flex-grow`}
+            >
+              NNONNO WAIT ヽ(O_O )ﾉ
+            </Button>
+            <Button
+              onClick={handleDelete}
+              className={`${buttonVariants({ variant: 'destructive' })}`}
+            >
+              Yes {'ദ്ദി(｡•̀ ,<)~✩‧₊'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </form>
   )
 }
