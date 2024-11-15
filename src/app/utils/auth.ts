@@ -7,7 +7,7 @@ export interface HsSession {
   /// The Person record ID in the high seas base
   personId: string
 
-  authType: 'slack-oauth' | 'magic-link'
+  authType: 'slack-oauth' | 'magic-link' | 'impersonation'
   slackId: string
   name?: string
   firstName?: string
@@ -75,7 +75,7 @@ async function hashSession(session: HsSession) {
   return hashHex
 }
 
-async function signAndSet(session: HsSession) {
+export async function signAndSet(session: HsSession) {
   session.sig = await hashSession(session)
 
   cookies().set(sessionCookieName, JSON.stringify(session), {
