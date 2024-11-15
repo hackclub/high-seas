@@ -96,12 +96,20 @@ export default function NewShipForm({
 
     const repoUrl = formData.get('repo_url') as string
     if (isGithubRepo) {
-      formData.set(
-        'readme_url',
-        repoUrl.replace(
+      let readmeURI = repoUrl.replace(
           /https:\/\/github.com\/(.*?)\/(.*?)\/?$/,
           'https://raw.githubusercontent.com/$1/$2/refs/heads/main/README.md',
-        ),
+        );
+      let readmeData = await fetch(readmeURI).then((d) => d.text())
+      if(readmeData == "404: Not Found"){
+        readmeURI = repoUrl.replace(
+          /https:\/\/github.com\/(.*?)\/(.*?)\/?$/,
+          'https://raw.githubusercontent.com/$1/$2/refs/heads/master/README.md',
+        );
+      }
+      formData.set(
+        'readme_url',
+        readmeURI,
       )
     }
 
