@@ -19,15 +19,19 @@ export default function Shop({ session }: { session: HsSession }) {
     'cache.shopItems',
     null,
   )
+  const [cursed, setCursed] = useState(false)
   const [personTicketBalance, setPersonTicketBalance] =
-    useLocalStorageState<string>('cache.personTicketBalance', '-')
+    useLocalStorageState<string>('cache.personTicketBalance', 0)
 
   const [bannerText, setBannerText] = useState('')
   const isTutorial = sessionStorage.getItem('tutorial')
   useEffect(() => {
     setBannerText(sample(shopBanner))
     getShop().then((shop) => setShopItems(shop))
-    safePerson().then((sp) => setPersonTicketBalance(sp.settledTickets))
+    safePerson().then((sp) => {
+      setPersonTicketBalance(sp.settledTickets)
+      setCursed(sp.cursed)
+    })
   }, [])
 
   if (!shopItems) {
@@ -66,7 +70,7 @@ export default function Shop({ session }: { session: HsSession }) {
         <p className="text-xl animate-pulse mb-6 rotate-[-7deg] inline-block">
           {bannerText}
         </p>
-        <ShopkeeperComponent />
+        <ShopkeeperComponent balance={personTicketBalance} cursed={cursed} />
       </div>
       <div className="text-center mb-6 mt-12" id="region-select">
         <label>pick a region to buy something!</label>
