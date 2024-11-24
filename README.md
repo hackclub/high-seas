@@ -12,6 +12,10 @@ High Seas is the successor to [Arcade](https://hackclub.com/arcade/), Hack Clubâ
 
 ## Local development
 
-Set sail with a simple `bun i; bun run dev`
+Set sail with these commands: 
+```sh
+bun i
+bun run dev
+```
 
 You should configure your tokens/env based on the `example.env` (`cp example.env .env`), or if you're on the vercel team you can `bunx vercel env pull` to automatically load them up.
