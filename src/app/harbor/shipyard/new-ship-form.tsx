@@ -37,6 +37,18 @@ async function getReadmeFromRepo(url: string) {
   return (await testReadmeLink(readmeURI)) ? readmeURI : null
 }
 
+async function checkRepoForPossibleWebsite(repoUrl: string) {
+  const response = await fetch('/api/check-repo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ repoUrl }),
+  })
+  const data = await response.json()
+  return data.hasPossibleWebsite
+}
+
 export default function NewShipForm({
   ships,
   canvasRef,
@@ -121,8 +133,15 @@ export default function NewShipForm({
     }
 
     const repoUrl = formData.get('repo_url') as string
-    const assumedReadmeUrl = await getReadmeFromRepo(repoUrl)
+    const hasPossibleWebsite = await checkRepoForPossibleWebsite(repoUrl)
+    if (hasPossibleWebsite) {
+      toast({
+        title: "Warning",
+        description: 'We detected possible website files in your repo. Please submit a hosted demo link using vercel over a Youtube link.',
+      })
+    }
 
+    const assumedReadmeUrl = await getReadmeFromRepo(repoUrl)    
     if (!!assumedReadmeUrl) {
       formData.set('readme_url', assumedReadmeUrl)
     }
