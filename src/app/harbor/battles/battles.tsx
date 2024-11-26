@@ -20,6 +20,7 @@ import { HsSession } from '@/app/utils/auth'
 import SpeechToText from '@/components/speech-to-text'
 import Blessed from './blessed'
 import Cursed from './cursed'
+import pluralize from '../../../../lib/pluralize'
 
 interface Matchup {
   project1: Ships
@@ -490,8 +491,8 @@ export default function Matchups({ session }: { session: HsSession }) {
 
           {voteBalance > 0 && (
             <div className="flex justify-center items-center space-x-4">
-              {voteBalance} more vote{voteBalance == 1 ? '' : 's'} until your
-              next ship's payout!
+              {voteBalance} more {pluralize(voteBalance, 'vote', false)} until
+              your next ship's payout!
             </div>
           )}
         </header>
