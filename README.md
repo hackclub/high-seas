@@ -12,7 +12,8 @@ High Seas is the successor to [Arcade](https://hackclub.com/arcade/), Hack Clubâ
 
 ## Local development
 
-Set sail with these commands: 
+Set sail with these commands:
+
 ```sh
 bun i
 bun run dev

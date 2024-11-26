@@ -19,9 +19,8 @@ export default function Progress({ val, items }) {
     return null
   }
 
-  const progressPercentage = currentTix <= max.priceGlobal
-    ? (currentTix * 100) / max.priceGlobal
-    : 100;
+  const progressPercentage =
+    currentTix <= max.priceGlobal ? (currentTix * 100) / max.priceGlobal : 100
 
   return (
     <>
