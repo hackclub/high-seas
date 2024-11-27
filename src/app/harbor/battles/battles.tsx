@@ -15,11 +15,12 @@ import {
 } from '@/app/utils/airtable'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
 import { useToast } from '@/hooks/use-toast'
-// import { HsSession } from '@/app/utils/auth'
+import { HsSession } from '@/app/utils/auth'
 
 import SpeechToText from '@/components/speech-to-text'
 import Blessed from './blessed'
 import Cursed from './cursed'
+import pluralize from '../../../../lib/pluralize'
 
 interface Matchup {
   project1: Ships
@@ -248,7 +249,7 @@ const markdownComponents: Components = {
   ),
 }
 
-export default function Matchups(/*{ session }: { session: HsSession }*/) {
+export default function Matchups({ session }: { session: HsSession }) {
   const [matchup, setMatchup] = useState<Matchup | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedProject, setSelectedProject] = useState<Ships | null>(null)
@@ -272,12 +273,12 @@ export default function Matchups(/*{ session }: { session: HsSession }*/) {
 
   const { toast } = useToast()
 
-  // useEffect(() => {
-  //   safePerson().then((sp) => {
-  //     setCursed(sp.cursed)
-  //     setBlessed(sp.blessed)
-  //   })
-  // })
+  useEffect(() => {
+    safePerson().then((sp) => {
+      setCursed(sp.cursed)
+      setBlessed(sp.blessed)
+    })
+  })
 
   useEffect(() => {
     setFewerThanTenWords(reason.trim().split(' ').length < 10)
@@ -309,7 +310,7 @@ export default function Matchups(/*{ session }: { session: HsSession }*/) {
   // }, [selectedProject]);
 
   const fetchVoteBalance = async () => {
-    // setVoteBalance(await getVotesRemainingForNextPendingShip(session.slackId))
+    setVoteBalance(await getVotesRemainingForNextPendingShip(session.slackId))
   }
 
   const fetchMatchup = async (
@@ -319,19 +320,23 @@ export default function Matchups(/*{ session }: { session: HsSession }*/) {
     try {
       // require at least 1.25 seconds of loading time for full loop of loading animations
       const [response, _] = await Promise.all([
-        fetch('/api/battles/matchups'),
+        fetch(
+          '/api/battles/matchups' +
+            (sessionStorage.getItem('tutorial') === 'true'
+              ? '?tutorial=true'
+              : ''),
+        ),
         new Promise((r) => setTimeout(r, 1250)),
       ])
       if (response.ok) {
         const data: Matchup = await response.json()
         setMatchup(data)
-        console.log(data)
       } else {
         console.error('Failed to fetch matchup')
 
         toast({
-          title: 'Failed to fetch a new thing to vote on.',
-          description: 'Retrying automatically...',
+          title: 'There are no ships to battle right now.',
+          description: 'Searching again automatically',
         })
 
         setTimeout(
@@ -388,10 +393,10 @@ export default function Matchups(/*{ session }: { session: HsSession }*/) {
       return
     }
 
-    if (selectedProject && matchup /*&& session*/) {
+    if (selectedProject && matchup && session) {
       setIsSubmitting(true)
       try {
-        // const slackId = session.slackId
+        const slackId = session.slackId
         const winner = selectedProject
         const loser =
           selectedProject.id === matchup.project1.id
@@ -406,7 +411,7 @@ export default function Matchups(/*{ session }: { session: HsSession }*/) {
             ts: matchup.ts,
             project1: matchup.project1,
             project2: matchup.project2,
-            // slackId,
+            slackId,
             explanation: reason,
             winner: winner.id,
             loser: loser.id,
@@ -417,11 +422,11 @@ export default function Matchups(/*{ session }: { session: HsSession }*/) {
         })
 
         if (response.ok) {
-          const json = await response.json();
-          if (json.reload) {
-            window.location.reload();
-            return;
-          }
+          // const json = await response.json();
+          // if (json.reload) {
+          //   window.location.reload();
+          //   return;
+          // }
 
           setSelectedProject(null)
           setReason('')
@@ -492,13 +497,13 @@ export default function Matchups(/*{ session }: { session: HsSession }*/) {
             to skip!)
           </p>
 
-          {/* {blessed && <Blessed />}
-          {cursed && <Cursed />} */}
+          {blessed && <Blessed />}
+          {cursed && <Cursed />}
 
           {voteBalance > 0 && (
             <div className="flex justify-center items-center space-x-4">
-              {voteBalance} more vote{voteBalance == 1 ? '' : 's'} until your
-              next ship's payout!
+              {voteBalance} more {pluralize(voteBalance, 'vote', false)} until
+              your next ship's payout!
             </div>
           )}
         </header>
