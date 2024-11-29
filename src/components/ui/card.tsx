@@ -18,6 +18,7 @@ const Card = React.forwardRef<
       backgroundSize = '50rem auto'
       backgroundRepeat = 'repeat'
       backdropFilter = 'blur(1px)'
+      scrollbarWidth = 'none'
       break
     default: // paper
       backgroundColor = '#fffffff0'
