@@ -127,9 +127,17 @@ export default function NewShipForm({
     const screenshotUrl = formData.get('screenshot_url') as string
     const readmeUrl = formData.get('readme_url') as string
     const [screenshotRes, readmeRes] = await Promise.all([
-      fetch(screenshotUrl),
-      fetch(readmeUrl),
+      fetch(screenshotUrl).catch((e) => console.error(e)),
+      fetch(readmeUrl).catch((e) => console.error(e)),
     ])
+    if (!screenshotRes) {
+      toast({
+        title: "We couldn't load your screenshot link!",
+        description: 'Try #cdn instead!',
+      })
+      setStaging(false)
+      return
+    }
     if (!screenshotRes?.headers?.get('content-type')?.startsWith('image')) {
       toast({
         title: "That's not an image!",
