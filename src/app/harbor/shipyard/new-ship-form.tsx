@@ -102,7 +102,7 @@ export default function NewShipForm({
 
     const deploymentUrl = formData.get('deployment_url') as string
     if (
-      ['github.com', 'gitlab.com', 'bitbucket.org'].some((domain) =>
+      ['github.com', 'gitlab.com', 'bitbucket.org', 'localhost', '127.0.0.1'].some((domain) =>
         deploymentUrl.includes(domain),
       )
     ) {
