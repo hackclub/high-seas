@@ -7,8 +7,6 @@ import Battles from '../battles/battles'
 import Shop from '../shop/shop'
 import { useEffect } from 'react'
 import SignPost from '../signpost/signpost'
-import { type SafePerson, safePerson } from '../../utils/airtable'
-// import { WakaLock } from "../../../components/ui/waka-lock";
 import { tour } from './tour'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
 import { useRouter } from 'next/navigation'
@@ -22,6 +20,7 @@ import { sample, zeroMessage } from '../../../../lib/flavor'
 import Cookies from 'js-cookie'
 import JaggedCard from '@/components/jagged-card'
 import Icon from '@hackclub/icons'
+import { ShopItem } from '../shop/shop-utils'
 
 const doubloonTips = [
   {
@@ -134,6 +133,16 @@ const LoadingOverlay = () => {
   )
 }
 
+const fsIdentify = (id: string, email: string, displayName?: string) => {
+  if (!!window && !!window?.FS && !!window?.FS?.identify) {
+    window?.FS?.identify(id, {
+      email,
+      displayName,
+    })
+  }
+  return null
+}
+
 export default function Harbor({
   currentTab,
   session,
@@ -141,6 +150,11 @@ export default function Harbor({
   currentTab: string
   session: HsSession
 }) {
+  const [shopItems, setShopItems] = useLocalStorageState<ShopItem[] | null>(
+    'cache.shopItems',
+    null,
+  )
+
   // default to true so we don't flash a warning at the user
   const [hasHb, setHasHb] = useLocalStorageState<boolean>('cache.hasHb', true)
   // All the content management for all the tabs goes here.
@@ -150,6 +164,12 @@ export default function Harbor({
   const handleTabChange = (newTab: string) => {
     router.push(`/${newTab}`) // Navigate to the new tab slug
   }
+
+  useEffect(() => {
+    if (!!session.email && !!session.slackId) {
+      fsIdentify(session.slackId, session.email, session.name)
+    }
+  }, [session])
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -167,31 +187,6 @@ export default function Harbor({
       tour()
     }
   }, [])
-
-  // useEffect(() => {
-  //   const initializeHarbor = async () => {
-  //     try {
-  //       // const { hasHb } = await fetchWaka();
-  //       // setHasHb(hasHb);
-  //       // const p: SafePerson = await safePerson();
-  //       // if (!p.hasCompletedTutorial) {
-  //       //   console.warn("1 triggering tour");
-  //       //   tour();
-  //       // }
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   initializeHarbor();
-  // }, []);
-
-  // Keep ships and shipChain in sync
-  // useEffect(() => {
-  //   getUserShips(session.slackId).then(({ shipChains }) =>
-  //     setMyShipChains(shipChains),
-  //   );
-  // }, [myShips]);
 
   const tabs = [
     {
@@ -218,6 +213,22 @@ export default function Harbor({
     },
   ]
 
+  let usPrices = false
+  try {
+    usPrices =
+      JSON.parse(localStorage.getItem('shop.country.filter')!)?.value === 1
+  } catch (e) {}
+  const currentTix = Number(Cookies.get('tickets') ?? 0)
+  const nextPrize: ShopItem = shopItems
+    ? shopItems
+        .filter(
+          (a: ShopItem) => (usPrices ? a.priceUs : a.priceGlobal) >= currentTix,
+        )
+        .sort((a: ShopItem, b: ShopItem) =>
+          usPrices ? a.priceUs - b.priceUs : a.priceGlobal - b.priceGlobal,
+        )[0]
+    : null
+
   return (
     <>
       {isLoading && <LoadingOverlay />}
@@ -237,31 +248,41 @@ export default function Harbor({
           className="flex-1 flex flex-col"
           onValueChange={handleTabChange}
         >
-          <TabsList className="mx-2 my-2 relative">
-            {tabs.map((tab) => (
-              <TabsTrigger key={tab.path} value={tab.path}>
-                {tab.name}
-              </TabsTrigger>
-            ))}
-            <div className="right-px absolute mr-px text-green-400 text-sm">
-              <Balance />
+          <TabsList className="mx-2 my-2 relative h-16">
+            <div className="flex flex-col items-center">
+              <div>
+                {tabs.map((tab) => (
+                  <TabsTrigger key={tab.path} value={tab.path}>
+                    {tab.name}
+                  </TabsTrigger>
+                ))}
+                <div className="right-px top-2 absolute mr-px text-green-400 text-sm">
+                  <Balance />
+                </div>
+              </div>
+
+              {nextPrize ? (
+                <div>
+                  <p className="text-sm">
+                    <img
+                      src="doubloon.svg"
+                      alt="doubloons"
+                      className="inline w-4 sm:w-5 h-4 sm:h-5 mr-1"
+                    />
+                    {Math.ceil(
+                      (usPrices ? nextPrize.priceUs : nextPrize.priceGlobal) -
+                        currentTix,
+                    )}{' '}
+                    doubloons until {nextPrize.name}!
+                  </p>
+                </div>
+              ) : null}
             </div>
           </TabsList>
           <div className="flex-1 p-3" id="harbor-tab-scroll-element">
             {tabs.map((tab) => (
               <TabsContent key={tab.path} value={tab.path} className="h-full">
                 {tab.component}
-                {/* {tab.lockOnNoHb &&
-              hasWakaHb === false &&
-              sessionStorage.getItem("tutorial") !== "true" ? (
-                <WakaLock
-                  wakaOverride={() => setHasWakaHb(true)}
-                  wakaToken={wakaToken}
-                  tabName={tab.name}
-                />
-              ) : (
-                tab.component
-              )} */}
               </TabsContent>
             ))}
           </div>

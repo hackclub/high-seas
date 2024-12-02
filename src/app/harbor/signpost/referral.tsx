@@ -29,8 +29,6 @@ export default function Referral() {
     if (navigator.share) {
       navigator
         .share({
-          title: 'High Seas',
-          text: 'Build. Battle. Booty. Repeat!',
           url: shareLink || '',
         })
         .then(() => console.log('Successful share'))

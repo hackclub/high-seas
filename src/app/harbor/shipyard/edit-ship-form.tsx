@@ -173,6 +173,10 @@ export default function EditShipForm({
 
       <div>
         <label htmlFor="screenshotUrl">Screenshot URL</label>
+        <p className="text-sm text-gray-500">
+          No dataurls please. If you need an image host, upload your image in{' '}
+          <a href="https://hackclub.slack.com/archives/C016DEDUL87">#cdn</a>
+        </p>
         <input
           id="screenshotUrl"
           name="screenshotUrl"

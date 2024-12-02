@@ -9,6 +9,7 @@ export default function SignOut() {
         localStorage.removeItem(key)
       }
     })
+    sessionStorage.clear()
   }
 
   return (

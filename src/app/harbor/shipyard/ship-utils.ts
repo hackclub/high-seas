@@ -4,8 +4,10 @@ import { getSelfPerson } from '@/app/utils/airtable'
 import { getSession } from '@/app/utils/auth'
 import { fetchShips, person } from '@/app/utils/data'
 import { getWakaSessions } from '@/app/utils/waka'
+import { cookies } from 'next/headers'
 import type { Ship } from '@/app/utils/data'
 import Airtable from 'airtable'
+import { withLock } from '../../../../lib/redis-lock'
 
 const peopleTableName = 'people'
 const shipsTableName = 'ships'
@@ -41,34 +43,38 @@ export async function createShip(formData: FormData, isTutorial: boolean) {
   }
 
   const slackId = session.slackId
-  const entrantId = await getSelfPerson(slackId).then((p) => p.id)
+  return await withLock(`ship:${slackId}`, async () => {
+    const entrantId = await getSelfPerson(slackId).then((p) => p.id)
 
-  const isShipUpdate = formData.get('isShipUpdate')
+    const isShipUpdate = formData.get('isShipUpdate')
 
-  base()(shipsTableName).create(
-    [
-      {
-        // @ts-expect-error No overload matches this call - but it does
-        fields: {
-          title: formData.get('title'),
-          entrant: [entrantId],
-          repo_url: formData.get('repo_url'),
-          readme_url: formData.get('readme_url'),
-          deploy_url: formData.get('deployment_url'),
-          screenshot_url: formData.get('screenshot_url'),
-          ship_type: isShipUpdate ? 'update' : 'project',
-          update_description: isShipUpdate
-            ? formData.get('updateDescription')
-            : null,
-          wakatime_project_name: formData.get('wakatime_project_name'),
-          project_source: isTutorial ? 'tutorial' : 'high_seas',
+    const newShip = await base()(shipsTableName).create(
+      [
+        {
+          // @ts-expect-error No overload matches this call - but it does
+          fields: {
+            title: formData.get('title'),
+            entrant: [entrantId],
+            repo_url: formData.get('repo_url'),
+            readme_url: formData.get('readme_url'),
+            deploy_url: formData.get('deployment_url'),
+            screenshot_url: formData.get('screenshot_url'),
+            ship_type: isShipUpdate ? 'update' : 'project',
+            update_description: isShipUpdate
+              ? formData.get('updateDescription')
+              : null,
+            wakatime_project_name: formData.get('wakatime_project_name'),
+            project_source: isTutorial ? 'tutorial' : 'high_seas',
+          },
         },
+      ],
+      (err: Error, records: any) => {
+        if (err) console.error(err)
       },
-    ],
-    (err: Error, records: any) => {
-      if (err) console.error(err)
-    },
-  )
+    )
+
+    await cookies().delete('ships')
+  })
 }
 
 // @malted: I'm confident this is secure.
@@ -76,7 +82,7 @@ export async function createShipUpdate(
   dangerousReshippedFromShipId: string,
   credited_hours: number,
   formData: FormData,
-): Promise<Ship> {
+): Promise<Ship | null> {
   const session = await getSession()
   if (!session) {
     const error = new Error(
@@ -87,102 +93,113 @@ export async function createShipUpdate(
   }
 
   const slackId = session.slackId
-  const entrantId = await getSelfPerson(slackId).then((p) => p.id)
 
-  // This pattern makes sure the ship data is not fraudulent
-  const ships = await fetchShips(slackId)
+  return withLock(`update:${slackId}`, async () => {
+    const entrantId = await getSelfPerson(slackId).then((p) => p.id)
 
-  const reshippedFromShip = ships.find(
-    (ship: Ship) => ship.id === dangerousReshippedFromShipId,
-  )
-  if (!reshippedFromShip) {
-    const error = new Error('Invalid reshippedFromShipId!')
-    console.error(error)
-    throw error
-  }
+    // This pattern makes sure the ship data is not fraudulent
+    const ships = await fetchShips(slackId)
 
-  /* Two things are happening here.
-   * Firstly, the new ship of ship_type "update" needs to be created.
-   *  - This will have all the same fields as the reshipped ship.
-   *  - The update_descripton will be the new entered form field though.
-   *  - The reshipped_from field should have the record ID of the reshipped ship
-   * Secondly, the reshipped_to field on the reshipped ship should be updated to be the new update ship's record ID.
-   */
+    const reshippedFromShip = ships.find(
+      (ship: Ship) => ship.id === dangerousReshippedFromShipId,
+    )
+    if (!reshippedFromShip) {
+      const error = new Error('Invalid reshippedFromShipId!')
+      console.error(error)
+      throw error
+    }
 
-  // Step 1:
-  const res: { id: string; fields: any } = await new Promise(
-    (resolve, reject) => {
-      base()(shipsTableName).create(
-        [
-          {
-            // @ts-expect-error No overload matches this call - but it does
-            fields: {
-              ...shipToFields(reshippedFromShip, entrantId),
-              ship_type: 'update',
-              update_description: formData.get('update_description'),
-              reshipped_from: [reshippedFromShip.id],
-              reshipped_from_all: reshippedFromShip.reshippedFromAll
-                ? [...reshippedFromShip.reshippedFromAll, reshippedFromShip.id]
-                : [reshippedFromShip.id],
-              credited_hours,
-            },
-          },
-        ],
-        (err: Error, records: any) => {
-          if (err) {
-            console.error('createShipUpdate step 1:', err)
-            throw err
-          }
-          if (records) {
-            // Step 2
-            if (records.length !== 1) {
-              const error = new Error(
-                'createShipUpdate: step 1 created records result length is not 1',
-              )
-              console.error(error)
-              reject(error)
-            }
-            const reshippedToShip = records[0]
+    /* Two things are happening here.
+     * Firstly, the new ship of ship_type "update" needs to be created.
+     *  - This will have all the same fields as the reshipped ship.
+     *  - The update_descripton will be the new entered form field though.
+     *  - The reshipped_from field should have the record ID of the reshipped ship
+     * Secondly, the reshipped_to field on the reshipped ship should be updated to be the new update ship's record ID.
+     */
 
-            // Update previous ship to point reshipped_to to the newly created update record
-            base()(shipsTableName).update([
-              {
-                id: reshippedFromShip.id,
-                fields: {
-                  reshipped_to: [reshippedToShip.id],
-                  reshipped_all: [reshippedToShip, reshippedFromShip],
-                },
+    // Step 1:
+    const res: { id: string; fields: any } = await new Promise(
+      (resolve, reject) => {
+        base()(shipsTableName).create(
+          [
+            {
+              // @ts-expect-error No overload matches this call - but it does
+              fields: {
+                ...shipToFields(reshippedFromShip, entrantId),
+                ship_type: 'update',
+                update_description: formData.get('update_description'),
+                reshipped_from: [reshippedFromShip.id],
+                reshipped_from_all: reshippedFromShip.reshippedFromAll
+                  ? [
+                      ...reshippedFromShip.reshippedFromAll,
+                      reshippedFromShip.id,
+                    ]
+                  : [reshippedFromShip.id],
+                credited_hours,
               },
-            ])
+            },
+          ],
+          async (err: Error, records: any) => {
+            if (err) {
+              console.error('createShipUpdate step 1:', err)
+              throw err
+            }
+            if (records) {
+              // Step 2
+              if (records.length !== 1) {
+                const error = new Error(
+                  'createShipUpdate: step 1 created records result length is not 1',
+                )
+                console.error(error)
+                reject(error)
+              }
+              const reshippedToShip = records[0]
 
-            resolve(reshippedToShip)
-          } else {
-            console.error('AAAFAUKCSCSAEVTNOESIFNVFEINTTET🤬🤬🤬')
-            reject(new Error('createShipUpdate: step 1 created no records'))
-          }
-        },
-      )
-    },
-  )
+              // Update previous ship to point reshipped_to to the newly created update record
+              await base()(shipsTableName).update([
+                {
+                  id: reshippedFromShip.id,
+                  fields: {
+                    reshipped_to: [reshippedToShip.id],
+                    reshipped_all: reshippedFromShip.reshippedFromAll
+                      ? [
+                          ...reshippedFromShip.reshippedFromAll,
+                          reshippedFromShip.id,
+                        ]
+                      : [reshippedFromShip.id],
+                  },
+                },
+              ])
 
-  return {
-    ...reshippedFromShip,
-    id: res.id,
-    repoUrl: reshippedFromShip.repoUrl,
-    readmeUrl: reshippedFromShip.readmeUrl,
-    screenshotUrl: reshippedFromShip.screenshotUrl,
-    deploymentUrl: reshippedFromShip.deploymentUrl,
-    shipType: 'update',
-    shipStatus: 'staged',
-    updateDescription: formData.get('update_description')?.toString() || null,
-    reshippedFromId: reshippedFromShip.id,
-    reshippedFromAll: reshippedFromShip.reshippedFromAll
-      ? [...reshippedFromShip.reshippedFromAll, reshippedFromShip.id]
-      : [reshippedFromShip.id],
-    credited_hours,
-    total_hours: (reshippedFromShip.total_hours ?? 0) + credited_hours,
-    wakatimeProjectNames: reshippedFromShip.wakatimeProjectNames,
-  }
+              resolve(reshippedToShip)
+            } else {
+              console.error('AAAFAUKCSCSAEVTNOESIFNVFEINTTET🤬🤬🤬')
+              reject(new Error('createShipUpdate: step 1 created no records'))
+            }
+          },
+        )
+      },
+    )
+
+    return {
+      ...reshippedFromShip,
+      id: res.id,
+      repoUrl: reshippedFromShip.repoUrl,
+      readmeUrl: reshippedFromShip.readmeUrl,
+      screenshotUrl: reshippedFromShip.screenshotUrl,
+      deploymentUrl: reshippedFromShip.deploymentUrl,
+      shipType: 'update',
+      shipStatus: 'staged',
+      updateDescription: formData.get('update_description')?.toString() || null,
+      reshippedFromId: reshippedFromShip.id,
+      reshippedFromAll: reshippedFromShip.reshippedFromAll
+        ? [...reshippedFromShip.reshippedFromAll, reshippedFromShip.id]
+        : [reshippedFromShip.id],
+      credited_hours,
+      total_hours: (reshippedFromShip.total_hours ?? 0) + credited_hours,
+      wakatimeProjectNames: reshippedFromShip.wakatimeProjectNames,
+    }
+  })
 }
 
 export async function updateShip(ship: Ship) {

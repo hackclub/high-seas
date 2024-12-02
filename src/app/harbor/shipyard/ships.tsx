@@ -20,6 +20,7 @@ import NoImgBanner from '/public/no-img-banner.png'
 import ReadmeHelperImg from '/public/readme-helper.png'
 import NewUpdateForm from './new-update-form'
 import Modal from '../../../components/ui/modal'
+import RepoLink from '@/components/ui/repo_link'
 
 export default function Ships({
   ships = [],
@@ -221,8 +222,11 @@ export default function Ships({
                 <Button
                   onClick={async (e) => {
                     e.stopPropagation()
-                    console.log('Shipping an update...', s)
-                    setNewUpdateShip(s)
+                    alert(
+                      'Blimeys!! Sorry, but updates are broken right now – the dev team is working on a fix',
+                    )
+                    //console.log('Shipping an update...', s)
+                    //setNewUpdateShip(s)
                   }}
                 >
                   Ship an update!
@@ -406,17 +410,7 @@ export default function Ships({
                       <Icon glyph="view-forward" />
                     </Button>
                   </Link>
-                  <Link
-                    id="selected-ship-repo-button"
-                    target="_blank"
-                    className={`${buttonVariants({
-                      variant: 'outline',
-                    })} h-full`}
-                    href={selectedShip?.repoUrl}
-                    prefetch={false}
-                  >
-                    <Icon glyph="github" /> GitHub Repo
-                  </Link>
+                  <RepoLink repo={selectedShip?.repoUrl} />
 
                   <Button
                     id="selected-ship-edit-button"

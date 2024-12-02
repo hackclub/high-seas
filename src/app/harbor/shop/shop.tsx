@@ -9,7 +9,7 @@ import { HsSession } from '@/app/utils/auth.js'
 import { ShopItemComponent } from './shop-item-component.js'
 import { ShopkeeperComponent } from './shopkeeper.js'
 import { safePerson } from '@/app/utils/airtable'
-
+import Progress from './progress.tsx'
 export default function Shop({ session }: { session: HsSession }) {
   const [filterIndex, setFilterIndex] = useLocalStorageState(
     'shop.country.filter',
@@ -29,6 +29,9 @@ export default function Shop({ session }: { session: HsSession }) {
     getShop().then((shop) => setShopItems(shop))
     safePerson().then((sp) => setPersonTicketBalance(sp.settledTickets))
   }, [])
+  const [favouriteItems, setFavouriteItems] = useState(
+    JSON.parse(localStorage.getItem('favouriteItems') ?? '[]'),
+  )
 
   if (!shopItems) {
     return (
@@ -39,9 +42,7 @@ export default function Shop({ session }: { session: HsSession }) {
   }
 
   const filters = {
-    '0': (x: any) => {
-      return true
-    },
+    '0': (item: any) => item.enabledAll,
     '1': (item: any) => item.enabledUs,
     '2': (item: any) => item.enabledEu,
     '3': (item: any) => item.enabledIn,
@@ -67,6 +68,9 @@ export default function Shop({ session }: { session: HsSession }) {
           {bannerText}
         </p>
         <ShopkeeperComponent />
+        <br />
+        <Progress val={favouriteItems} items={shopItems} />
+        <br />
       </div>
       <div className="text-center mb-6 mt-12" id="region-select">
         <label>pick a region to buy something!</label>
@@ -89,6 +93,8 @@ export default function Shop({ session }: { session: HsSession }) {
           if (item.id == 'item_free_stickers_41' && !isTutorial) return null
           return (
             <ShopItemComponent
+              setFavouriteItems={setFavouriteItems}
+              favouriteItems={favouriteItems}
               id={item.id}
               key={item.id}
               item={item}

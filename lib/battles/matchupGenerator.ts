@@ -3,6 +3,54 @@ import { createHmac } from 'node:crypto'
 import type { Ships } from '../../types/battles/airtable'
 import { ensureUniqueVote, getPersonBySlackId } from './airtable'
 
+export function generateTutorialMatchup() {
+  const simpleNumbers = {
+    id: 'rectt5JQEF0jffbJF',
+    title: 'Simple Numbers',
+    repo_url: 'https://github.com/polytroper/simplenumbers',
+    deploy_url: 'https://polytrope.com/simplenumbers/',
+    screenshot_url: 'https://polytrope.com/projects/simplenumbers_256.jpg',
+    readme_url:
+      'https://raw.githubusercontent.com/polytroper/simplenumbers/refs/heads/master/README.md',
+    credited_hours: 3,
+    total_hours: 3,
+    rating: 0,
+  }
+
+  const wigglyDragon = {
+    id: 'recC4Wr3kPgZHHhJr',
+    title: 'Wiggly dragon!!',
+    repo_url: 'https://github.com/maxwofford/wiggling-dragon',
+    deploy_url: 'https://maxwofford.com/wiggling-dragon/',
+    screenshot_url:
+      'https://cloud-2mxjbb9vc-hack-club-bot.vercel.app/0ezgif.com-video-to-gif-converter.gif',
+    readme_url:
+      'https://raw.githubusercontent.com/maxwofford/wiggling-dragon/refs/heads/main/README.md',
+    credited_hours: 1.6,
+    total_hours: 1.6,
+    rating: 0,
+    entrant: [],
+    contest: [],
+    matchups: [],
+    matchups_count: 0,
+    wins: [],
+    wins_adjustments: 0,
+    losses: [],
+    losses_adjustments: 0,
+    autonumber: 0,
+    entrant__slack_id: [],
+  }
+
+  const r = Math.random()
+
+  return {
+    project1: r < 0.5 ? simpleNumbers : wigglyDragon,
+    project2: r < 0.5 ? wigglyDragon : simpleNumbers,
+    signature: '',
+    ts: Date.now(),
+  }
+}
+
 export function signMatchup(
   matchup: { project1: Ships; project2: Ships },
   userSlackId: string,

@@ -57,6 +57,12 @@ export default function EmailSubmissionForm() {
     plausible('sign-up')
   }
 
+  let origin = ''
+  if (typeof window !== 'undefined') {
+    origin = encodeURIComponent(window.location.origin)
+  }
+  const slackAuthUrl = `https://hackclub.slack.com/oauth/v2/authorize?scope=&user_scope=openid%2Cprofile%2Cemail&redirect_uri=${origin}/api/slack_redirect&client_id=2210535565.7780087007589`
+
   return (
     <>
       <div className="flex flex-col">
@@ -99,20 +105,16 @@ export default function EmailSubmissionForm() {
           style={{ maxHeight: '75vh', overflowY: 'auto' }}
         >
           <div className="space-y-4">
-            <p className="text-3xl">Ahoy!</p>
+            <p className="text-3xl">Ahoy 🏴‍☠️</p>
             <p className="text-xl mb-4">
-              We can't wait for you to join High Seas! We're under heavy demand
-              right now, so it may take some time to get through the queue.
-              <br />
-              <br />
-              <b>
-                Look out for an email from Slack—<i>that's your ticket in!</i>{' '}
-              </b>
-              When it comes, we strongly recommend joining from the computer you
-              code on.
-              <br />
-              <br />
-              Hang tight and we'll see you soon 🏴‍☠️
+              We are under heavy load right now… but you're in the queue!! Watch
+              your inbox for an invitation from Slack 👀
+            </p>
+            <p className="text-sm mb-4 italic">
+              If you already have a Hack Club Slack account,{' '}
+              <a className="underline" href={slackAuthUrl}>
+                click here instead
+              </a>
             </p>
           </div>
           <img

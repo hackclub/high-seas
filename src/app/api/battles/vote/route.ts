@@ -16,6 +16,22 @@ export async function POST(request: Request) {
     // let isBot = false;
     const voteData = await request.json()
 
+    const winnerAnalytics = voteData.analytics.projectResources[
+      voteData.winner
+    ] || {
+      readmeOpened: false,
+      repoOpened: false,
+      demoOpened: false,
+    }
+
+    const loserAnalytics = voteData.analytics.projectResources[
+      voteData.loser
+    ] || {
+      readmeOpened: false,
+      repoOpened: false,
+      demoOpened: false,
+    }
+
     // Validate turnstile token
     // const turnstileResult = await fetch(
     //   "https://challenges.cloudflare.com/turnstile/v0/siteverify",
@@ -61,6 +77,15 @@ export async function POST(request: Request) {
         { status: 400 },
       )
     }
+
+    voteData.winner_readme_opened = winnerAnalytics.readmeOpened
+    voteData.winner_repo_opened = winnerAnalytics.repoOpened
+    voteData.winner_demo_opened = winnerAnalytics.demoOpened
+    voteData.loser_readme_opened = loserAnalytics.readmeOpened
+    voteData.loser_repo_opened = loserAnalytics.repoOpened
+    voteData.loser_demo_opened = loserAnalytics.demoOpened
+    voteData.skips_before_vote = voteData.analytics.skipsBeforeVote
+
     const _result = await submitVote(voteData /*, isBot*/)
 
     return NextResponse.json({ ok: true /*, reload: isBot */ })

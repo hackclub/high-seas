@@ -465,9 +465,9 @@ function setupSteps(tourManager: Tour) {
             <br /><br />
             word to the wise… prosperous pirates take time with their votes, for <strong style="color:#ec3750;">the ocean can tell when ye vote without care. and legends say it will punish ye for it!!!!</strong>
             <br /><br />
-            click the <strong style="color:#ec3750;">Repository</strong> button to experience this lovely ship!!`,
+            click the <strong style="color:#ec3750;">Demo</strong> button to experience this lovely ship!!`,
       attachTo: {
-        element: '#voting-project-left #repository-link',
+        element: '#voting-project-left #live-demo-link',
         on: 'top',
       },
       beforeShowPromise: () => {
@@ -483,7 +483,7 @@ function setupSteps(tourManager: Tour) {
         )
       },
       advanceOn: {
-        selector: '#voting-project-left #repository-link',
+        selector: '#voting-project-left #live-demo-link',
         event: 'click',
       },
     },
