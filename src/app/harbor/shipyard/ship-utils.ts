@@ -273,23 +273,29 @@ export async function stagedToShipped(ship: Ship, ships: Ship[]) {
     projectHours.reduce((prev, curr) => prev + curr, 0) -
     (previousShip?.total_hours ?? 0)
 
-  base()(shipsTableName).update(
-    [
-      {
-        id: ship.id,
-        fields: {
-          ship_status: 'shipped',
-          credited_hours: totalHours,
+  if (totalHours > 1.0) {
+    base()(shipsTableName).update(
+      [
+        {
+          id: ship.id,
+          fields: {
+            ship_status: 'shipped',
+            credited_hours: totalHours,
+          },
         },
+      ],
+      (err: Error, records: any) => {
+        if (err) {
+          console.error(err)
+          throw err
+        }
       },
-    ],
-    (err: Error, records: any) => {
-      if (err) {
-        console.error(err)
-        throw err
-      }
-    },
-  )
+    )
+
+    return true
+  } else {
+    return false
+  }
 }
 
 export async function deleteShip(shipId: string) {
