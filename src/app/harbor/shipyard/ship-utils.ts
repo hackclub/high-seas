@@ -288,11 +288,6 @@ export async function stagedToShipped(ship: Ship, ships: Ship[]) {
     credited_hours: totalHours,
   }
 
-  if (ship.shipType === 'update') {
-    // @ts-expect-error This doesn't need to be optional
-    delete fields.credited_hours
-  }
-
   base()(shipsTableName).update(
     [
       {
