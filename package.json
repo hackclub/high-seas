@@ -24,6 +24,7 @@
     "@vercel/postgres": "^0.10.0",
     "@vercel/speed-insights": "^1.0.12",
     "airtable": "^0.12.2",
+    "bottleneck": "^2.19.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
