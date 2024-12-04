@@ -34,6 +34,19 @@ interface ProjectCardProps {
   project: Ships
   onVote: () => void
   onReadmeClick: () => void
+  setAnalyticsState: React.Dispatch<
+    React.SetStateAction<{
+      projectResources: Record<
+        string,
+        {
+          readmeOpened: boolean
+          repoOpened: boolean
+          demoOpened: boolean
+        }
+      >
+      matchupGeneratedAt: Date
+    }>
+  >
 }
 
 const notFoundImages = [
@@ -49,6 +62,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
   onVote,
   onReadmeClick,
+  setAnalyticsState,
 }) => {
   const notFoundImage = useMemo(() => {
     return notFoundImages[Math.floor(Math.random() * notFoundImages.length)]
@@ -101,6 +115,21 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               href={project.repo_url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => {
+                setAnalyticsState((prev) => ({
+                  ...prev,
+                  projectResources: {
+                    ...prev.projectResources,
+                    [project.id]: {
+                      readmeOpened: false,
+                      repoOpened: false,
+                      demoOpened: false,
+                      ...prev.projectResources[project.id],
+                      repoOpened: true,
+                    },
+                  },
+                }))
+              }}
             >
               <Pill
                 msg="Repository"
@@ -116,12 +145,45 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               href={project.deploy_url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => {
+                setAnalyticsState((prev) => ({
+                  ...prev,
+                  projectResources: {
+                    ...prev.projectResources,
+                    [project.id]: {
+                      readmeOpened: false,
+                      repoOpened: false,
+                      demoOpened: false,
+                      ...prev.projectResources[project.id],
+                      demoOpened: true,
+                    },
+                  },
+                }))
+              }}
             >
               <Pill msg="Demo" color="green" glyph="link" classes="text-lg" />
             </a>
           )}
           {project.readme_url && (
-            <button onClick={onReadmeClick} id="readme-button">
+            <button
+              onClick={() => {
+                setAnalyticsState((prev) => ({
+                  ...prev,
+                  projectResources: {
+                    ...prev.projectResources,
+                    [project.id]: {
+                      readmeOpened: false,
+                      repoOpened: false,
+                      demoOpened: false,
+                      ...prev.projectResources[project.id],
+                      readmeOpened: true,
+                    },
+                  },
+                }))
+                onReadmeClick()
+              }}
+              id="readme-button"
+            >
               <Pill
                 msg="README"
                 color="purple"
@@ -268,6 +330,28 @@ export default function Matchups({ session }: { session: HsSession }) {
 
   const { toast } = useToast()
 
+  const [skipsBeforeVote, setSkipsBeforeVote] = useLocalStorageState<number>(
+    'battles.skipsBeforeVote',
+    0,
+  )
+
+  const [isFirstLoad, setIsFirstLoad] = useLocalStorageState<boolean>(
+    'battles.isFirstLoad',
+    true,
+  )
+
+  const [analyticsState, setAnalyticsState] = useState({
+    projectResources: {} as Record<
+      string,
+      {
+        readmeOpened: boolean
+        repoOpened: boolean
+        demoOpened: boolean
+      }
+    >,
+    matchupGeneratedAt: new Date(),
+  })
+
   useEffect(() => {
     safePerson().then((sp) => {
       setCursed(sp.cursed)
@@ -325,15 +409,38 @@ export default function Matchups({ session }: { session: HsSession }) {
       ])
       if (response.ok) {
         const data: Matchup = await response.json()
+        setAnalyticsState({
+          matchupGeneratedAt: new Date(),
+          projectResources: {
+            [data.project1.id]: {
+              readmeOpened: false,
+              repoOpened: false,
+              demoOpened: false,
+            },
+            [data.project2.id]: {
+              readmeOpened: false,
+              repoOpened: false,
+              demoOpened: false,
+            },
+          },
+        })
+        const firstLoad = JSON.parse(
+          localStorage.getItem('battles.isFirstLoad') || 'true',
+        ).value
+
+        if (!firstLoad) {
+          setSkipsBeforeVote((prev) => prev + 1)
+        } else {
+          setIsFirstLoad(false)
+        }
+
         setMatchup(data)
       } else {
         console.error('Failed to fetch matchup')
-
         toast({
           title: 'There are no ships to battle right now.',
           description: 'Searching again automatically',
         })
-
         setTimeout(
           () =>
             fetchMatchup({
@@ -412,10 +519,21 @@ export default function Matchups({ session }: { session: HsSession }) {
             winnerRating: winner.rating,
             loserRating: loser.rating,
             // turnstileToken,
+            analytics: {
+              ...analyticsState,
+              skipsBeforeVote,
+            },
           }),
         })
 
         if (response.ok) {
+          setAnalyticsState({
+            projectResources: {},
+            matchupGeneratedAt: new Date(),
+          })
+          setSkipsBeforeVote(0)
+          setIsFirstLoad(true)
+
           // const json = await response.json();
           // if (json.reload) {
           //   window.location.reload();
@@ -521,6 +639,7 @@ export default function Matchups({ session }: { session: HsSession }) {
                   project={matchup.project1}
                   onVote={() => handleVoteClick(matchup.project1)}
                   onReadmeClick={() => handleReadmeClick(matchup.project1)}
+                  setAnalyticsState={setAnalyticsState}
                 />
               </div>
               <div className="flex items-center justify-center text-6xl font-bold text-indigo-600 dark:text-indigo-300">
@@ -531,6 +650,7 @@ export default function Matchups({ session }: { session: HsSession }) {
                   project={matchup.project2}
                   onVote={() => handleVoteClick(matchup.project2)}
                   onReadmeClick={() => handleReadmeClick(matchup.project2)}
+                  setAnalyticsState={setAnalyticsState}
                 />
               </div>
             </div>

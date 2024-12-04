@@ -48,7 +48,8 @@
     "sharp": "^0.33.5",
     "shepherd.js": "^14.1.0",
     "tailwind-merge": "^2.5.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@types/node": "^20",

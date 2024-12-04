@@ -8,13 +8,13 @@ import { getWakaSessions } from '@/app/utils/waka'
 import Icon from '@hackclub/icons'
 
 export default function NewUpdateForm({
-  shipToUpdate,
+  shipChain,
   canvasRef,
   closeForm,
   session,
   setShips,
 }: {
-  shipToUpdate: Ship
+  shipChain: Ship[]
   canvasRef: any
   closeForm: any
   session: any
@@ -47,17 +47,23 @@ export default function NewUpdateForm({
         total: number
       }[],
     ): number => {
-      const project = projects.find((p) =>
-        (shipToUpdate.wakatimeProjectNames || []).includes(p.key),
+      const shipChainTotalHours = shipChain.reduce(
+        (acc, curr) => (acc += curr.credited_hours ?? 0),
+        0,
+      )
+      console.log({ shipChain, shipChainTotalHours })
+
+      const ps = projects.filter((p) =>
+        (shipChain[0].wakatimeProjectNames || []).includes(p.key),
       )
 
-      if (!project) return 0
+      if (!ps || ps.length === 0) return 0
 
-      const creditedTime =
-        project.total / 3600 - (shipToUpdate.total_hours || 0)
+      const total = ps.reduce((acc, curr) => (acc += curr.total), 0)
+      const creditedTime = total / 3600 - shipChainTotalHours
       return Math.round(creditedTime * 1000) / 1000
     },
-    [shipToUpdate],
+    [shipChain],
   )
 
   useEffect(() => {
@@ -65,13 +71,15 @@ export default function NewUpdateForm({
       setLoading(true)
       const res = await fetchWakaSessions()
 
-      if (res && shipToUpdate.total_hours) {
+      if (res && shipChain[0].total_hours) {
         let creditedTime = calculateCreditedTime(res.projects)
+        console.log('Flow one', { ps: res.projects, creditedTime })
 
         if (creditedTime < 0) {
           const anyScopeRes = await fetchWakaSessions('any')
           if (anyScopeRes) {
             creditedTime = calculateCreditedTime(anyScopeRes.projects)
+            console.error('fetchAndSetProjectHours::Flow two', { creditedTime })
           }
         }
 
@@ -81,13 +89,23 @@ export default function NewUpdateForm({
     }
 
     fetchAndSetProjectHours()
-  }, [fetchWakaSessions, calculateCreditedTime, shipToUpdate])
+  }, [fetchWakaSessions, calculateCreditedTime, shipChain])
 
   const handleForm = async (formData: FormData) => {
     setStaging(true)
 
+    if (!shipChain.at(-1)) {
+      console.error(
+        'shipChain.at(-1) FAILED while trying to ship an update to ship in chain',
+        shipChain,
+      )
+      closeForm()
+      setStaging(false)
+      return
+    }
+
     const updatedShip = await createShipUpdate(
-      shipToUpdate.id,
+      shipChain.at(-1)!.id,
       projectHours,
       formData,
     )
@@ -96,8 +114,6 @@ export default function NewUpdateForm({
     setStaging(false)
 
     if (setShips) {
-      console.log('Set ships is passed! Adding stagged ship', shipToUpdate.id)
-
       setShips((previousShips: Ship[]) => {
         return [...previousShips, updatedShip]
       })
@@ -109,11 +125,12 @@ export default function NewUpdateForm({
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-2">
-        Ship an update to {shipToUpdate.title}
+        Ship an update to {shipChain[0].title}
       </h1>
 
       <p className="mb-2">
-        You are adding {projectHours} hours of work to this project
+        You are adding {projectHours <= 0 ? 'no' : projectHours} hours of work
+        to this project
       </p>
 
       <form
@@ -131,7 +148,7 @@ export default function NewUpdateForm({
           cols={50}
           minLength={10}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 rounded bg-white/50"
         />
 
         <Button

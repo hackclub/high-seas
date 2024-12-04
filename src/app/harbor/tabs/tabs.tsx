@@ -133,6 +133,16 @@ const LoadingOverlay = () => {
   )
 }
 
+const fsIdentify = (id: string, email: string, displayName?: string) => {
+  if (!!window && !!window?.FS && !!window?.FS?.identify) {
+    window?.FS?.identify(id, {
+      email,
+      displayName,
+    })
+  }
+  return null
+}
+
 export default function Harbor({
   currentTab,
   session,
@@ -155,6 +165,12 @@ export default function Harbor({
     router.push(`/${newTab}`) // Navigate to the new tab slug
   }
 
+  useEffect(() => {
+    if (!!session.email && !!session.slackId) {
+      fsIdentify(session.slackId, session.email, session.name)
+    }
+  }, [session])
+
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -171,31 +187,6 @@ export default function Harbor({
       tour()
     }
   }, [])
-
-  // useEffect(() => {
-  //   const initializeHarbor = async () => {
-  //     try {
-  //       // const { hasHb } = await fetchWaka();
-  //       // setHasHb(hasHb);
-  //       // const p: SafePerson = await safePerson();
-  //       // if (!p.hasCompletedTutorial) {
-  //       //   console.warn("1 triggering tour");
-  //       //   tour();
-  //       // }
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   initializeHarbor();
-  // }, []);
-
-  // Keep ships and shipChain in sync
-  // useEffect(() => {
-  //   getUserShips(session.slackId).then(({ shipChains }) =>
-  //     setMyShipChains(shipChains),
-  //   );
-  // }, [myShips]);
 
   const tabs = [
     {
@@ -292,17 +283,6 @@ export default function Harbor({
             {tabs.map((tab) => (
               <TabsContent key={tab.path} value={tab.path} className="h-full">
                 {tab.component}
-                {/* {tab.lockOnNoHb &&
-              hasWakaHb === false &&
-              sessionStorage.getItem("tutorial") !== "true" ? (
-                <WakaLock
-                  wakaOverride={() => setHasWakaHb(true)}
-                  wakaToken={wakaToken}
-                  tabName={tab.name}
-                />
-              ) : (
-                tab.component
-              )} */}
               </TabsContent>
             ))}
           </div>

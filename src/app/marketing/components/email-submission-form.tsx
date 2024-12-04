@@ -57,7 +57,10 @@ export default function EmailSubmissionForm() {
     plausible('sign-up')
   }
 
-  const origin = encodeURIComponent(location.origin)
+  let origin = ''
+  if (typeof window !== 'undefined') {
+    origin = encodeURIComponent(window.location.origin)
+  }
   const slackAuthUrl = `https://hackclub.slack.com/oauth/v2/authorize?scope=&user_scope=openid%2Cprofile%2Cemail&redirect_uri=${origin}/api/slack_redirect&client_id=2210535565.7780087007589`
 
   return (

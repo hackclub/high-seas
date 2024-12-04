@@ -121,7 +121,7 @@ export default function EditShipForm({
           name="title"
           defaultValue={ship.title}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 
@@ -133,7 +133,7 @@ export default function EditShipForm({
             name="update_description"
             defaultValue={ship.updateDescription}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 rounded bg-white/50"
           />
         </div>
       )}
@@ -145,7 +145,7 @@ export default function EditShipForm({
           name="repoUrl"
           defaultValue={ship.repoUrl}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 
@@ -156,7 +156,7 @@ export default function EditShipForm({
           name="deploymentUrl"
           defaultValue={ship.deploymentUrl}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 
@@ -167,18 +167,22 @@ export default function EditShipForm({
           name="readmeUrl"
           defaultValue={ship.readmeUrl}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 
       <div>
         <label htmlFor="screenshotUrl">Screenshot URL</label>
+        <p className="text-sm text-gray-500">
+          No dataurls please. If you need an image host, upload your image in{' '}
+          <a href="https://hackclub.slack.com/archives/C016DEDUL87">#cdn</a>
+        </p>
         <input
           id="screenshotUrl"
           name="screenshotUrl"
           defaultValue={ship.screenshotUrl}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 

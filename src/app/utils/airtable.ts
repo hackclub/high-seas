@@ -51,7 +51,7 @@ export const getSignpostUpdates = async () => {
     console.error(e, await response.text())
     throw e
   }
-  console.log(data.records)
+
   return data.records
 }
 

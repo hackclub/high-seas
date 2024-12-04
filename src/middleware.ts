@@ -19,17 +19,23 @@ async function loadShipsCookie(
   try {
     const shipyardPage = request.nextUrl.pathname.startsWith('/shipyard')
     if (shipyardPage && !request.cookies.get('ships')) {
-      const ships = await fetchShips(slackId, 3)
+      const ships = await fetchShips(slackId, 2)
       response.cookies.set({
         name: 'ships',
-        value: JSON.stringify(ships),
+        value: JSON.stringify(
+          ships.map((s) => {
+            if (s.screenshotUrl.startsWith('data:'))
+              s.screenshotUrl = `replace_me_with_a_non_dataencoded_url_plz`
+            return s
+          }),
+        ),
         path: '/',
         sameSite: 'strict',
         expires: new Date(Date.now() + 5 * 60 * 1000), // In 5 mins
       })
     }
   } catch (e) {
-    console.log('Middleware errored on ships cookie step', e)
+    console.error('Middleware errored on ships cookie step', e)
   }
 }
 
@@ -55,7 +61,7 @@ async function loadWakaCookie(
       })
     }
   } catch (e) {
-    console.log('Middleware errored on waka cookie step', e)
+    console.error('Middleware errored on waka cookie step', e)
   }
 }
 
@@ -78,7 +84,7 @@ async function loadSignpostFeedCookie(
       })
     }
   } catch (e) {
-    console.log('Middleware errored on signpost-feed cookie step', e)
+    console.error('Middleware errored on signpost-feed cookie step', e)
   }
 }
 
@@ -131,7 +137,7 @@ async function loadPersonCookies(request: NextRequest, response: NextResponse) {
       })
     }
   } catch (e) {
-    console.log('Middleware errored on person cookie step', e)
+    console.error('Middleware errored on person cookie step', e)
   }
 }
 
