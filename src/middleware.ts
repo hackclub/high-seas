@@ -19,10 +19,16 @@ async function loadShipsCookie(
   try {
     const shipyardPage = request.nextUrl.pathname.startsWith('/shipyard')
     if (shipyardPage && !request.cookies.get('ships')) {
-      const ships = await fetchShips(slackId, 3)
+      const ships = await fetchShips(slackId, 2)
       response.cookies.set({
         name: 'ships',
-        value: JSON.stringify(ships),
+        value: JSON.stringify(
+          ships.map((s) => {
+            if (s.screenshotUrl.startsWith('data:'))
+              s.screenshotUrl = `replace_me_with_a_non_dataencoded_url_plz`
+            return s
+          }),
+        ),
         path: '/',
         sameSite: 'strict',
         expires: new Date(Date.now() + 5 * 60 * 1000), // In 5 mins

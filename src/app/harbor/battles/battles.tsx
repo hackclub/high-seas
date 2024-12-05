@@ -115,7 +115,22 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               href={project.repo_url}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => {
+              onClick={(e) => {
+                setAnalyticsState((prev) => ({
+                  ...prev,
+                  projectResources: {
+                    ...prev.projectResources,
+                    [project.id]: {
+                      readmeOpened: false,
+                      repoOpened: false,
+                      demoOpened: false,
+                      ...prev.projectResources[project.id],
+                      repoOpened: true,
+                    },
+                  },
+                }))
+              }}
+              onContextMenu={(e) => {
                 setAnalyticsState((prev) => ({
                   ...prev,
                   projectResources: {
@@ -145,7 +160,22 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               href={project.deploy_url}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => {
+              onClick={(e) => {
+                setAnalyticsState((prev) => ({
+                  ...prev,
+                  projectResources: {
+                    ...prev.projectResources,
+                    [project.id]: {
+                      readmeOpened: false,
+                      repoOpened: false,
+                      demoOpened: false,
+                      ...prev.projectResources[project.id],
+                      demoOpened: true,
+                    },
+                  },
+                }))
+              }}
+              onContextMenu={(e) => {
                 setAnalyticsState((prev) => ({
                   ...prev,
                   projectResources: {

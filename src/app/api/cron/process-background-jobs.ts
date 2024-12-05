@@ -50,9 +50,9 @@ async function processPendingInviteJobs() {
 
 async function processPendingPersonInitJobs() {
   const { rows } = await sql`
-  SELECT DISTINCT ON (args->>'email') 
-    args->>'email' AS email, 
-    args->>'ipAddress' AS ip_address, 
+  SELECT DISTINCT ON (args->>'email')
+    args->>'email' AS email,
+    args->>'ipAddress' AS ip_address,
     args->>'isMobile' AS is_mobile,
     args->>'username' AS username,
     args->>'urlParams' AS url_params
@@ -104,7 +104,7 @@ async function processPendingPersonInitJobs() {
   )
     .then((r) => r.json())
     .catch(console.error)
-  console.log(result)
+
   const records = result?.records || []
   console.log('Person created', records)
 

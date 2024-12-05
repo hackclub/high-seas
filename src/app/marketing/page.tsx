@@ -66,6 +66,19 @@ export default async function Marketing() {
               >
                 Free stickers for all new recruits!
               </p>
+              <p
+                className="mt-4 text-white bg-opacity-50 px-4 py-2 rounded-lg"
+                style={{
+                  backgroundImage: 'url(/floorboard.svg)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundColor: 'rgba(0, 0, 0, 1)',
+                  mixBlendMode: 'hard-light',
+                  transform: 'rotate(1deg)',
+                }}
+              >
+                New signups enter a daily raffle for a Raspberry Pi Zero!
+              </p>
             </div>
             <Link href="#howthisworks">
               <img

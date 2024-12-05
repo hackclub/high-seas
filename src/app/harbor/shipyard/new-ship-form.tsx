@@ -100,6 +100,17 @@ export default function NewShipForm({
   const handleForm = async (formData: FormData) => {
     setStaging(true)
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    if (selectedProjects === null || selectedProjects?.length === 0) {
+      toast({
+        title: 'Select a project',
+        description: 'Please select at least one Hackatime project!',
+      })
+      setStaging(false)
+      return
+    }
+
     const deploymentUrl = formData.get('deployment_url') as string
     if (
       ['github.com', 'gitlab.com', 'bitbucket.org'].some((domain) =>
@@ -152,6 +163,28 @@ export default function NewShipForm({
         title: "That screenshot doesn't work!",
         description:
           'Discord links are temporary, please host your files in #cdn!',
+      })
+      setStaging(false)
+      return
+    }
+
+    if (!screenshotUrl.startsWith('https://')) {
+      toast({
+        title: "That screenshot doesn't work!",
+        description:
+          'Please use http or https links (no data urls), please host your files in #cdn!',
+      })
+      setStaging(false)
+      return
+    }
+    if (
+      deploymentUrl.includes('localhost') ||
+      deploymentUrl.includes('127.0.0.1')
+    ) {
+      toast({
+        title: "That's not a demo link!",
+        description:
+          'Please make sure your link isnt a local link.. Please submit a deployed link instead!',
       })
       setStaging(false)
       return
