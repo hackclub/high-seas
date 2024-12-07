@@ -37,7 +37,7 @@ const Card = React.forwardRef<
         backgroundRepeat,
         backgroundColor,
         backdropFilter,
-        scrollbarWidth
+        scrollbarWidth,
       }}
       className={cn(
         'rounded-lg bg-card text-card-foreground shadow-sm bg-blend-color-burn',
