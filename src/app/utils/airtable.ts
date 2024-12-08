@@ -1,5 +1,6 @@
 'use server'
 
+import { getSession } from './auth'
 import { person } from './data'
 
 export const getSelfPerson = async (slackId: string) => {
@@ -51,7 +52,7 @@ export const getSignpostUpdates = async () => {
     console.error(e, await response.text())
     throw e
   }
-  console.log(data.records)
+
   return data.records
 }
 
@@ -164,8 +165,6 @@ export interface SafePerson {
 }
 
 // Good method
-
-// Good method
 export async function safePerson(): Promise<SafePerson> {
   const record = await person()
 
@@ -194,4 +193,32 @@ export async function safePerson(): Promise<SafePerson> {
     blessed,
     referralLink,
   }
+}
+
+export async function reportTourStep(tourStepId: string) {
+  const session = await getSession()
+
+  if (!session) {
+    const err = new Error('No session when trying to report tour step')
+    console.error(err)
+    throw err
+  }
+
+  await fetch('https://api.airtable.com/v0/appTeNFYcUiYfGcR6/people', {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      records: [
+        {
+          id: session.personId,
+          fields: {
+            tour_step: tourStepId,
+          },
+        },
+      ],
+    }),
+  })
 }

@@ -50,9 +50,9 @@ async function processPendingInviteJobs() {
 
 async function processPendingPersonInitJobs() {
   const { rows } = await sql`
-  SELECT DISTINCT ON (args->>'email') 
-    args->>'email' AS email, 
-    args->>'ipAddress' AS ip_address, 
+  SELECT DISTINCT ON (args->>'email')
+    args->>'email' AS email,
+    args->>'ipAddress' AS ip_address,
     args->>'isMobile' AS is_mobile,
     args->>'username' AS username,
     args->>'urlParams' AS url_params
@@ -64,6 +64,9 @@ async function processPendingPersonInitJobs() {
   `
 
   if (rows.length === 0) {
+    await fetch(
+      'https://kuma-hackclub.fly.dev/api/push/HAPogoJ2s1?status=up&msg=OK&ping=',
+    )
     return
   }
 
@@ -104,7 +107,7 @@ async function processPendingPersonInitJobs() {
   )
     .then((r) => r.json())
     .catch(console.error)
-  console.log(result)
+
   const records = result?.records || []
   console.log('Person created', records)
 
@@ -118,6 +121,10 @@ async function processPendingPersonInitJobs() {
       AND type='create_person'
       AND status='pending'`
     }),
+  )
+
+  await fetch(
+    'https://kuma-hackclub.fly.dev/api/push/HAPogoJ2s1?status=up&msg=OK&ping=',
   )
 }
 

@@ -19,13 +19,29 @@ import { cookies } from 'next/headers'
 //#region Ships
 export type ShipType = 'project' | 'update'
 export type ShipStatus = 'shipped' | 'staged' | 'deleted'
-export interface Ship {
+export type YswsType =
+  | 'none'
+  | 'onboard'
+  | 'blot'
+  | 'sprig'
+  | 'bin'
+  | 'hackpad'
+  | 'llm'
+  | 'boba'
+  | 'cascade'
+  | 'retrospect'
+  | 'hackcraft'
+  | 'cider'
+  | 'browser buddy'
+  | 'cargo-cult'
+  | 'fraps'
+  | 'riceathon'
+  | 'counterspell'
+  | 'anchor'
+
+export interface Ship extends EditableShipFields {
   id: string // The Airtable row's ID.
-  title: string
-  repoUrl: string
-  deploymentUrl?: string
-  readmeUrl: string
-  screenshotUrl: string
+  autonumber: number
   // doubloonsPaid?: number;
   matchups_count: number
   hours: number | null
@@ -44,6 +60,14 @@ export interface Ship {
   reshippedAll: string[] | null
   reshippedFromAll: string[] | null
   paidOut: boolean
+  yswsType: YswsType
+}
+export interface EditableShipFields {
+  title: string
+  repoUrl: string
+  deploymentUrl?: string
+  readmeUrl: string
+  screenshotUrl: string
 }
 
 export async function fetchShips(
@@ -91,6 +115,7 @@ export async function fetchShips(
 
     const ship: Ship = {
       id: r.id,
+      autonumber: parseInt(r.fields.autonumber),
       title: r.fields.title,
       repoUrl: r.fields.repo_url,
       deploymentUrl: r.fields.deploy_url,
@@ -115,6 +140,7 @@ export async function fetchShips(
       reshippedAll,
       reshippedFromAll,
       paidOut: Boolean(r.fields.paid_out),
+      yswsType: r.fields.yswsType,
     }
 
     return ship
@@ -124,23 +150,28 @@ export async function fetchShips(
 
 //#region Person
 const personCacheTtl = 60_000
-const personCache = new Map()
+const personCache = new Map<
+  string,
+  { recordPromise: Promise<any>; timestamp: number }
+>()
+
 export async function person(): Promise<any> {
   const session = await getSession()
   if (!session) throw new Error('No session present')
 
-  const cached = personCache.get(session.personId)
-  if (cached) {
-    const [data, timestamp] = cached
-    if (Date.now() < timestamp + personCacheTtl) {
+  const personCached = personCache.get(session.personId)
+  if (personCached) {
+    const expired = Date.now() > personCached.timestamp + personCacheTtl
+    let rejected = false
+    personCached.recordPromise.catch(() => (rejected = true))
+    if (!expired && !rejected) {
       console.log('Person cache HIT')
-      return data
+      return personCached.recordPromise
     }
-    personCache.delete(session.personId)
   }
   console.log('Person cache MISS')
 
-  const response = await fetch(
+  const recordPromise = fetch(
     `https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/people/${session.personId}`,
     {
       headers: {
@@ -149,14 +180,16 @@ export async function person(): Promise<any> {
         'User-Agent': 'highseas.hackclub.com (person)',
       },
     },
-  )
+  ).then((r) => r.json())
 
-  if (!response.ok) throw new Error('Failed to fetch person')
-  const record = await response.json()
-  if (!record) throw new Error('Person not found')
+  personCache.set(session.personId, {
+    recordPromise,
+    timestamp: Date.now(),
+  })
 
-  personCache.set(session.personId, [record, Date.now()])
-  return record
+  recordPromise.catch(() => personCache.delete(session.personId))
+
+  return recordPromise
 }
 //#endregion
 

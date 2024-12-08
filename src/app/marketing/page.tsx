@@ -66,6 +66,19 @@ export default async function Marketing() {
               >
                 Free stickers for all new recruits!
               </p>
+              <p
+                className="mt-4 text-white bg-opacity-50 px-4 py-2 rounded-lg"
+                style={{
+                  backgroundImage: 'url(/floorboard.svg)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundColor: 'rgba(0, 0, 0, 1)',
+                  mixBlendMode: 'hard-light',
+                  transform: 'rotate(1deg)',
+                }}
+              >
+                New signups enter a daily raffle for a Raspberry Pi Zero!
+              </p>
             </div>
             <Link href="#howthisworks">
               <img
@@ -838,7 +851,6 @@ export default async function Marketing() {
             >
               Hack Club
             </Link>
-            .
           </p>
           <p className="max-w-2xl text-pink-800 text-sm">
             Hack Club is a 501(c)(3) nonprofit and network of 30k+ technical
@@ -871,7 +883,16 @@ export default async function Marketing() {
             >
               {"ran Canada's largest high school hackathon"}
             </Link>
-            .
+            . This server is currently on{' '}
+            <Link
+              href={`https://github.com/hackclub/high-seas/commit/${process.env.COMMIT_HASH}`}
+              target="_blank"
+              rel="noopenner noreferrer"
+              className="footLink"
+            >
+              {process.env.COMMIT_HASH?.slice(0, 6)}
+            </Link>{' '}
+            commit.
           </p>
         </div>
 

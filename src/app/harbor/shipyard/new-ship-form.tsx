@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useToast } from '@/hooks/use-toast'
 import Icon from '@hackclub/icons'
 import { MultiSelect } from '../../../components/ui/multi-select'
+import { SingleSelect } from '@/components/ui/single-select'
 
 async function testReadmeLink(url: string) {
   const response = await fetch(url)
@@ -51,6 +52,7 @@ export default function NewShipForm({
 }) {
   const [staging, setStaging] = useState(false)
   const confettiRef = useRef<JSConfetti | null>(null)
+  const [usedRepos, setUsedRepos] = useState<string[]>([])
   const [projects, setProjects] = useState<
     { key: string; total: number }[] | null
   >(null)
@@ -63,10 +65,29 @@ export default function NewShipForm({
       ]
     | null
   >(null)
-  const [open, setOpen] = useState(false)
   const [isShipUpdate, setIsShipUpdate] = useState(false)
-  const [isGithubRepo, setIsGithubRepo] = useState(false)
   const { toast } = useToast()
+  const [yswsType, setYswsType] = useState<string>('none')
+  const yswsTypeOptions = [
+    { label: 'none', value: 'none' },
+    { label: 'Onboard', value: 'onboard' },
+    { label: 'Blot', value: 'blot' },
+    { label: 'Sprig', value: 'sprig' },
+    { label: 'Bin', value: 'bin' },
+    { label: 'Hackpad', value: 'hackpad' },
+    { label: 'LLM', value: 'llm' },
+    { label: 'Boba Drops', value: 'boba' },
+    { label: 'Cascade', value: 'cascade' },
+    { label: 'Retrospect', value: 'retrospect' },
+    { label: 'Hackcraft', value: 'hackcraft' },
+    { label: 'Cider', value: 'cider' },
+    { label: 'Browser buddy', value: 'browser buddy' },
+    { label: 'Cargo Cult', value: 'cargo-cult' },
+    { label: 'Fraps', value: 'fraps' },
+    { label: 'Riceathon', value: 'riceathon' },
+    { label: 'Counterspell', value: 'counterspell' },
+    { label: 'Anchor', value: 'anchor' },
+  ]
 
   // Initialize confetti on mount
   useEffect(() => {
@@ -100,15 +121,22 @@ export default function NewShipForm({
 
   const handleForm = async (formData: FormData) => {
     setStaging(true)
-    // // Append the selected project's hours to the form data
-    // if (selectedProject) {
-    //   formData.append("hours", selectedProject.key.toString());
-    // }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    if (selectedProjects === null || selectedProjects?.length === 0) {
+      toast({
+        title: 'Select a project',
+        description: 'Please select at least one Hackatime project!',
+      })
+      setStaging(false)
+      return
+    }
 
     const deploymentUrl = formData.get('deployment_url') as string
     if (
-      ['github.com', 'gitlab.com', 'bitbucket.org', 'testflight.com'].some(
-        (domain) => deploymentUrl.includes(domain),
+      ['github.com', 'gitlab.com', 'bitbucket.org'].some((domain) =>
+        deploymentUrl.includes(domain),
       )
     ) {
       toast({
@@ -121,20 +149,107 @@ export default function NewShipForm({
     }
 
     const repoUrl = formData.get('repo_url') as string
-    const assumedReadmeUrl = await getReadmeFromRepo(repoUrl)
-
-    if (!!assumedReadmeUrl) {
-      formData.set('readme_url', assumedReadmeUrl)
+    if (usedRepos.includes(repoUrl)) {
+      toast({
+        title: 'You already submitted a project from this repo!',
+        description:
+          "If you're shipping an update to a project, use the 'ship an update' button instead.",
+      })
     }
+
+    const screenshotUrl = formData.get('screenshot_url') as string
+    const readmeUrl = formData.get('readme_url') as string
+    const [screenshotRes, readmeRes] = await Promise.all([
+      fetch(screenshotUrl).catch((e) => console.error(e)),
+      fetch(readmeUrl).catch((e) => console.error(e)),
+    ])
+    if (!screenshotRes) {
+      toast({
+        title: "We couldn't load your screenshot link!",
+        description: 'Try #cdn instead!',
+      })
+      setStaging(false)
+      return
+    }
+    if (!screenshotRes?.headers?.get('content-type')?.startsWith('image')) {
+      toast({
+        title: "That's not an image!",
+        description: 'Submit a link to an image of your project instead!',
+      })
+      setStaging(false)
+      return
+    }
+
+    if (screenshotUrl.includes('cdn.discordapp.com')) {
+      toast({
+        title: "That screenshot doesn't work!",
+        description:
+          'Discord links are temporary, please host your files in #cdn!',
+      })
+      setStaging(false)
+      return
+    }
+
+    if (!screenshotUrl.startsWith('https://')) {
+      toast({
+        title: "That screenshot doesn't work!",
+        description:
+          'Please use http or https links (no data urls), please host your files in #cdn!',
+      })
+      setStaging(false)
+      return
+    }
+    if (
+      deploymentUrl.includes('localhost') ||
+      deploymentUrl.includes('127.0.0.1')
+    ) {
+      toast({
+        title: "That's not a demo link!",
+        description:
+          'Please make sure your link isnt a local link.. Please submit a deployed link instead!',
+      })
+      setStaging(false)
+      return
+    }
+
+    if (readmeUrl.includes('github.com')) {
+      toast({
+        title: "This isn't a markdown link!",
+        description:
+          'Submit a link to the raw README file in your repo instead!',
+      })
+      setStaging(false)
+      return
+    }
+
+    if (
+      readmeRes.status !== 200 ||
+      !['text/plain', 'text/markdown'].includes(
+        readmeRes?.headers?.get('content-type')?.split(';')[0] || '',
+      )
+    ) {
+      toast({
+        title: "That's not a valid README link!",
+        description: 'Submit a link to a README file in your repo instead!',
+      })
+      setStaging(false)
+      return
+    }
+
+    formData.append('yswsType', yswsType)
 
     const isTutorial = sessionStorage?.getItem('tutorial') === 'true'
-    if (!isTutorial) {
-      await createShip(formData)
-    }
     confettiRef.current?.addConfetti()
     closeForm()
+    if (isTutorial) {
+      window.location.reload()
+    } else {
+      const _newShip = await createShip(formData, false)
+      setStaging(false)
+    }
+
+    // ideally we don't have to reload the page here.
     window.location.reload()
-    setStaging(false)
   }
 
   const projectDropdownList = projects?.map((p: any) => ({
@@ -197,6 +312,7 @@ export default function NewShipForm({
                 rows={4}
                 cols={50}
                 minLength={10}
+                maxLength={500}
                 required
                 className="w-full p-2 border rounded"
               ></textarea>
@@ -210,6 +326,7 @@ export default function NewShipForm({
             type="text"
             id="title"
             name="title"
+            maxLength={100}
             required
             className="w-full p-2 border rounded"
           />
@@ -234,70 +351,6 @@ export default function NewShipForm({
             <p>Loading projects...</p>
           )}
 
-          {/* <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                className="w-full justify-between"
-                disabled={!projects}
-              >
-                {selectedProject
-                  ? `${selectedProject.key} (${(selectedProject.total / 60 / 60).toFixed(1)} hrs)`
-                  : projects
-                    ? "Select project..."
-                    : "Loading projects..."}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0 z-[9998]">
-              <Command>
-                <CommandInput placeholder="Search projects..." />
-                <CommandList>
-                  <CommandEmpty className="p-4">
-                    <p>
-                      {"You don't seem to have any tracked projects."}
-                      <br />
-                      {"Start coding a project and it'll appear here!"}
-                    </p>
-
-                    <img
-                      className="mx-auto mt-4"
-                      width={128}
-                      src="/dino_debugging.svg"
-                      alt="a confused dinosaur"
-                    />
-                  </CommandEmpty>
-                  <CommandGroup>
-                    {projects &&
-                      projects.map((project, idx) => (
-                        <CommandItem
-                          key={`${project.key}-${idx}`}
-                          onSelect={() => {
-                            setSelectedProject(project);
-                            setOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedProject &&
-                                selectedProject.key === project.key
-                                ? "opacity-100"
-                                : "opacity-0",
-                            )}
-                          />
-                          {project.key} ({(project.total / 60 / 60).toFixed(1)}{" "}
-                          hrs)
-                        </CommandItem>
-                      ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover> */}
-
           {/* Hidden input to include in formData */}
           <input
             type="hidden"
@@ -314,25 +367,32 @@ export default function NewShipForm({
             id="repo_url"
             name="repo_url"
             required
+            maxLength={160}
             className="w-full p-2 border rounded"
-            onChange={({ target }) =>
-              setIsGithubRepo(target.value.includes('github.com'))
-            }
+            onChange={({ target }) => {
+              getReadmeFromRepo(target.value).then((readme) => {
+                if (readme && document) {
+                  const readmeEl = document.getElementById('readme_url')
+                  if (readmeEl) {
+                    readmeEl.setAttribute('value', readme)
+                  }
+                }
+              })
+            }}
           />
         </div>
 
-        {!isGithubRepo && (
-          <div id="readme-field">
-            <label htmlFor="readme_url">README URL</label>
-            <input
-              type="url"
-              id="readme_url"
-              name="readme_url"
-              required
-              className="w-full p-2 border rounded"
-            />
-          </div>
-        )}
+        <div id="readme-field">
+          <label htmlFor="readme_url">README URL</label>
+          <input
+            type="url"
+            id="readme_url"
+            name="readme_url"
+            maxLength={600}
+            required
+            className="w-full p-2 border rounded"
+          />
+        </div>
 
         <div id="deployment-field">
           <label htmlFor="deployment_url">
@@ -342,6 +402,7 @@ export default function NewShipForm({
             type="url"
             id="deployment_url"
             name="deployment_url"
+            maxLength={200}
             required
             className="w-full p-2 border rounded"
           />
@@ -352,7 +413,7 @@ export default function NewShipForm({
             Screenshot URL
             <br />
             <span className="text-xs opacity-50">
-              You can upload to{' '}
+              No dataURLs please. You can upload to{' '}
               <Link
                 className="underline"
                 href="https://hackclub.slack.com/archives/C016DEDUL87"
@@ -369,9 +430,27 @@ export default function NewShipForm({
             id="screenshot_url"
             name="screenshot_url"
             required
+            maxLength={300}
             className="w-full p-2 border rounded"
           />
         </div>
+
+        {sessionStorage?.getItem('tutorial') !== 'true' && (
+          <div id="yswsType-field">
+            <label htmlFor="yswsType">
+              Was this created for a YSWS program? (optional) <br />
+            </label>
+            <span className="text-xs opacity-50">
+              This doesn't affect your submission, it's just feedback for us!
+            </span>
+            <SingleSelect
+              options={yswsTypeOptions}
+              onValueChange={(t) => setYswsType(t)}
+              defaultValue={'none'}
+              variant="inverted"
+            />
+          </div>
+        )}
 
         <Button type="submit" disabled={staging} id="new-ship-submit">
           {staging ? (

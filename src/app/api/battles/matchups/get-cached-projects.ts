@@ -1,7 +1,7 @@
 import { kv } from '@vercel/kv'
 import { getAllProjects } from '../../../../../lib/battles/airtable'
 
-const PROJECT_CHUNK_SIZE = 500
+const PROJECT_CHUNK_SIZE = 1000
 const PROJECT_CACHE_TTL = 60 * 2
 
 async function pullFromRedis() {

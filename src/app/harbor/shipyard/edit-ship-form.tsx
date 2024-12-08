@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast'
 import Icon from '@hackclub/icons'
 import React, { useState } from 'react'
 import Modal from '../../../components/ui/modal'
+import { EditableShipFields } from '../../utils/data'
 
 const editMessages = [
   'Orpheus hopes you know that she put a lot of effort into recording your changes~',
@@ -20,10 +21,12 @@ const deleteMessages = [
 
 export default function EditShipForm({
   ship,
+  shipChain,
   closeForm,
   setShips,
 }: {
   ship: Ship
+  shipChain: Ship[]
   closeForm: () => void
   setShips: any
 }) {
@@ -40,17 +43,42 @@ export default function EditShipForm({
     const formData = new FormData(e.target)
     const formValues = Object.fromEntries(formData.entries())
 
-    const newShip: Ship = {
-      ...ship,
+    const editableFieldsForRootShipUpdate: EditableShipFields = {
       title: formValues.title as string,
-      ...(formValues.update_description && {
-        updateDescription: formValues.update_description as string,
-      }),
       repoUrl: formValues.repoUrl as string,
       deploymentUrl: formValues.deploymentUrl as string,
       readmeUrl: formValues.readmeUrl as string,
       screenshotUrl: formValues.screenshotUrl as string,
     }
+
+    // If you're updating a ship WITH a reshippedFromId, updates to the updateDescription should be applied to that ship, not the root ship (AS WELL as the update to the root ship).
+    if (ship.reshippedFromId) {
+      const theChildShipThatJustHadItsDescriptionUpdated = {
+        ...ship,
+        updateDescription: formValues.update_description as string,
+      }
+      await updateShip(theChildShipThatJustHadItsDescriptionUpdated)
+
+      if (setShips) {
+        setShips((previousShips: Ship[]) =>
+          previousShips.map((s: Ship) =>
+            s.id === theChildShipThatJustHadItsDescriptionUpdated.id
+              ? theChildShipThatJustHadItsDescriptionUpdated
+              : s,
+          ),
+        )
+      }
+    }
+
+    const newShip: Ship = {
+      ...shipChain[0],
+      ...editableFieldsForRootShipUpdate,
+    }
+    // If we're editing the root ship, update the desc with the new one from the form
+    if (!ship.reshippedFromId && ship.shipType === 'update') {
+      newShip.updateDescription = formValues.update_description as string
+    }
+
     console.log('updating...', formValues, ship, newShip)
     await updateShip(newShip)
 
@@ -120,8 +148,9 @@ export default function EditShipForm({
           id="title"
           name="title"
           defaultValue={ship.title}
+          maxLength={100}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 
@@ -133,7 +162,7 @@ export default function EditShipForm({
             name="update_description"
             defaultValue={ship.updateDescription}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 rounded bg-white/50"
           />
         </div>
       )}
@@ -145,7 +174,8 @@ export default function EditShipForm({
           name="repoUrl"
           defaultValue={ship.repoUrl}
           required
-          className="w-full p-2 border rounded"
+          maxLength={160}
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 
@@ -155,8 +185,9 @@ export default function EditShipForm({
           id="deploymentUrl"
           name="deploymentUrl"
           defaultValue={ship.deploymentUrl}
+          maxLength={200}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 
@@ -167,18 +198,24 @@ export default function EditShipForm({
           name="readmeUrl"
           defaultValue={ship.readmeUrl}
           required
-          className="w-full p-2 border rounded"
+          maxLength={600}
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 
       <div>
         <label htmlFor="screenshotUrl">Screenshot URL</label>
+        <p className="text-sm text-gray-500">
+          No dataurls please. If you need an image host, upload your image in{' '}
+          <a href="https://hackclub.slack.com/archives/C016DEDUL87">#cdn</a>
+        </p>
         <input
           id="screenshotUrl"
           name="screenshotUrl"
           defaultValue={ship.screenshotUrl}
           required
-          className="w-full p-2 border rounded"
+          maxLength={300}
+          className="w-full p-2 rounded bg-white/50"
         />
       </div>
 
