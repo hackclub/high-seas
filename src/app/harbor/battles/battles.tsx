@@ -34,6 +34,7 @@ interface ProjectCardProps {
   project: Ships
   onVote: () => void
   onReadmeClick: () => void
+  onReport: () => void
   setAnalyticsState: React.Dispatch<
     React.SetStateAction<{
       projectResources: Record<
@@ -62,6 +63,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
   onVote,
   onReadmeClick,
+  onReport,
   setAnalyticsState,
 }) => {
   const notFoundImage = useMemo(() => {
@@ -81,6 +83,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl">
+      <span onClick={onReport} className='text-5xl absolute z-50 pt-2 drop-shadow-2xl shadow-black opacity-40 hover:opacity-100 cursor-pointer transition-all'>🏴‍☠️</span>
+      <span onClick={onReport} className='text-5xl absolute z-50 pt-2 drop-shadow-2xl shadow-black opacity-40 hover:opacity-100 cursor-pointer transition-all'>🏴‍☠️</span>
       {project.screenshot_url && (
         <div className="relative h-48 w-full" style={imageStyle}>
           <Image
@@ -347,6 +351,7 @@ export default function Matchups({ session }: { session: HsSession }) {
   const [readmeContent, setReadmeContent] = useState('')
   const [isReadmeView, setIsReadmeView] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [reportedProject, setReportedProject] = useState<Ships | null>(null)
   const [cursed, setCursed] = useState(false)
   const [blessed, setBlessed] = useState(false)
   useEffect(() => {
@@ -501,6 +506,7 @@ export default function Matchups({ session }: { session: HsSession }) {
 
   const handleVoteClick = (project: Ships) => {
     setSelectedProject(project)
+    setReportedProject(null)
 
     if (sessionStorage.getItem('tutorial') === 'true') {
       setReason(
@@ -604,6 +610,11 @@ export default function Matchups({ session }: { session: HsSession }) {
     }
   }
 
+  const handleReportClick = (project: Ships)=>{
+    setReportedProject(project)
+    setSelectedProject(null)
+  }
+
   if (isReadmeView) {
     return (
       <div className="min-h-[75vh] bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-900 p-4 sm:p-6 md:p-8">
@@ -673,6 +684,7 @@ export default function Matchups({ session }: { session: HsSession }) {
                   project={matchup.project1}
                   onVote={() => handleVoteClick(matchup.project1)}
                   onReadmeClick={() => handleReadmeClick(matchup.project1)}
+                  onReport={()=> handleReportClick(matchup.project1)}
                   setAnalyticsState={setAnalyticsState}
                 />
               </div>
@@ -684,6 +696,7 @@ export default function Matchups({ session }: { session: HsSession }) {
                   project={matchup.project2}
                   onVote={() => handleVoteClick(matchup.project2)}
                   onReadmeClick={() => handleReadmeClick(matchup.project2)}
+                  onReport={()=> handleReportClick(matchup.project2)}
                   setAnalyticsState={setAnalyticsState}
                 />
               </div>
@@ -750,6 +763,80 @@ export default function Matchups({ session }: { session: HsSession }) {
                     </>
                   ) : (
                     'Submit Vote'
+                  )}
+                </button>
+                <SpeechToText handleResults={handleAudioTranscription} />
+              </div>
+            )}
+            {/* show container for report like for voting */}
+            {reportedProject && (
+              <div
+                id="report-reason-container-parent"
+                className="mt-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
+              >
+                <div id="report-reason-container">
+                  <h3 className="text-2xl text-center font-semibold text-indigo-600 dark:text-indigo-300 mb-4">
+                  🏴‍☠️Why are you reporting {reportedProject.title}?🏴‍☠️
+                  </h3>
+                  <select name="" id="" className='w-full text-center border border-gray-300 dark:border-gray-600 rounded my-4 p-1'>
+                    <option value="type">Select the type of fraud</option>
+                    <option value="repo">Wrong / no repo</option>
+                    <option value="demo">Wrong / no demo</option>
+                    <option value="tutorial">Copying a tutorial / template (link to it below)</option>
+                    <option value="copyCode">Copying someone else's code (link to original below)</option>
+                    <option value="other">Other (specify below)</option>
+                  </select>
+                  <textarea
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    placeholder="Provide your reason here (minimum 10 words)"
+                    className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-md mb-4 text-gray-900 dark:text-white bg-white dark:bg-gray-700 min-h-[150px]"
+                    rows={6}
+                  />
+
+                  {error && (
+                    <p className="text-red-500 text-sm mb-4">{error}</p>
+                  )}
+                </div>
+
+                <button
+                  id="submit-report"
+                  // onClick={handleReportSubmit} submit the report to airtable
+                  disabled={
+                    isSubmitting || reason.trim().split(' ').length < 10
+                  }
+                  className={`bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 mr-3 rounded-lg transition-colors duration-200 text-lg w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {reason.trim().split(' ').length < 10 ? (
+                    `${10 - reason.trim().split(' ').length} words left...`
+                  ) : isSubmitting ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Submitting...
+                    </>
+                  ) : (
+                    'Submit Report'
                   )}
                 </button>
                 <SpeechToText handleResults={handleAudioTranscription} />
