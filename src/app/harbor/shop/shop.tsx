@@ -10,6 +10,7 @@ import { ShopItemComponent } from './shop-item-component.js'
 import { ShopkeeperComponent } from './shopkeeper.js'
 import { safePerson } from '@/app/utils/airtable'
 import Progress from './progress.tsx'
+import { sort } from 'next/dist/build/webpack/loaders/css-loader/src/utils'
 export default function Shop({ session }: { session: HsSession }) {
   const [filterIndex, setFilterIndex] = useLocalStorageState(
     'shop.country.filter',
@@ -33,14 +34,6 @@ export default function Shop({ session }: { session: HsSession }) {
     JSON.parse(localStorage.getItem('favouriteItems') ?? '[]'),
   )
 
-  if (!shopItems) {
-    return (
-      <motion.div className="flex justify-center items-center h-screen">
-        <LoadingSpinner />
-      </motion.div>
-    )
-  }
-
   const filters = {
     '0': (item: any) => item.enabledAll,
     '1': (item: any) => item.enabledUs,
@@ -52,6 +45,24 @@ export default function Shop({ session }: { session: HsSession }) {
   const getFilter = () => {
     // @ts-expect-error reason reason reason
     return filters[filterIndex.toString()] || filters['0']
+  }
+
+  if (!shopItems) {
+    return (
+      <motion.div className="flex justify-center items-center h-screen">
+        <LoadingSpinner />
+      </motion.div>
+    )
+  } else {
+    if (filterIndex.toString() == '1') {
+      shopItems.sort((lhs: ShopItem, rhs: ShopItem) => {
+        return lhs.priceUs - rhs.priceUs
+      })
+    } else {
+      shopItems.sort((lhs: ShopItem, rhs: ShopItem) => {
+        return lhs.priceGlobal - rhs.priceGlobal
+      })
+    }
   }
 
   const onOptionChangeHandler = (e) => {
