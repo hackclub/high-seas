@@ -10,7 +10,8 @@ const Card = React.forwardRef<
     backgroundImage,
     backgroundSize,
     backgroundRepeat,
-    backdropFilter
+    backdropFilter,
+    scrollbarWidth
 
   switch (props?.type) {
     case 'cardboard':
@@ -18,6 +19,7 @@ const Card = React.forwardRef<
       backgroundSize = '50rem auto'
       backgroundRepeat = 'repeat'
       backdropFilter = 'blur(1px)'
+      scrollbarWidth = 'none'
       break
     default: // paper
       backgroundColor = '#fffffff0'
@@ -35,6 +37,7 @@ const Card = React.forwardRef<
         backgroundRepeat,
         backgroundColor,
         backdropFilter,
+        scrollbarWidth,
       }}
       className={cn(
         'rounded-lg bg-card text-card-foreground shadow-sm bg-blend-color-burn',
