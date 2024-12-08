@@ -723,7 +723,11 @@ export default function Matchups({ session }: { session: HsSession }) {
                   }`}
                 >
                   {reason.trim().split(' ').length < 10 ? (
-                    `${10 - reason.trim().split(' ').length} words left...`
+                    reason.trim() ? (
+                      `${10 - reason.trim().split(' ').length} words left...`
+                    ) : (
+                      '10 words left...'
+                    )
                   ) : isSubmitting ? (
                     <>
                       <svg
