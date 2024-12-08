@@ -19,6 +19,9 @@ export default function Progress({ val, items }) {
     return null
   }
 
+  const progressPercentage =
+    currentTix <= max.priceGlobal ? (currentTix * 100) / max.priceGlobal : 100
+
   return (
     <>
       <div className="relative ">
@@ -26,12 +29,15 @@ export default function Progress({ val, items }) {
           <div
             className="w-0 h-full bg-blue-500 rounded transition-all duration-300"
             style={{
-              width:
-                (currentTix <= max.priceGlobal
-                  ? (currentTix * 100) / max.priceGlobal
-                  : '100') + '%',
+              width: progressPercentage + '%',
             }}
           ></div>
+          <div
+            className="absolute top-0 left-1/2 transform -translate-x-1/2 text-white font-bold"
+            style={{ zIndex: 1 }}
+          >
+            {Math.round(progressPercentage)}%
+          </div>
           {favItems.map((item) => (
             <React.Fragment key={item.id}>
               <a href={'#' + item.id}>
