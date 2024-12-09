@@ -21,6 +21,8 @@ import SpeechToText from '@/components/speech-to-text'
 import Blessed from './blessed'
 import Cursed from './cursed'
 import pluralize from '../../../../lib/pluralize'
+import ProjectCard from './project-card'
+import { markdownComponents } from '@/components/markdown'
 
 interface Matchup {
   project1: Ships
@@ -29,313 +31,89 @@ interface Matchup {
   ts: number
 }
 
-interface ProjectCardProps {
-  key: number
-  project: Ships
-  onVote: () => void
-  onReadmeClick: () => void
-  setAnalyticsState: React.Dispatch<
-    React.SetStateAction<{
-      projectResources: Record<
-        string,
-        {
-          readmeOpened: boolean
-          repoOpened: boolean
-          demoOpened: boolean
-        }
-      >
-      matchupGeneratedAt: Date
-    }>
-  >
-}
-
-const notFoundImages = [
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/0not_found5.png',
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/1not_found4.png',
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/2not_found3.png',
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/3not_found2.png',
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/4not_found1.png',
-]
-
-const ProjectCard: React.FC<ProjectCardProps> = ({
-  key,
-  project,
-  onVote,
-  onReadmeClick,
-  setAnalyticsState,
-}) => {
-  const notFoundImage = useMemo(() => {
-    return notFoundImages[Math.floor(Math.random() * notFoundImages.length)]
-  }, [])
-  const imageStyle = {
-    backgroundImage: `url(${notFoundImage})`,
-    backgroundSize: 'cover',
-  }
-  const [showFullText, setShowFullText] = useState(false)
-
-  const toggleReadMore = () => {
-    setShowFullText((prev) => !prev)
-  }
-
-  const truncatedText = project.update_description?.slice(0, 50)
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl">
-      {project.screenshot_url && (
-        <div className="relative h-48 w-full" style={imageStyle}>
-          <Image
-            src={project.screenshot_url}
-            alt={`Screenshot of ${project.title}`}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover"
-          />
-        </div>
-      )}
-      <div className="p-6">
-        <h2 className="font-heading text-2xl font-semibold text-indigo-600 dark:text-indigo-300 mb-4">
-          {project.title}
-          {project.ship_type === 'update' ? (
-            <p className="text-gray-600 dark:text-gray-300 mb-4 inline">
-              {' '}
-              <Pill
-                msg="This is a project update"
-                color="green"
-                glyph="rep"
-                classes="text-lg"
-              />
-            </p>
-          ) : null}
-        </h2>
-
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.repo_url && (
-            <a
-              id="repository-link"
-              href={project.repo_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                setAnalyticsState((prev) => ({
-                  ...prev,
-                  projectResources: {
-                    ...prev.projectResources,
-                    [project.id]: {
-                      readmeOpened: false,
-                      repoOpened: false,
-                      demoOpened: false,
-                      ...prev.projectResources[project.id],
-                      repoOpened: true,
-                    },
-                  },
-                }))
-              }}
-              onContextMenu={(e) => {
-                setAnalyticsState((prev) => ({
-                  ...prev,
-                  projectResources: {
-                    ...prev.projectResources,
-                    [project.id]: {
-                      readmeOpened: false,
-                      repoOpened: false,
-                      demoOpened: false,
-                      ...prev.projectResources[project.id],
-                      repoOpened: true,
-                    },
-                  },
-                }))
-              }}
-            >
-              <Pill
-                msg="Repository"
-                color="blue"
-                glyph="code"
-                classes="text-lg"
-              />
-            </a>
-          )}
-          {project.deploy_url && (
-            <a
-              id="live-demo-link"
-              href={project.deploy_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                setAnalyticsState((prev) => ({
-                  ...prev,
-                  projectResources: {
-                    ...prev.projectResources,
-                    [project.id]: {
-                      readmeOpened: false,
-                      repoOpened: false,
-                      demoOpened: false,
-                      ...prev.projectResources[project.id],
-                      demoOpened: true,
-                    },
-                  },
-                }))
-              }}
-              onContextMenu={(e) => {
-                setAnalyticsState((prev) => ({
-                  ...prev,
-                  projectResources: {
-                    ...prev.projectResources,
-                    [project.id]: {
-                      readmeOpened: false,
-                      repoOpened: false,
-                      demoOpened: false,
-                      ...prev.projectResources[project.id],
-                      demoOpened: true,
-                    },
-                  },
-                }))
-              }}
-            >
-              <Pill msg="Demo" color="green" glyph="link" classes="text-lg" />
-            </a>
-          )}
-          {project.readme_url && (
-            <button
-              onClick={() => {
-                setAnalyticsState((prev) => ({
-                  ...prev,
-                  projectResources: {
-                    ...prev.projectResources,
-                    [project.id]: {
-                      readmeOpened: false,
-                      repoOpened: false,
-                      demoOpened: false,
-                      ...prev.projectResources[project.id],
-                      readmeOpened: true,
-                    },
-                  },
-                }))
-                onReadmeClick()
-              }}
-              id="readme-button"
-            >
-              <Pill
-                msg="README"
-                color="purple"
-                glyph="docs-fill"
-                classes="text-lg"
-              />
-            </button>
-          )}
-        </div>
-        {project.update_description && (
-          <p className="mt-4">
-            {showFullText
-              ? project.update_description
-              : truncatedText +
-                (project.update_description.length > 50 ? '...' : '')}
-            {project.update_description.length > 50 && (
-              <button
-                className="text-blue-500 ml-2 underline"
-                onClick={toggleReadMore}
-              >
-                {showFullText ? 'Read Less' : 'Read More'}
-              </button>
-            )}
-          </p>
-        )}
-      </div>
-      <div className="p-4 bg-gray-100 dark:bg-gray-700">
-        <button
-          id="vote-button"
-          onClick={onVote}
-          className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
-        >
-          <Icon glyph="thumbsup-fill" size={32} /> Vote for {project.title}
-        </button>
-      </div>
-    </div>
-  )
-}
-
-const markdownComponents: Components = {
-  h1: ({ ...props }) => (
-    <h1
-      className="text-3xl font-bold mb-4 text-indigo-600 dark:text-indigo-300"
-      {...props}
-    />
-  ),
-  h2: ({ ...props }) => (
-    <h2
-      className="text-2xl font-semibold mb-3 text-indigo-500 dark:text-indigo-400"
-      {...props}
-    />
-  ),
-  h3: ({ ...props }) => (
-    <h3
-      className="text-xl font-semibold mb-2 text-indigo-400 dark:text-indigo-500"
-      {...props}
-    />
-  ),
-  p: ({ ...props }) => <p className="mb-4" {...props} />,
-  a: ({ ...props }) => (
-    <Link
-      className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
-      {...props}
-    />
-  ),
-  ul: ({ ...props }) => <ul className="list-disc pl-5 mb-4" {...props} />,
-  ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-4" {...props} />,
-  li: ({ ...props }) => <li className="mb-1" {...props} />,
-  img: ({ src, alt, ...props }) => (
-    <div className="mb-4">
-      <img
-        src={src}
-        alt={alt || ''}
-        className="rounded-lg shadow-md"
-        {...props}
-      />
-    </div>
-  ),
-  code: ({ className, children, ...props }) => {
-    const match = /language-(\w+)/.exec(className || '')
-    return match ? (
-      <pre className="bg-gray-100 dark:bg-gray-700 rounded p-4 overflow-x-auto">
-        <code className={className} {...props}>
-          {children}
-        </code>
-      </pre>
-    ) : (
-      <code
-        className="bg-gray-100 dark:bg-gray-700 rounded px-1 py-0.5"
-        {...props}
-      >
-        {children}
-      </code>
-    )
-  },
-  blockquote: ({ ...props }) => (
-    <blockquote
-      className="border-l-4 border-indigo-500 pl-4 italic my-4"
-      {...props}
-    />
-  ),
-  table: ({ ...props }) => (
-    <div className="overflow-x-auto mb-4">
-      <table
-        className="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-        {...props}
-      />
-    </div>
-  ),
-  th: ({ ...props }) => (
-    <th
-      className="px-6 py-3 bg-gray-50 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-      {...props}
-    />
-  ),
-  td: ({ ...props }) => (
-    <td
-      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
-      {...props}
-    />
-  ),
-}
+// const markdownComponents: Components = {
+//   h1: ({ ...props }) => (
+//     <h1
+//       className="text-3xl font-bold mb-4 text-indigo-600 dark:text-indigo-300"
+//       {...props}
+//     />
+//   ),
+//   h2: ({ ...props }) => (
+//     <h2
+//       className="text-2xl font-semibold mb-3 text-indigo-500 dark:text-indigo-400"
+//       {...props}
+//     />
+//   ),
+//   h3: ({ ...props }) => (
+//     <h3
+//       className="text-xl font-semibold mb-2 text-indigo-400 dark:text-indigo-500"
+//       {...props}
+//     />
+//   ),
+//   p: ({ ...props }) => <p className="mb-4" {...props} />,
+//   a: ({ ...props }) => (
+//     <Link
+//       className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+//       {...props}
+//     />
+//   ),
+//   ul: ({ ...props }) => <ul className="list-disc pl-5 mb-4" {...props} />,
+//   ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-4" {...props} />,
+//   li: ({ ...props }) => <li className="mb-1" {...props} />,
+//   img: ({ src, alt, ...props }) => (
+//     <div className="mb-4">
+//       <img
+//         src={src}
+//         alt={alt || ''}
+//         className="rounded-lg shadow-md"
+//         {...props}
+//       />
+//     </div>
+//   ),
+//   code: ({ className, children, ...props }) => {
+//     const match = /language-(\w+)/.exec(className || '')
+//     return match ? (
+//       <pre className="bg-gray-100 dark:bg-gray-700 rounded p-4 overflow-x-auto">
+//         <code className={className} {...props}>
+//           {children}
+//         </code>
+//       </pre>
+//     ) : (
+//       <code
+//         className="bg-gray-100 dark:bg-gray-700 rounded px-1 py-0.5"
+//         {...props}
+//       >
+//         {children}
+//       </code>
+//     )
+//   },
+//   blockquote: ({ ...props }) => (
+//     <blockquote
+//       className="border-l-4 border-indigo-500 pl-4 italic my-4"
+//       {...props}
+//     />
+//   ),
+//   table: ({ ...props }) => (
+//     <div className="overflow-x-auto mb-4">
+//       <table
+//         className="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+//         {...props}
+//       />
+//     </div>
+//   ),
+//   th: ({ ...props }) => (
+//     <th
+//       className="px-6 py-3 bg-gray-50 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+//       {...props}
+//     />
+//   ),
+//   td: ({ ...props }) => (
+//     <td
+//       className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
+//       {...props}
+//     />
+//   ),
+// }
 
 export default function Matchups({ session }: { session: HsSession }) {
   const [matchup, setMatchup] = useState<Matchup | null>(null)
@@ -349,27 +127,26 @@ export default function Matchups({ session }: { session: HsSession }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [cursed, setCursed] = useState(false)
   const [blessed, setBlessed] = useState(false)
+
+  const { toast } = useToast()
+
   useEffect(() => {
     window.onbeforeunload = () => {
-      return Boolean(selectedProject)
+      return !!selectedProject
     }
   }, [])
-  // const turnstileRef = useRef(null);
-  // const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
-  const [voteBalance, setVoteBalance] = useLocalStorageState<number>(
+  const [voteBalance, setVoteBalance] = useLocalStorageState(
     'cache.voteBalance',
     0,
   )
 
-  const { toast } = useToast()
-
-  const [skipsBeforeVote, setSkipsBeforeVote] = useLocalStorageState<number>(
+  const [skipsBeforeVote, setSkipsBeforeVote] = useLocalStorageState(
     'battles.skipsBeforeVote',
     0,
   )
 
-  const [isFirstLoad, setIsFirstLoad] = useLocalStorageState<boolean>(
+  const [isFirstLoad, setIsFirstLoad] = useLocalStorageState(
     'battles.isFirstLoad',
     true,
   )
@@ -514,7 +291,7 @@ export default function Matchups({ session }: { session: HsSession }) {
   }
 
   const handleVoteSubmit = async () => {
-    if (reason.split(' ').length < 10) {
+    if (fewerThanTenWords) {
       setError('Please provide a reason with at least 10 words.')
       return
     }
@@ -715,14 +492,12 @@ export default function Matchups({ session }: { session: HsSession }) {
                 <button
                   id="submit-vote"
                   onClick={handleVoteSubmit}
-                  disabled={
-                    isSubmitting || reason.trim().split(' ').length < 10
-                  }
+                  disabled={isSubmitting || fewerThanTenWords}
                   className={`bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 mr-3 rounded-lg transition-colors duration-200 text-lg w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed ${
                     isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
-                  {reason.trim().split(' ').length < 10 ? (
+                  {fewerThanTenWords ? (
                     `${10 - reason.trim().split(' ').length} words left...`
                   ) : isSubmitting ? (
                     <>
