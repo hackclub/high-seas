@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useToast } from '@/hooks/use-toast'
 import Icon from '@hackclub/icons'
 import { MultiSelect } from '../../../components/ui/multi-select'
+import { SingleSelect } from '@/components/ui/single-select'
 
 async function testReadmeLink(url: string) {
   const response = await fetch(url)
@@ -66,6 +67,27 @@ export default function NewShipForm({
   >(null)
   const [isShipUpdate, setIsShipUpdate] = useState(false)
   const { toast } = useToast()
+  const [yswsType, setYswsType] = useState<string>('none')
+  const yswsTypeOptions = [
+    { label: 'none', value: 'none' },
+    { label: 'Onboard', value: 'onboard' },
+    { label: 'Blot', value: 'blot' },
+    { label: 'Sprig', value: 'sprig' },
+    { label: 'Bin', value: 'bin' },
+    { label: 'Hackpad', value: 'hackpad' },
+    { label: 'LLM', value: 'llm' },
+    { label: 'Boba Drops', value: 'boba' },
+    { label: 'Cascade', value: 'cascade' },
+    { label: 'Retrospect', value: 'retrospect' },
+    { label: 'Hackcraft', value: 'hackcraft' },
+    { label: 'Cider', value: 'cider' },
+    { label: 'Browser buddy', value: 'browser buddy' },
+    { label: 'Cargo Cult', value: 'cargo-cult' },
+    { label: 'Fraps', value: 'fraps' },
+    { label: 'Riceathon', value: 'riceathon' },
+    { label: 'Counterspell', value: 'counterspell' },
+    { label: 'Anchor', value: 'anchor' },
+  ]
 
   // Initialize confetti on mount
   useEffect(() => {
@@ -121,6 +143,16 @@ export default function NewShipForm({
         title: "That's not a demo link!",
         description:
           'Submit a link to a deployed project or a video demo of what your project is instead!',
+      })
+      setStaging(false)
+      return
+    }
+
+    if (deploymentUrl.includes('drive.google')) {
+      toast({
+        title: "Drive links aren't allowed",
+        description:
+          "Drive links aren't allowed. Link to a deployed project directly, or if you can't upload your video somewhere else",
       })
       setStaging(false)
       return
@@ -214,6 +246,8 @@ export default function NewShipForm({
       return
     }
 
+    formData.append('yswsType', yswsType)
+
     const isTutorial = sessionStorage?.getItem('tutorial') === 'true'
     confettiRef.current?.addConfetti()
     closeForm()
@@ -288,6 +322,7 @@ export default function NewShipForm({
                 rows={4}
                 cols={50}
                 minLength={10}
+                maxLength={500}
                 required
                 className="w-full p-2 border rounded"
               ></textarea>
@@ -301,6 +336,7 @@ export default function NewShipForm({
             type="text"
             id="title"
             name="title"
+            maxLength={100}
             required
             className="w-full p-2 border rounded"
           />
@@ -341,6 +377,7 @@ export default function NewShipForm({
             id="repo_url"
             name="repo_url"
             required
+            maxLength={160}
             className="w-full p-2 border rounded"
             onChange={({ target }) => {
               getReadmeFromRepo(target.value).then((readme) => {
@@ -361,6 +398,7 @@ export default function NewShipForm({
             type="url"
             id="readme_url"
             name="readme_url"
+            maxLength={600}
             required
             className="w-full p-2 border rounded"
           />
@@ -374,6 +412,7 @@ export default function NewShipForm({
             type="url"
             id="deployment_url"
             name="deployment_url"
+            maxLength={200}
             required
             className="w-full p-2 border rounded"
           />
@@ -401,9 +440,27 @@ export default function NewShipForm({
             id="screenshot_url"
             name="screenshot_url"
             required
+            maxLength={300}
             className="w-full p-2 border rounded"
           />
         </div>
+
+        {sessionStorage?.getItem('tutorial') !== 'true' && (
+          <div id="yswsType-field">
+            <label htmlFor="yswsType">
+              Was this created for a YSWS program? (optional) <br />
+            </label>
+            <span className="text-xs opacity-50">
+              This doesn't affect your submission, it's just feedback for us!
+            </span>
+            <SingleSelect
+              options={yswsTypeOptions}
+              onValueChange={(t) => setYswsType(t)}
+              defaultValue={'none'}
+              variant="inverted"
+            />
+          </div>
+        )}
 
         <Button type="submit" disabled={staging} id="new-ship-submit">
           {staging ? (

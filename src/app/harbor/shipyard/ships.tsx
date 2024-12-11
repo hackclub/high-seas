@@ -21,6 +21,8 @@ import ReadmeHelperImg from '/public/readme-helper.png'
 import NewUpdateForm from './new-update-form'
 import Modal from '../../../components/ui/modal'
 import RepoLink from '@/components/ui/repo_link'
+import { EditableShipFields } from '../../utils/data'
+import ThinkingDino from '/public/thinking.png'
 
 export default function Ships({
   ships = [],
@@ -42,6 +44,8 @@ export default function Ships({
   const [session, setSession] = useState<HsSession | null>(null)
   const [isEditingShip, setIsEditingShip] = useState(false)
   const [errorModal, setErrorModal] = useState<string>()
+  const [shipToShip, setShipToShip] = useState<Ship | null>(null)
+  const [shipModal, setShipModal] = useState<boolean>(false)
   const canvasRef = useRef(null)
 
   const [isShipping, setIsShipping] = useState(false)
@@ -128,6 +132,26 @@ export default function Ships({
     }
   }
 
+  async function tryToShip(s: Ship) {
+    console.log('Shipping', s)
+
+    try {
+      setIsShipping(true)
+      const { error } = await stagedToShipped(s, ships)
+      if (error) {
+        setErrorModal(String(error))
+      } else {
+        location.reload()
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorModal(err.message)
+      }
+    } finally {
+      setIsShipping(false)
+    }
+  }
+
   const selectedShipChain = selectedShip
     ? shipChains?.get(selectedShip.id)
     : undefined
@@ -184,36 +208,65 @@ export default function Ships({
         {bareShips ? null : (
           <div className="mt-4 sm:mt-0 sm:ml-auto">
             {s.shipStatus === 'staged' ? (
-              <Button
-                id="ship-ship"
-                onClick={async (e) => {
-                  e.stopPropagation()
-                  console.log('Shipping', s)
-
-                  try {
-                    setIsShipping(true)
-                    const { error } = await stagedToShipped(s, ships)
-                    if (error) {
-                      setErrorModal(String(error))
+              <>
+                <Button
+                  id="ship-ship"
+                  onClick={async (e) => {
+                    e.stopPropagation()
+                    if (sessionStorage.getItem('tutorial') === 'true') {
+                      await tryToShip(s)
                     } else {
-                      location.reload()
+                      setShipToShip(s)
+                      setShipModal(true)
                     }
-                  } catch (err: unknown) {
-                    if (err instanceof Error) {
-                      setErrorModal(err.message)
-                    }
-                  } finally {
-                    setIsShipping(false)
-                  }
-                }}
-                disabled={isShipping}
-              >
-                {isShipping
-                  ? 'Shipping...'
-                  : s.shipType === 'project'
-                    ? 'SHIP SHIP!'
-                    : 'SHIP UPDATE!'}
-              </Button>
+                  }}
+                  disabled={isShipping}
+                >
+                  {isShipping
+                    ? 'Shipping...'
+                    : s.shipType === 'project'
+                      ? 'SHIP SHIP!'
+                      : 'SHIP UPDATE!'}
+                </Button>
+
+                <Modal isOpen={shipModal} close={() => setShipModal(false)}>
+                  <div className="p-4 max-h-96 overflow-y-auto">
+                    <h2 className="text-3xl font-bold text-center">
+                      Confirm Shipping
+                    </h2>
+                    <p className="text-xl mt-5 text-center">
+                      Are you sure you want to ship {s.title}?
+                    </p>
+                    <p className="mt-3 text-center">
+                      Keep in mind that this can't be reverted! <br /> Your ship
+                      will start getting into matchups.
+                    </p>
+                    <div className="flex justify-center">
+                      <Image src={ThinkingDino} alt="Thinking Dino" />
+                    </div>
+                    <div className="flex justify-end mt-5">
+                      <Button
+                        onClick={() => setShipModal(false)}
+                        className="mr-5"
+                      >
+                        Go back
+                      </Button>
+
+                      <Button
+                        onClick={async () => {
+                          if (shipToShip) {
+                            await tryToShip(shipToShip)
+                          }
+                          setShipModal(false)
+                        }}
+                        disabled={isShipping}
+                      >
+                        {isShipping ? 'Shipping...' : 'Yes, ship it'}
+                      </Button>
+                    </div>
+                  </div>
+                </Modal>
+              </>
             ) : s.paidOut ? (
               !stagedShips.find(
                 (stagedShip) =>
@@ -271,14 +324,34 @@ export default function Ships({
           )}
 
           <div id="staged-ships-container" className="space-y-4">
-            {stagedShips.map((ship: Ship, idx: number) => (
-              <SingleShip
-                s={ship}
-                key={ship.id}
-                id={`staged-ship-${idx}`}
-                setNewShipVisible={setNewShipVisible}
-              />
-            ))}
+            {/* If the ship has a reshippedFromId, we're going to fill in the editable fields from the root ship. */}
+            {stagedShips.map((ship: Ship, idx: number) => {
+              const stagedShipParent = getChainFromAnyId(ship.id)
+
+              const editableFields: EditableShipFields = {
+                title: stagedShipParent?.[0].title,
+                repoUrl: stagedShipParent?.[0].repoUrl,
+                deploymentUrl: stagedShipParent?.[0].deploymentUrl,
+                readmeUrl: stagedShipParent?.[0].readmeUrl,
+                screenshotUrl: stagedShipParent?.[0].screenshotUrl,
+              }
+
+              return (
+                <SingleShip
+                  s={
+                    ship.reshippedFromId && stagedShipParent
+                      ? {
+                          ...ship,
+                          ...editableFields,
+                        }
+                      : ship
+                  }
+                  key={ship.id}
+                  id={`staged-ship-${idx}`}
+                  setNewShipVisible={setNewShipVisible}
+                />
+              )
+            })}
           </div>
         </div>
       )}
@@ -442,6 +515,7 @@ export default function Ships({
                       <Card className="p-2 mt-2 text-white !bg-white/15">
                         <EditShipForm
                           ship={selectedShip}
+                          shipChain={getChainFromAnyId(selectedShip.id)}
                           closeForm={() => setIsEditingShip(false)}
                           setShips={setShips}
                         />
@@ -507,15 +581,9 @@ export default function Ships({
                                           }}
                                         ></div>
                                         <span>
-                                          {ship.shipType === 'project'
+                                          {idx === 0
                                             ? 'Start'
-                                            : `Update ${
-                                                idx +
-                                                (selectedShipChain[0]
-                                                  .shipType === 'project'
-                                                  ? 0
-                                                  : 1)
-                                              }`}
+                                            : `Update ${idx + 1}`}
                                           <span className="text-xs ml-2 text-indigo-100">
                                             {timeAgo.format(
                                               new Date(ship.createdTime),

@@ -64,6 +64,9 @@ async function processPendingPersonInitJobs() {
   `
 
   if (rows.length === 0) {
+    await fetch(
+      'https://kuma-hackclub.fly.dev/api/push/HAPogoJ2s1?status=up&msg=OK&ping=',
+    )
     return
   }
 
@@ -118,6 +121,10 @@ async function processPendingPersonInitJobs() {
       AND type='create_person'
       AND status='pending'`
     }),
+  )
+
+  await fetch(
+    'https://kuma-hackclub.fly.dev/api/push/HAPogoJ2s1?status=up&msg=OK&ping=',
   )
 }
 

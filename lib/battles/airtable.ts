@@ -1,5 +1,6 @@
 import Airtable from 'airtable'
 import { Ships, Person, Battles } from '../../types/battles/airtable'
+import { getSession } from '@/app/utils/auth'
 
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.BASE_ID!,

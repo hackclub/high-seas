@@ -107,21 +107,23 @@ async function loadPersonCookies(request: NextRequest, response: NextResponse) {
         expires: new Date(Date.now() + 5 * 60 * 1000), // In 5 minutes
       })
 
-      const verificationStatus = p['verification_status'][0]
-      const verificationReason = p['Rejection Reason']
-      let verifExpiration = 5 * 60 * 1000
-      if (verificationStatus.startsWith('Eligible')) {
-        verifExpiration = 24 * 60 * 60 * 1000 // In 1 day
+      if (p['verification_status']) {
+        const verificationStatus = p['verification_status'][0]
+        const verificationReason = p['Rejection Reason']
+        let verifExpiration = 5 * 60 * 1000
+        if (verificationStatus.startsWith('Eligible')) {
+          verifExpiration = 24 * 60 * 60 * 1000 // In 1 day
+        }
+        response.cookies.set({
+          name: 'verification',
+          value: JSON.stringify({
+            status: verificationStatus,
+            reason: verificationReason,
+          }),
+          path: '/',
+          expires: new Date(Date.now() + verifExpiration),
+        })
       }
-      response.cookies.set({
-        name: 'verification',
-        value: JSON.stringify({
-          status: verificationStatus,
-          reason: verificationReason,
-        }),
-        path: '/',
-        expires: new Date(Date.now() + verifExpiration),
-      })
 
       const academyCompleted = p['academy_completed'] === true
       let acadExpiration = 60 * 60 * 1000 // In 1 hour

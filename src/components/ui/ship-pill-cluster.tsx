@@ -27,7 +27,6 @@ export default function ShipPillCluster({
       return (acc += curr.credited_hours ?? 0)
     }, 0)
     .toFixed(1)
-  console.log('byeeee')
 
   const allShipsHaveVoteRequirementMet = !chain.some(
     (s) => !s.voteRequirementMet,

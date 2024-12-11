@@ -147,6 +147,7 @@ export default function NewUpdateForm({
           rows={4}
           cols={50}
           minLength={10}
+          maxLength={500}
           required
           className="w-full p-2 rounded bg-white/50"
         />

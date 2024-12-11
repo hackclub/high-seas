@@ -12,6 +12,7 @@ import { getWakaSessions } from '@/app/utils/waka'
 import Referral from './referral'
 
 import pluralize from '../../../../lib/pluralize.js'
+import BestShips from './best-ships'
 
 export default function Signpost() {
   let wakaKey: string | null = null
@@ -133,6 +134,8 @@ export default function Signpost() {
           <p>Loading Hackatime token...</p>
         )}
       </JaggedCard>
+
+      <BestShips />
 
       <h2 className="mt-8 font-heading text-2xl font-bold mb-4 text-center">
         What's happening?
