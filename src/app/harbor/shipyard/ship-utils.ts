@@ -122,6 +122,8 @@ export async function createShipUpdate(
      * Secondly, the reshipped_to field on the reshipped ship should be updated to be the new update ship's record ID.
      */
 
+    const wakatimeProjectNames = formData.get('wakatime_project_name');
+
     // Step 1:
     const res: { id: string; fields: any } = await new Promise(
       (resolve, reject) => {
@@ -142,6 +144,7 @@ export async function createShipUpdate(
                   : [reshippedFromShip.id],
                 credited_hours,
                 for_ysws: reshippedFromShip.yswsType,
+                wakatime_project_name: wakatimeProjectNames,
               },
             },
           ],
@@ -208,7 +211,7 @@ export async function createShipUpdate(
         : [reshippedFromShip.id],
       credited_hours,
       total_hours: (reshippedFromShip.total_hours ?? 0) + credited_hours,
-      wakatimeProjectNames: reshippedFromShip.wakatimeProjectNames,
+      wakatimeProjectNames,
       for_ysws,
     }
   })
