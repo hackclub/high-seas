@@ -105,7 +105,7 @@ export default function NewUpdateForm({
       ).reduce((acc, curr) => (acc += curr.total ?? 0), 0)
 
       const ps = projects.filter((p) =>
-        (shipChain[0].wakatimeProjectNames || []).includes(p.key),
+        (shipChain[shipChain.length - 1].wakatimeProjectNames || []).includes(p.key),
       )
 
       if (!ps || ps.length === 0) return 0

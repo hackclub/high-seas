@@ -111,12 +111,17 @@ export default function NewShipForm({
                 p.key !== '<<LAST_PROJECT>>' && !shippedShips.includes(p.key),
             ),
           )
+
         }
       } catch (error) {
         console.error('Error fetching projects:', error)
       }
     }
     fetchProjects()
+  }, [ships])
+
+  useEffect(() => {
+    setUsedRepos(ships.map(ship => ship.repoUrl))
   }, [ships])
 
   const handleForm = async (formData: FormData) => {
@@ -165,6 +170,8 @@ export default function NewShipForm({
         description:
           "If you're shipping an update to a project, use the 'ship an update' button instead.",
       })
+      setStaging(false)
+      return
     }
 
     const screenshotUrl = formData.get('screenshot_url') as string
