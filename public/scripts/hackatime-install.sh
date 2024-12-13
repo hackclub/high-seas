@@ -54,7 +54,7 @@ install_code_command() {
                 else
                     error "Failed to install 'code' command even after creating symlink."
                     error "Please install it manually:"
-                    error "(In VS Code, press ⌘⇧P and type \"Shell Command: Install 'code' command in PATH\" and press 'Enter'.)"
+                    error "(In VS Code, press Command + Shift + P and type \"Shell Command: Install 'code' command in PATH\" and press 'Enter'.)"
                     exit 1
                 fi
             else
@@ -90,7 +90,7 @@ install_code_command() {
         ;;
     msys* | win32*)
         error "Automatic installation of 'code' command is not supported on Windows."
-        error "(In VS Code, press Ctrl+Shift+P and type \"Shell Command: Install 'code' command in PATH\" and press 'Enter'.)"
+        error "(In VS Code, press Ctrl + Shift + P and type \"Shell Command: Install 'code' command in PATH\" and press 'Enter'.)"
         error "Once that's done, restart this script."
         exit 1
         ;;

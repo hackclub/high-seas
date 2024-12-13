@@ -175,12 +175,7 @@ export default function ProjectCard({
               }}
               id="readme-button"
             >
-              <Pill
-                msg="README"
-                color="purple"
-                glyph="docs-fill"
-                classes="text-lg"
-              />
+              <Pill msg="README" glyph="docs-fill" classes="text-lg" />
             </button>
           )}
         </div>
@@ -200,6 +195,12 @@ export default function ProjectCard({
             )}
           </p>
         )}
+        <a
+          target="_blank"
+          href={`https://hackclub.slack.com/team/${project.entrant__slack_id}`}
+        >
+          <Pill glyph="slack" color="purple" msg="Chat on Slack" />
+        </a>
       </div>
       <div className="p-4 bg-gray-100 dark:bg-gray-700">
         <button
