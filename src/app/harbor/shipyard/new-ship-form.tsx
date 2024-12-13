@@ -111,7 +111,6 @@ export default function NewShipForm({
                 p.key !== '<<LAST_PROJECT>>' && !shippedShips.includes(p.key),
             ),
           )
-
         }
       } catch (error) {
         console.error('Error fetching projects:', error)
@@ -121,7 +120,7 @@ export default function NewShipForm({
   }, [ships])
 
   useEffect(() => {
-    setUsedRepos(ships.map(ship => ship.repoUrl))
+    setUsedRepos(ships.map((ship) => ship.repoUrl))
   }, [ships])
 
   const handleForm = async (formData: FormData) => {

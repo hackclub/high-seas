@@ -14,7 +14,7 @@ export default function NewUpdateForm({
   closeForm,
   session,
   setShips,
-  ships
+  ships,
 }: {
   shipChain: Ship[]
   canvasRef: any
@@ -32,19 +32,23 @@ export default function NewUpdateForm({
   >(null)
   const [selectedProjects, setSelectedProjects] = useState<
     | [
-    {
-      key: string
-      total: number
-    },
-  ]
+        {
+          key: string
+          total: number
+        },
+      ]
     | null
   >(null)
 
   const newWakatimeProjects = selectedProjects?.join('$$xXseparatorXx$$') ?? ''
-  const prevWakatimeProjects = shipChain[shipChain.length - 1].wakatimeProjectNames?.join('$$xXseparatorXx$$') ?? ''
+  const prevWakatimeProjects =
+    shipChain[shipChain.length - 1].wakatimeProjectNames?.join(
+      '$$xXseparatorXx$$',
+    ) ?? ''
   let wakatimeProjectNames = prevWakatimeProjects
   if (newWakatimeProjects && newWakatimeProjects !== '') {
-    wakatimeProjectNames = prevWakatimeProjects + '$$xXseparatorXx$$' + newWakatimeProjects
+    wakatimeProjectNames =
+      prevWakatimeProjects + '$$xXseparatorXx$$' + newWakatimeProjects
   }
 
   // Initialize confetti on mount
@@ -100,48 +104,57 @@ export default function NewUpdateForm({
         0,
       )
       console.log({ shipChain, shipChainTotalHours })
-      const newProjectsHours = projects.filter((p) =>
-        newProjects?.includes(p.key),
-      ).reduce((acc, curr) => (acc += curr.total ?? 0), 0)
+      const newProjectsHours = projects
+        .filter((p) => newProjects?.includes(p.key))
+        .reduce((acc, curr) => (acc += curr.total ?? 0), 0)
 
       const ps = projects.filter((p) =>
-        (shipChain[shipChain.length - 1].wakatimeProjectNames || []).includes(p.key),
+        (shipChain[shipChain.length - 1].wakatimeProjectNames || []).includes(
+          p.key,
+        ),
       )
 
       if (!ps || ps.length === 0) return 0
 
-      const total = ps.reduce((acc, curr) => (acc += curr.total), 0) + newProjectsHours
+      const total =
+        ps.reduce((acc, curr) => (acc += curr.total), 0) + newProjectsHours
       const creditedTime = total / 3600 - shipChainTotalHours
       return Math.round(creditedTime * 1000) / 1000
     },
     [shipChain],
   )
 
-  const fetchAndSetProjectHours = useCallback(async (newProjects: string[] | null) => {
-    setLoading(true);
-    const res = await fetchWakaSessions();
+  const fetchAndSetProjectHours = useCallback(
+    async (newProjects: string[] | null) => {
+      setLoading(true)
+      const res = await fetchWakaSessions()
 
-    if (res && shipChain[0].total_hours) {
-      let creditedTime = calculateCreditedTime(res.projects, newProjects);
-      console.log('Flow one', { ps: res.projects, creditedTime });
+      if (res && shipChain[0].total_hours) {
+        let creditedTime = calculateCreditedTime(res.projects, newProjects)
+        console.log('Flow one', { ps: res.projects, creditedTime })
 
-      if (creditedTime < 0) {
-        const anyScopeRes = await fetchWakaSessions('any');
-        if (anyScopeRes) {
-          creditedTime = calculateCreditedTime(anyScopeRes.projects, newProjects);
-          console.error('fetchAndSetProjectHours::Flow two', { creditedTime });
+        if (creditedTime < 0) {
+          const anyScopeRes = await fetchWakaSessions('any')
+          if (anyScopeRes) {
+            creditedTime = calculateCreditedTime(
+              anyScopeRes.projects,
+              newProjects,
+            )
+            console.error('fetchAndSetProjectHours::Flow two', { creditedTime })
+          }
         }
+
+        setProjectHours(creditedTime)
       }
+      setLoading(false)
+    },
+    [fetchWakaSessions, calculateCreditedTime, shipChain],
+  )
 
-      setProjectHours(creditedTime);
-    }
-    setLoading(false);
-  }, [fetchWakaSessions, calculateCreditedTime, shipChain]);
-
-// Use fetchAndSetProjectHours in useEffect
+  // Use fetchAndSetProjectHours in useEffect
   useEffect(() => {
-    fetchAndSetProjectHours(null);
-  }, [fetchAndSetProjectHours]);
+    fetchAndSetProjectHours(null)
+  }, [fetchAndSetProjectHours])
 
   const handleForm = async (formData: FormData) => {
     setStaging(true)
@@ -220,8 +233,8 @@ export default function NewUpdateForm({
             <MultiSelect
               options={projectDropdownList}
               onValueChange={async (p) => {
-                setSelectedProjects(p);
-                await fetchAndSetProjectHours(p);
+                setSelectedProjects(p)
+                await fetchAndSetProjectHours(p)
               }}
               defaultValue={[]}
               placeholder="Select projects..."

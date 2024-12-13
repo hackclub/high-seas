@@ -53,7 +53,7 @@ export default function Ships({
 
   const timeAgo = new TimeAgo('en-US')
 
-  console.log("WK NAMES", selectedShip?.wakatimeProjectNames)
+  console.log('WK NAMES', selectedShip?.wakatimeProjectNames)
 
   useEffect(() => {
     getSession().then((sesh) => setSession(sesh))
@@ -273,7 +273,7 @@ export default function Ships({
               !stagedShips.find(
                 (stagedShip) =>
                   stagedShip.wakatimeProjectNames.join(',') ===
-                  s.wakatimeProjectNames.join(',')
+                  s.wakatimeProjectNames.join(','),
               ) ? (
                 <Button
                   onClick={async (e) => {
@@ -289,8 +289,7 @@ export default function Ships({
               )
             ) : (
               <p>Awaiting payout</p>
-            )
-            }
+            )}
           </div>
         )}
       </Card>
