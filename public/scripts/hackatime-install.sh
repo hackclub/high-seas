@@ -17,9 +17,23 @@ error() {
 }
 
 check_command() {
-    if ! command -v "$1" &>/dev/null; then
-        error "$1 is not installed. Please install it before running this script."
-        exit 1
+    if ! command -v code &>/dev/null; then
+        if [[ -d "/Applications/Visual Studio Code.app" ]]; then
+            echo "The 'code' command is not found although VS code is installed. This is probably because it is not added to your path. Would you like to add it to your PATH? (y/n)"
+            read -r answer
+            if [[ "$answer" =~ ^[Yy]$ ]]; then
+                if [[ "$OSTYPE" == "darwin"* ]]; then
+                    echo 'export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"' >> ~/.zshrc
+                    source ~/.zshrc
+                elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+                    echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bashrc
+                    source ~/.bashrc
+                fi
+                echo "The 'code' command has been added to your PATH. Please restart your terminal."
+            fi
+        else
+             echo "$1 is not installed. Please install it before running this script."
+        fi
     fi
 }
 
@@ -36,78 +50,24 @@ configure_wakatime() {
     echo
 }
 
-install_code_command() {
-    log "Attempting to install 'code' command..."
-    case "$OSTYPE" in
-    darwin*)
-        VSCODE_APP="/Applications/Visual Studio Code.app"
-        if [ -d "$VSCODE_APP" ]; then
-            CODE_BIN_PATH="$VSCODE_APP/Contents/Resources/app/bin/code"
-            if [ -f "$CODE_BIN_PATH" ]; then
-                if [ ! -d "/usr/local/bin" ]; then
-                    sudo mkdir -p /usr/local/bin
-                fi
-                # Create symlink
-                sudo ln -sf "$CODE_BIN_PATH" /usr/local/bin/code
-                if command -v code &>/dev/null; then
-                    log "'code' command installed successfully."
-                else
-                    error "Failed to install 'code' command even after creating symlink."
-                    error "Please install it manually:"
-                    error "(In VS Code, press ⌘⇧P and type \"Shell Command: Install 'code' command in PATH\" and press 'Enter'.)"
-                    exit 1
-                fi
-            else
-                error "'code' binary not found at expected location: $CODE_BIN_PATH."
-                error "Please ensure VS Code is installed correctly."
-                exit 1
-            fi
-        else
-            error "VS Code is not installed at $VSCODE_APP."
-            error "Please install VS Code from https://code.visualstudio.com/Download."
-            exit 1
-        fi
-        ;;
-    linux*)
-        if [ -f "/usr/share/code/bin/code" ]; then
-            VSCODE_BIN="/usr/share/code/bin/code"
-        elif [ -f "/usr/bin/code" ]; then
-            VSCODE_BIN="/usr/bin/code"
-        else
-            error "VS Code is not installed in standard locations."
-            error "Please install VS Code from https://code.visualstudio.com/Download."
-            exit 1
-        fi
-
-        sudo ln -sf "$VSCODE_BIN" /usr/local/bin/code
-        if command -v code &>/dev/null; then
-            log "'code' command installed successfully."
-        else
-            error "Failed to install 'code' command even after creating symlink."
-            error "Please install it manually."
-            exit 1
-        fi
-        ;;
-    msys* | win32*)
-        error "Automatic installation of 'code' command is not supported on Windows."
-        error "(In VS Code, press Ctrl+Shift+P and type \"Shell Command: Install 'code' command in PATH\" and press 'Enter'.)"
-        error "Once that's done, restart this script."
-        exit 1
-        ;;
-    *)
-        error "Unsupported OS type: $OSTYPE"
-        exit 1
-        ;;
-    esac
-}
-
 check_vscode() {
     log "Checking for VS Code installation..."
     if ! command -v code &>/dev/null; then
-        log "'code' command not found."
-        install_code_command
-    else
-        log "'code' command is available."
+        error "VS Code is not installed. Install it from https://code.visualstudio.com/Download"
+        if [ "$VERBOSE" = true ]; then
+            case "$OSTYPE" in
+            darwin*)
+                error "(In VS Code, press ⌘⇧P and type \"Shell Command: Install 'code' command in PATH\".)"
+                ;;
+            msys* | win32*)
+                error "(In VS Code, press Ctrl+Shift+P and type \"Shell Command: Install 'code' command in PATH\".)"
+                ;;
+            *)
+                error "(In VS Code, press Ctrl+Shift+P and type \"Shell Command: Install 'code' command in PATH\".)"
+                ;;
+            esac
+        fi
+        exit 1
     fi
 }
 
