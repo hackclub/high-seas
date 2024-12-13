@@ -38,25 +38,81 @@ configure_wakatime() {
 
 install_code_command() {
     log "Attempting to install 'code' command..."
+
     case "$OSTYPE" in
     darwin*)
         VSCODE_APP="/Applications/Visual Studio Code.app"
         if [ -d "$VSCODE_APP" ]; then
             CODE_BIN_PATH="$VSCODE_APP/Contents/Resources/app/bin/code"
             if [ -f "$CODE_BIN_PATH" ]; then
-                if [ ! -d "/usr/local/bin" ]; then
-                    sudo mkdir -p /usr/local/bin
-                fi
-                # Create symlink
-                sudo ln -sf "$CODE_BIN_PATH" /usr/local/bin/code
-                if command -v code &>/dev/null; then
-                    log "'code' command installed successfully."
-                else
-                    error "Failed to install 'code' command even after creating symlink."
-                    error "Please install it manually:"
-                    error "(In VS Code, press ⌘⇧P and type \"Shell Command: Install 'code' command in PATH\" and press 'Enter'.)"
+                echo "Choose how to install the 'code' command:"
+                echo "1) Create a symbolic link in /usr/local/bin (requires sudo)"
+                echo "2) Manually add 'code' to PATH by modifying shell profile"
+                read -rp "Enter choice [1 or 2]: " choice
+
+                case "$choice" in
+                1)
+                    if [ ! -d "/usr/local/bin" ]; then
+                        sudo mkdir -p /usr/local/bin
+                        log "Created /usr/local/bin directory."
+                    fi
+                    # Create symlink
+                    sudo ln -sf "$CODE_BIN_PATH" /usr/local/bin/code
+                    if command -v code &>/dev/null; then
+                        log "'code' command installed successfully via symlink."
+                    else
+                        error "Failed to install 'code' command via symlink."
+                        exit 1
+                    fi
+                    ;;
+                2)
+                    SHELL_NAME="$(basename "$SHELL")"
+                    if [ "$SHELL_NAME" = "zsh" ]; then
+                        PROFILE_FILE="$HOME/.zprofile"
+                    else
+                        PROFILE_FILE="$HOME/.bash_profile"
+                    fi
+
+                    # Add the export line to the profile file if not already present
+                    EXPORT_LINE='export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"'
+                    if ! grep -Fxq "$EXPORT_LINE" "$PROFILE_FILE" 2>/dev/null; then
+                        cat <<EOF >>"$PROFILE_FILE"
+# Add Visual Studio Code (code) to PATH
+$EXPORT_LINE
+EOF
+                        log "Added 'code' to PATH in $PROFILE_FILE."
+                        echo "✓ 'code' command added to PATH. Please start a new terminal session or run 'source $PROFILE_FILE' to apply changes."
+                    else
+                        log "'code' is already in PATH in $PROFILE_FILE."
+                    fi
+                    ;;
+                *)
+                    error "Invalid choice. Please run the script again and choose either option 1 or 2."
                     exit 1
+                    ;;
+                esac
+
+                # First verification
+                if ! command -v code &>/dev/null; then
+                    log "'code' command not found after primary installation method. Attempting backup method via symlink."
+
+                    # Backup method - create symlink
+                    if [ -d "/usr/local/bin" ]; then
+                        sudo ln -sf "$CODE_BIN_PATH" /usr/local/bin/code
+                        if command -v code &>/dev/null; then
+                            log "'code' command installed successfully via symlink (backup method)."
+                        else
+                            error "Failed to install 'code' command via symlink (backup method)."
+                            exit 1
+                        fi
+                    else
+                        error "/usr/local/bin directory does not exist and failed to create symlink as backup."
+                        exit 1
+                    fi
+                else
+                    log "'code' command is available."
                 fi
+
             else
                 error "'code' binary not found at expected location: $CODE_BIN_PATH."
                 error "Please ensure VS Code is installed correctly."
@@ -179,6 +235,31 @@ EOF
     echo
 }
 
+install_code_symlink_backup() {
+    log "Attempting to install 'code' command via symlink as a backup..."
+
+    VSCODE_APP="/Applications/Visual Studio Code.app"
+    CODE_BIN_PATH="$VSCODE_APP/Contents/Resources/app/bin/code"
+
+    if [ -d "$VSCODE_APP" ] && [ -f "$CODE_BIN_PATH" ]; then
+        if [ ! -d "/usr/local/bin" ]; then
+            sudo mkdir -p /usr/local/bin
+            log "Created /usr/local/bin directory."
+        fi
+
+        sudo ln -sf "$CODE_BIN_PATH" /usr/local/bin/code
+        if command -v code &>/dev/null; then
+            log "'code' command installed successfully via symlink (backup method)."
+        else
+            error "Failed to install 'code' command via symlink (backup method)."
+            exit 1
+        fi
+    else
+        error "VS Code is not installed at $VSCODE_APP or 'code' binary not found."
+        exit 1
+    fi
+}
+
 main() {
     log "Starting Hackatime setup..."
 
@@ -193,6 +274,20 @@ main() {
     check_vscode
     install_wakatime_extension
     send_heartbeat
+
+    # Final verification
+    if ! command -v code &>/dev/null; then
+        log "'code' command not found after initial installation attempts. Trying backup symlink method."
+        install_code_symlink_backup
+    fi
+
+    # Final Check
+    if command -v code &>/dev/null; then
+        echo "✓ 'code' command is available in your PATH."
+    else
+        error "'code' command is still not available in your PATH. Please add it manually or rerun the script."
+        exit 1
+    fi
 
     echo "✨ Hackatime setup completed successfully!"
     echo "You can now return to the setup page for further instructions."
