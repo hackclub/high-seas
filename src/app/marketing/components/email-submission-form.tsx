@@ -85,18 +85,15 @@ export default function EmailSubmissionForm() {
           </Button>
         </form>
 
-        <AnimatePresence>
-          {errorText ? (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'fit-content' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mt-2 border-2 border-[#3852CD] bg-blues px-4 py-2 rounded-md text-white"
-            >
-              {errorText}
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+        {errorText ? (
+          <div className="mt-2 border-2 border-[#3852CD] bg-blues px-4 py-2 rounded-md text-white">
+            {errorText}
+          </div>
+        ) : (
+          <div className="mt-2 border-2 opacity-0 border-[#3852CD] bg-blues px-4 py-2 rounded-md text-white">
+            You need to enter an Email
+          </div>
+        )}
       </div>
 
       <Modal isOpen={!!email} close={() => setEmail(undefined)}>

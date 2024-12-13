@@ -8,6 +8,7 @@ import { cookies } from 'next/headers'
 import type { Ship } from '@/app/utils/data'
 import Airtable from 'airtable'
 import { withLock } from '../../../../lib/redis-lock'
+import sum from '../../../../lib/sum'
 
 const peopleTableName = 'people'
 const shipsTableName = 'ships'
@@ -48,6 +49,9 @@ export async function createShip(formData: FormData, isTutorial: boolean) {
 
     const isShipUpdate = formData.get('isShipUpdate')
 
+    let for_ysws: FormDataEntryValue | null = formData.get('yswsType')
+    if (for_ysws == 'none') for_ysws = null
+
     const newShip = await base()(shipsTableName).create(
       [
         {
@@ -65,6 +69,7 @@ export async function createShip(formData: FormData, isTutorial: boolean) {
               : null,
             wakatime_project_name: formData.get('wakatime_project_name'),
             project_source: isTutorial ? 'tutorial' : 'high_seas',
+            for_ysws,
           },
         },
       ],
@@ -136,6 +141,7 @@ export async function createShipUpdate(
                     ]
                   : [reshippedFromShip.id],
                 credited_hours,
+                for_ysws: reshippedFromShip.yswsType,
               },
             },
           ],
@@ -181,6 +187,11 @@ export async function createShipUpdate(
       },
     )
 
+    let for_ysws: FormDataEntryValue | null = formData.get('yswsType')
+    if (for_ysws == 'none') for_ysws = null
+
+    await cookies().delete('ships')
+
     return {
       ...reshippedFromShip,
       id: res.id,
@@ -198,6 +209,7 @@ export async function createShipUpdate(
       credited_hours,
       total_hours: (reshippedFromShip.total_hours ?? 0) + credited_hours,
       wakatimeProjectNames: reshippedFromShip.wakatimeProjectNames,
+      for_ysws,
     }
   })
 }
@@ -211,54 +223,63 @@ export async function updateShip(ship: Ship) {
   }
 
   console.log('updating!', ship)
+  console.log(ship.yswsType)
 
-  base()(shipsTableName).update(
-    [
-      {
-        id: ship.id,
-        fields: {
-          title: ship.title,
-          repo_url: ship.repoUrl,
-          readme_url: ship.readmeUrl,
-          deploy_url: ship.deploymentUrl,
-          screenshot_url: ship.screenshotUrl,
-          ...(ship.updateDescription && {
-            update_description: ship.updateDescription,
-          }),
+  await new Promise((resolve, reject) => {
+    base()(shipsTableName).update(
+      [
+        {
+          id: ship.id,
+          fields: {
+            title: ship.title,
+            repo_url: ship.repoUrl,
+            readme_url: ship.readmeUrl,
+            deploy_url: ship.deploymentUrl,
+            screenshot_url: ship.screenshotUrl,
+            ...(ship.updateDescription && {
+              update_description: ship.updateDescription,
+            }),
+            for_ysws: ship.yswsType,
+          },
         },
+      ],
+      (err: Error, records: any) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(records)
       },
-    ],
-    (err: Error, records: any) => {
-      if (err) console.error(err)
-    },
-  )
+    )
+  })
+  await cookies().delete('ships')
 }
 
 // Good function. I like. Wawaweewah very nice.
-export async function stagedToShipped(ship: Ship, ships: Ship[]) {
+export async function stagedToShipped(
+  ship: Ship,
+  ships: Ship[],
+): Promise<{ error?: string; ok: boolean }> {
   const session = await getSession()
   if (!session) {
-    const error = new Error(
-      "You tried to ship a draft Ship, but you're not signed in!",
-    )
-    console.log(error)
-    throw error
+    const error = "You tried to ship a draft Ship, but you're not signed in!"
+    return { error, ok: false }
   }
 
   const p = await person()
 
   if (!p.fields.academy_completed) {
-    throw new Error(
-      "You can't ship a Ship if you haven't completed Pirate Academy!",
-    )
+    const error =
+      "You can't ship a Ship if you haven't completed Pirate Academy!"
+    return { error, ok: false }
   }
   if (!p.fields.verified_eligible) {
-    throw new Error("You can't ship a Ship before you've been verified!")
+    const error = "You can't ship a Ship before you've been verified!"
+    return { error, ok: false }
   }
   if (!ship.wakatimeProjectNames) {
-    throw new Error(
-      "You can't ship a Ship that has no Hackatime projects associated with it!",
-    )
+    const error =
+      "You can't ship a Ship that has no Hackatime projects associated with it!"
+    return { error, ok: false }
   }
 
   const previousShip = ships.find((s) => s.id === ship.reshippedFromId)
@@ -269,33 +290,38 @@ export async function stagedToShipped(ship: Ship, ships: Ship[]) {
     ship.wakatimeProjectNames.includes(key),
   )
   const projectHours = associatedProjects.map(({ total }) => total / 60 / 60)
-  const totalHours =
-    projectHours.reduce((prev, curr) => prev + curr, 0) -
-    (previousShip?.total_hours ?? 0)
+  const totalHours = sum(projectHours) - (previousShip?.total_hours ?? 0)
 
-  if (totalHours > 1.0) {
+  if (totalHours < 1) {
+    const error =
+      'Projects must be at least one hour. Spend a little more time on this one!'
+    return { error, ok: false }
+  }
+
+  const fields = {
+    ship_status: 'shipped',
+    credited_hours: totalHours,
+  }
+
+  await new Promise((resolve, reject) => {
     base()(shipsTableName).update(
       [
         {
           id: ship.id,
-          fields: {
-            ship_status: 'shipped',
-            credited_hours: totalHours,
-          },
+          fields,
         },
       ],
       (err: Error, records: any) => {
         if (err) {
           console.error(err)
-          throw err
+          reject(err)
         }
+        resolve(records)
       },
     )
-
-    return true
-  } else {
-    return false
-  }
+  })
+  await cookies().delete('ships')
+  return { ok: true }
 }
 
 export async function deleteShip(shipId: string) {
@@ -308,17 +334,23 @@ export async function deleteShip(shipId: string) {
     throw error
   }
 
-  base()(shipsTableName).update(
-    [
-      {
-        id: shipId,
-        fields: {
-          ship_status: 'deleted',
+  await new Promise((resolve, reject) => {
+    base()(shipsTableName).update(
+      [
+        {
+          id: shipId,
+          fields: {
+            ship_status: 'deleted',
+          },
         },
+      ],
+      (err: Error, records: any) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(records)
       },
-    ],
-    (err: Error, records: any) => {
-      if (err) console.error(err)
-    },
-  )
+    )
+  })
+  await cookies().delete('ships')
 }

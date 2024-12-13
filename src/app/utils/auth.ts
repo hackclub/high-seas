@@ -128,6 +128,9 @@ export async function createSlackSession(slackOpenidToken: string) {
 
     if (!person) {
       const body = JSON.stringify({
+        performUpsert: {
+          fieldsToMergeOn: ['email'],
+        },
         records: [
           {
             fields: {

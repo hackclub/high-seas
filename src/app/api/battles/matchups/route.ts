@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
         { status: 404 },
       )
     }
+
     const rMatchup = {
       project1: {
         id: matchup.project1.id,
@@ -46,9 +47,10 @@ export async function GET(request: NextRequest) {
         readme_url: matchup.project1.readme_url,
         repo_url: matchup.project1.repo_url,
         deploy_url: matchup.project1.deploy_url,
-        rating: matchup.project1.rating,
+        // rating: matchup.project1.rating,
         ship_type: matchup.project1.ship_type,
         update_description: matchup.project1.update_description,
+        entrant__slack_id: matchup.project1.entrant__slack_id[0],
       },
       project2: {
         id: matchup.project2.id,
@@ -57,9 +59,10 @@ export async function GET(request: NextRequest) {
         readme_url: matchup.project2.readme_url,
         repo_url: matchup.project2.repo_url,
         deploy_url: matchup.project2.deploy_url,
-        rating: matchup.project2.rating,
+        // rating: matchup.project2.rating,
         ship_type: matchup.project2.ship_type,
         update_description: matchup.project2.update_description,
+        entrant__slack_id: matchup.project2.entrant__slack_id[0],
       },
       signature: matchup.signature,
       ts: matchup.ts,

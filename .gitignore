@@ -39,3 +39,6 @@ yarn.lock
 
 .vscode
 .idea/
+
+# Sentry Config File
+.env.sentry-build-plugin

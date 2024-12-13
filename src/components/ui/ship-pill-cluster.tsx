@@ -6,61 +6,104 @@ import Image from 'next/image'
 import pluralize from '../../../lib/pluralize'
 
 export default function ShipPillCluster({
-  ship,
-  shipChains,
+  chain,
+  transparent = false,
+  size = 'default',
 }: {
-  ship: Ship
-  shipChains: Map<string, string[]>
+  chain: Ship[]
+  transparent?: boolean
+  size?: 'small' | 'default'
 }) {
-  const shipUpdates = shipChains
-    ? shipChains.get(ship.wakatimeProjectNames.join(','))
-    : null
-  const shipUpdateCount = shipUpdates ? shipUpdates.length - 1 : null
-  const roundedPayout = Math.floor(ship.doubloonPayout)
-  const roundedHr = ship.total_hours?.toFixed(1)
+  if (!chain) return null
+
+  const shipUpdateCount = chain.length - 1
+  const roundedPayout = Math.round(
+    chain.reduce((acc, curr) => (acc += curr.doubloonPayout), 0),
+  )
+  const roundedHr = chain
+    .reduce((acc, curr) => {
+      if (!curr.reshippedToId && curr.shipStatus === 'staged') return acc
+
+      return (acc += curr.credited_hours ?? 0)
+    }, 0)
+    .toFixed(1)
+
+  const allShipsHaveVoteRequirementMet = !chain.some(
+    (s) => !s.voteRequirementMet,
+  )
+
   return (
     <>
-      {ship.shipStatus === 'shipped' ? (
-        <Pill msg={pluralize(roundedHr, 'hr', true)} glyph="clock" />
-      ) : (
-        <Pill msg="pending ship" glyph="clock" />
-      )}
-
-      {ship.shipStatus === 'shipped' &&
-        (ship.voteRequirementMet ? (
-          ship.doubloonPayout != null ? (
-            <Pill
-              msg={pluralize(roundedPayout, 'doubloon', true)}
-              color="green"
-              glyphImage={
-                <Image src={DoubloonsImage} alt="doubloons" height={20} />
-              }
-            />
-          ) : (
-            <Pill
-              msg={`Awaiting ${10 - ship.matchups_count} more ${pluralize(
-                10 - ship.matchups_count,
-                'vote',
-                false,
-              )} from other pirates…`}
-              color="blue"
-              glyph="event-add"
-              percentage={Math.max(ship.matchups_count * 10, 5)}
-            />
-          )
+      {/* {JSON.stringify(chain[0].reshippedFromId)},,
+      {JSON.stringify(chain[0].shipStatus)} */}
+      {
+        /*!chain[0].reshippedFromId && */ chain[0].shipStatus === 'staged' ? (
+          <Pill
+            classes={`${transparent && 'bg-white/15 text-white'} ${size === 'small' ? 'text-xs' : ''}`}
+            msg="Pending"
+            glyphSize={size === 'small' ? 16 : 20}
+            glyph="clock"
+          />
         ) : (
           <Pill
-            msg={'Pending: Vote to unlock payout!'}
-            color="blue"
-            glyph="enter"
+            classes={`${transparent && 'bg-white/15 text-white'} ${size === 'small' ? 'text-xs' : ''}`}
+            msg={pluralize(roundedHr, 'hr', true)}
+            glyphSize={size === 'small' ? 16 : 20}
+            glyph="clock"
           />
-        ))}
-
-      {shipUpdateCount && shipUpdateCount > 0 ? (
+        )
+      }
+      {chain[0].shipStatus === 'shipped' ? (
+        <>
+          {allShipsHaveVoteRequirementMet ? (
+            chain.at(-1)?.doubloonPayout != null ? (
+              <Pill
+                classes={`${transparent && 'bg-white/15 text-white'} ${size === 'small' ? 'text-xs' : ''}`}
+                msg={pluralize(roundedPayout, 'doubloon', true)}
+                glyphSize={size === 'small' ? 16 : 20}
+                glyphImage={
+                  <Image src={DoubloonsImage} alt="doubloons" height={20} />
+                }
+              />
+            ) : (
+              <Pill
+                classes={`${transparent && 'bg-white/15 text-white'} ${size === 'small' ? 'text-xs' : ''}`}
+                msg={`Awaiting ${10 - chain.at(-1)?.matchups_count} more ${pluralize(
+                  10 - chain.at(-1)?.matchups_count,
+                  'vote',
+                  false,
+                )} from other pirates…`}
+                color="blue"
+                glyph="event-add"
+                glyphSize={size === 'small' ? 16 : 20}
+                // percentage={Math.max(chain.at(-1)?.matchups_count * 10, 5)}
+              />
+            )
+          ) : (
+            <Pill
+              classes={`${transparent && 'bg-white/15 text-white'} ${size === 'small' ? 'text-xs' : ''}`}
+              msg={'Pending: Vote to unlock payout!'}
+              color="blue"
+              glyph="enter"
+              glyphSize={size === 'small' ? 20 : 24}
+            />
+          )}
+        </>
+      ) : (
         <Pill
+          classes={`${transparent && 'bg-white/15 text-white'} ${size === 'small' ? 'text-xs' : ''}`}
+          msg={`Draft ${chain.at(-1)?.shipType === 'project' ? 'ship' : 'update'}`}
+          glyph="attachment"
+          glyphSize={size === 'small' ? 16 : 20}
+        />
+      )}
+      {shipUpdateCount > 0 ? (
+        <Pill
+          classes={`${transparent && 'bg-white/15 text-white'} ${size === 'small' ? 'text-xs' : ''}`}
           msg={pluralize(shipUpdateCount, 'update', true)}
           color="purple"
           glyph="reply"
+          glyphSize={size === 'small' ? 20 : 24}
           glyphStyles={{ transform: 'scaleX(-1)' }}
         />
       ) : null}

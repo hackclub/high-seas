@@ -13,7 +13,7 @@ export const getInstallCommand = (platform: string, wakaKey: string) => {
         label: 'Windows',
         application: 'PowerShell',
         installScript: `${currentBaseUrl}/scripts/hackatime-install.ps1`,
-        command: `$env:BEARER_TOKEN="${wakaKey}"; iex (curl ${currentBaseUrl}/scripts/hackatime-install.ps1)`,
+        command: `$env:BEARER_TOKEN="${wakaKey}"; iwr -UseBasicParsing ${currentBaseUrl}/scripts/hackatime-install.ps1 | iex`,
         lang: 'powershell',
       }
     case 'macos':
