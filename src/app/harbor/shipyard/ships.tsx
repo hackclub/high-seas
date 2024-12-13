@@ -53,8 +53,6 @@ export default function Ships({
 
   const timeAgo = new TimeAgo('en-US')
 
-  console.log('WK NAMES', selectedShip?.wakatimeProjectNames)
-
   useEffect(() => {
     getSession().then((sesh) => setSession(sesh))
   }, [])
