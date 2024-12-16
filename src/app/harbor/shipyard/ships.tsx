@@ -6,6 +6,7 @@ import type { Ship } from '@/app/utils/data'
 import Image from 'next/image'
 import Icon from '@hackclub/icons'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import { markdownComponents } from '@/components/markdown'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -675,6 +676,7 @@ export default function Ships({
                         <ReactMarkdown
                           components={markdownComponents}
                           rehypePlugins={[rehypeRaw]}
+                          remarkPlugins={[remarkGfm]}
                         >
                           {readmeText}
                         </ReactMarkdown>
