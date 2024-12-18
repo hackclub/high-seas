@@ -91,6 +91,21 @@ export default function ProjectCard({
                   },
                 }))
               }}
+              onAuxClick={(e) => {
+                setAnalyticsState((prev) => ({
+                  ...prev,
+                  projectResources: {
+                    ...prev.projectResources,
+                    [project.id]: {
+                      readmeOpened: false,
+                      repoOpened: false,
+                      demoOpened: false,
+                      ...prev.projectResources[project.id],
+                      repoOpened: true,
+                    },
+                  },
+                }))
+              }}
               onContextMenu={(e) => {
                 setAnalyticsState((prev) => ({
                   ...prev,
@@ -122,6 +137,21 @@ export default function ProjectCard({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => {
+                setAnalyticsState((prev) => ({
+                  ...prev,
+                  projectResources: {
+                    ...prev.projectResources,
+                    [project.id]: {
+                      readmeOpened: false,
+                      repoOpened: false,
+                      demoOpened: false,
+                      ...prev.projectResources[project.id],
+                      demoOpened: true,
+                    },
+                  },
+                }))
+              }}
+              onAuxClick={(e) => {
                 setAnalyticsState((prev) => ({
                   ...prev,
                   projectResources: {

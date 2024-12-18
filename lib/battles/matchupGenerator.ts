@@ -15,6 +15,7 @@ export function generateTutorialMatchup() {
     credited_hours: 3,
     total_hours: 3,
     rating: 0,
+    entrant__slack_id: [],
   }
 
   const wigglyDragon = {

@@ -24,8 +24,9 @@ const nextConfig = {
       { protocol: 'https', hostname: '**' },
     ],
   },
+}
 
-  // Sentry stuff
+const sentryContext = {
   org: 'malted',
   project: 'javascript-nextjs',
   silent: !process.env.CI,
@@ -39,4 +40,6 @@ const nextConfig = {
   automaticVercelMonitors: true,
 }
 
-export default withPlausibleProxy()(nextConfig)
+const plausibleConfig = withPlausibleProxy()(nextConfig)
+
+export default withSentryConfig(plausibleConfig, sentryContext)
