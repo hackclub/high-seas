@@ -34,6 +34,7 @@ const Trumpet = ({ bot, rot, flip = false }) => {
         animationFillMode: 'forwards',
         bottom: `${bot}%`,
         ...pos,
+        zIndex: 3000,
       }}
     >
       <div style={{ transform: `rotate(${rot}deg)` }}>

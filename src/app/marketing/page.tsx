@@ -110,11 +110,11 @@ export default async function Marketing() {
       <div className="watergradient">
         <div className="py-24 pt-12" id="howthisworks">
           <div className="flex justify-center items-center mb-6">
-            <p className="text-5xl text-center">How this works:</p>
+            <p className="text-4xl sm:text-5xl text-center">How this works:</p>
           </div>
 
           <div className="flex flex-col justify-center items-center text-white mx-8">
-            <div className="flex flex-wrap m-0 p-6 rounded-md">
+            <div className="flex flex-wrap m-0 p-0 xl:p-6 rounded-md">
               <div className="flex flex-col justify-center items-center mb-8 xl:mb-0 xl:mr-8 w-full xl:w-auto text-center p-8 xl:px-16 xl:py-10 rounded-md relative pop">
                 <img
                   src="/howtobacks.svg"
@@ -137,7 +137,7 @@ export default async function Marketing() {
                   </p>
                 </div>
               </div>
-              <div className="flex justify-center items-center w-full xl:w-auto bobble opacity-90">
+              <div className="hidden xl:flex justify-center items-center w-full xl:w-auto bobble opacity-90">
                 <Image
                   src="/ship.svg"
                   alt="dragons battling"
@@ -147,14 +147,14 @@ export default async function Marketing() {
               </div>
             </div>
 
-            <div className="flex flex-wrap m-0 p-6 rounded-md">
-              <div className="flex justify-center items-center w-full md:w-auto">
+            <div className="flex flex-wrap m-0 p-0 xl:p-6 rounded-md">
+              <div className="hidden xl:flex justify-center items-center w-full md:w-auto">
                 <Image
                   src="/hydra.svg"
                   alt="dragons battling"
                   width={400}
                   height={400}
-                  className="left-0 absolute bobble opacity-95 hidden xl:block"
+                  className="left-0 absolute bobble opacity-95"
                 />
                 <Image
                   src="/howtobacks.svg"
@@ -198,7 +198,7 @@ export default async function Marketing() {
               </div>
             </div>
 
-            <div className="flex flex-wrap m-0 p-6 rounded-md">
+            <div className="flex flex-col xl:flex-row flex-wrap m-0 p-0 xl:p-6 rounded-md">
               <div className="flex flex-col justify-center items-center mb-8 xl:mb-0 xl:mr-8 w-full xl:w-auto text-center p-8 xl:px-16 xl:py-10 rounded-md relative pop">
                 <img
                   src="/howtobacks.svg"
@@ -414,7 +414,7 @@ export default async function Marketing() {
                 />{' '}
                 <div className="relative my-2">
                   <p className="flex justify-center text-center text-3xl px-4">
-                    1v1 call with Guido van Rossum
+                    1 on 1 call with Guido van Rossum
                   </p>
                   <p className="flex justify-center text-center">
                     This is the creator of Python!
@@ -445,7 +445,7 @@ export default async function Marketing() {
                 />{' '}
                 <div className="relative my-2">
                   <p className="flex justify-center text-center text-3xl px-4">
-                    1v1 call with Anders Hejlsberg
+                    1 on 1 call with Anders Hejlsberg
                   </p>
                   <p className="flex justify-center text-center">
                     This is the creator of C# and Typescript!
@@ -838,7 +838,6 @@ export default async function Marketing() {
             >
               Hack Club
             </Link>
-            .
           </p>
           <p className="max-w-2xl text-pink-800 text-sm">
             Hack Club is a 501(c)(3) nonprofit and network of 30k+ technical
@@ -871,7 +870,16 @@ export default async function Marketing() {
             >
               {"ran Canada's largest high school hackathon"}
             </Link>
-            .
+            . This server is currently on{' '}
+            <Link
+              href={`https://github.com/hackclub/high-seas/commit/${process.env.COMMIT_HASH}`}
+              target="_blank"
+              rel="noopenner noreferrer"
+              className="footLink"
+            >
+              {process.env.COMMIT_HASH?.slice(0, 6)}
+            </Link>{' '}
+            commit.
           </p>
         </div>
 
@@ -1175,6 +1183,14 @@ const PrizeData = [
     estMax: 55,
   },
   {
+    name: 'System76 Keeb',
+    doubloons: 520,
+    image: 'https://noras-secret-cdn.hackclub.dev/shop/s76_launch.png',
+    sub: 'open-source!!!',
+    estMin: 19,
+    estMax: 94,
+  },
+  {
     name: 'Flipper Zero',
     doubloons: 850,
     image: 'https://noras-secret-cdn.hackclub.dev/shop/flipper.png',
@@ -1200,13 +1216,13 @@ const PrizeData = [
     doubloons: 2090,
     image: 'https://noras-secret-cdn.hackclub.dev/shop/ipad.png',
     sub: 'with Apple Pencil!',
-    estMin: 87,
-    estMax: 435,
+    estMin: 77,
+    estMax: 387,
   },
 
   {
     name: 'Framework Laptop',
-    doubloons: 3075,
+    doubloons: '4980',
     image: 'https://noras-secret-cdn.hackclub.dev/shop/fw_13.png',
     sub: '16", 16GB RAM....16 16 16',
     estMin: 208,

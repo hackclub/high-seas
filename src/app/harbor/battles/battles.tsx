@@ -1,12 +1,10 @@
 'use client'
 
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Ships } from '../../../../types/battles/airtable'
 import Icon from '@hackclub/icons'
-import Pill from '@/components/ui/pill'
-import Link from 'next/link'
-import Image from 'next/image'
-import ReactMarkdown, { Components } from 'react-markdown'
+import { AnimatePresence, motion } from 'framer-motion'
+import ReactMarkdown from 'react-markdown'
 
 import { LoadingSpinner } from '../../../components/ui/loading_spinner.js'
 import {
@@ -20,228 +18,19 @@ import { HsSession } from '@/app/utils/auth'
 import SpeechToText from '@/components/speech-to-text'
 import Blessed from './blessed'
 import Cursed from './cursed'
+import pluralize from '../../../../lib/pluralize'
+import ProjectCard from './project-card'
+import { markdownComponents } from './mdc'
+import { Ship } from '@/app/utils/data'
+import Modal from '@/components/ui/modal'
+import { sendFraudReport } from './fraud-utils'
+import { Button } from '@/components/ui/button'
 
 interface Matchup {
   project1: Ships
   project2: Ships
   signature: string
   ts: number
-}
-
-interface ProjectCardProps {
-  key: number
-  project: Ships
-  onVote: () => void
-  onReadmeClick: () => void
-}
-
-const notFoundImages = [
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/0not_found5.png',
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/1not_found4.png',
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/2not_found3.png',
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/3not_found2.png',
-  'https://cloud-6laa73jem-hack-club-bot.vercel.app/4not_found1.png',
-]
-
-const ProjectCard: React.FC<ProjectCardProps> = ({
-  key,
-  project,
-  onVote,
-  onReadmeClick,
-}) => {
-  const notFoundImage = useMemo(() => {
-    return notFoundImages[Math.floor(Math.random() * notFoundImages.length)]
-  }, [])
-  const imageStyle = {
-    backgroundImage: `url(${notFoundImage})`,
-    backgroundSize: 'cover',
-  }
-  const [showFullText, setShowFullText] = useState(false)
-
-  const toggleReadMore = () => {
-    setShowFullText((prev) => !prev)
-  }
-
-  const truncatedText = project.update_description?.slice(0, 50)
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl">
-      {project.screenshot_url && (
-        <div className="relative h-48 w-full" style={imageStyle}>
-          <Image
-            src={project.screenshot_url}
-            alt={`Screenshot of ${project.title}`}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover"
-          />
-        </div>
-      )}
-      <div className="p-6">
-        <h2 className="font-heading text-2xl font-semibold text-indigo-600 dark:text-indigo-300 mb-4">
-          {project.title}
-          {project.ship_type === 'update' ? (
-            <p className="text-gray-600 dark:text-gray-300 mb-4 inline">
-              {' '}
-              <Pill
-                msg="This is a project update"
-                color="green"
-                glyph="rep"
-                classes="text-lg"
-              />
-            </p>
-          ) : null}
-        </h2>
-
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.repo_url && (
-            <a
-              id="repository-link"
-              href={project.repo_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Pill
-                msg="Repository"
-                color="blue"
-                glyph="code"
-                classes="text-lg"
-              />
-            </a>
-          )}
-          {project.deploy_url && (
-            <a
-              id="live-demo-link"
-              href={project.deploy_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Pill msg="Demo" color="green" glyph="link" classes="text-lg" />
-            </a>
-          )}
-          {project.readme_url && (
-            <button onClick={onReadmeClick} id="readme-button">
-              <Pill
-                msg="README"
-                color="purple"
-                glyph="docs-fill"
-                classes="text-lg"
-              />
-            </button>
-          )}
-        </div>
-        {project.update_description && (
-          <p className="mt-4">
-            {showFullText
-              ? project.update_description
-              : truncatedText +
-                (project.update_description.length > 50 ? '...' : '')}
-            {project.update_description.length > 50 && (
-              <button
-                className="text-blue-500 ml-2 underline"
-                onClick={toggleReadMore}
-              >
-                {showFullText ? 'Read Less' : 'Read More'}
-              </button>
-            )}
-          </p>
-        )}
-      </div>
-      <div className="p-4 bg-gray-100 dark:bg-gray-700">
-        <button
-          id="vote-button"
-          onClick={onVote}
-          className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
-        >
-          <Icon glyph="thumbsup-fill" size={32} /> Vote for {project.title}
-        </button>
-      </div>
-    </div>
-  )
-}
-
-const markdownComponents: Components = {
-  h1: ({ ...props }) => (
-    <h1
-      className="text-3xl font-bold mb-4 text-indigo-600 dark:text-indigo-300"
-      {...props}
-    />
-  ),
-  h2: ({ ...props }) => (
-    <h2
-      className="text-2xl font-semibold mb-3 text-indigo-500 dark:text-indigo-400"
-      {...props}
-    />
-  ),
-  h3: ({ ...props }) => (
-    <h3
-      className="text-xl font-semibold mb-2 text-indigo-400 dark:text-indigo-500"
-      {...props}
-    />
-  ),
-  p: ({ ...props }) => <p className="mb-4" {...props} />,
-  a: ({ ...props }) => (
-    <Link
-      className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
-      {...props}
-    />
-  ),
-  ul: ({ ...props }) => <ul className="list-disc pl-5 mb-4" {...props} />,
-  ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-4" {...props} />,
-  li: ({ ...props }) => <li className="mb-1" {...props} />,
-  img: ({ src, alt, ...props }) => (
-    <div className="mb-4">
-      <img
-        src={src}
-        alt={alt || ''}
-        className="rounded-lg shadow-md"
-        {...props}
-      />
-    </div>
-  ),
-  code: ({ className, children, ...props }) => {
-    const match = /language-(\w+)/.exec(className || '')
-    return match ? (
-      <pre className="bg-gray-100 dark:bg-gray-700 rounded p-4 overflow-x-auto">
-        <code className={className} {...props}>
-          {children}
-        </code>
-      </pre>
-    ) : (
-      <code
-        className="bg-gray-100 dark:bg-gray-700 rounded px-1 py-0.5"
-        {...props}
-      >
-        {children}
-      </code>
-    )
-  },
-  blockquote: ({ ...props }) => (
-    <blockquote
-      className="border-l-4 border-indigo-500 pl-4 italic my-4"
-      {...props}
-    />
-  ),
-  table: ({ ...props }) => (
-    <div className="overflow-x-auto mb-4">
-      <table
-        className="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-        {...props}
-      />
-    </div>
-  ),
-  th: ({ ...props }) => (
-    <th
-      className="px-6 py-3 bg-gray-50 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-      {...props}
-    />
-  ),
-  td: ({ ...props }) => (
-    <td
-      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
-      {...props}
-    />
-  ),
 }
 
 export default function Matchups({ session }: { session: HsSession }) {
@@ -257,26 +46,61 @@ export default function Matchups({ session }: { session: HsSession }) {
   const [cursed, setCursed] = useState(false)
   const [blessed, setBlessed] = useState(false)
 
-  // const turnstileRef = useRef(null);
-  // const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [fraudProject, setFraudProject] = useState<Ship>()
+  const [fraudType, setFraudType] = useState<string>()
+  const [fraudReason, setFraudReason] = useState<string>()
+  const debounceTimeoutRef = useRef<number | null>(null)
 
-  const [voteBalance, setVoteBalance] = useLocalStorageState<number>(
+  const { toast } = useToast()
+
+  const [voteBalance, setVoteBalance] = useLocalStorageState(
     'cache.voteBalance',
     0,
   )
 
-  const { toast } = useToast()
+  const [skipsBeforeVote, setSkipsBeforeVote] = useLocalStorageState(
+    'battles.skipsBeforeVote',
+    0,
+  )
+
+  const [isFirstLoad, setIsFirstLoad] = useLocalStorageState(
+    'battles.isFirstLoad',
+    true,
+  )
+
+  const [analyticsState, setAnalyticsState] = useState({
+    projectResources: {} as Record<
+      string,
+      {
+        readmeOpened: boolean
+        repoOpened: boolean
+        demoOpened: boolean
+      }
+    >,
+    matchupGeneratedAt: new Date(),
+  })
 
   useEffect(() => {
     safePerson().then((sp) => {
       setCursed(sp.cursed)
       setBlessed(sp.blessed)
     })
+  }, [])
+
+  const unloader = () => !!selectedProject || !!fraudProject
+  useEffect(() => {
+    window.addEventListener('beforeunload', unloader)
+    return () => window.removeEventListener('beforeunload', unloader)
   })
 
   useEffect(() => {
     setFewerThanTenWords(reason.trim().split(' ').length < 10)
   }, [reason])
+
+  function onFraudClick(project: Ship) {
+    setFraudProject(project)
+    console.log(project)
+  }
 
   // useEffect(() => {
   //   if (turnstileRef.current) {
@@ -314,20 +138,48 @@ export default function Matchups({ session }: { session: HsSession }) {
     try {
       // require at least 1.25 seconds of loading time for full loop of loading animations
       const [response, _] = await Promise.all([
-        fetch('/api/battles/matchups'),
+        fetch(
+          '/api/battles/matchups' +
+            (sessionStorage.getItem('tutorial') === 'true'
+              ? '?tutorial=true'
+              : ''),
+        ),
         new Promise((r) => setTimeout(r, 1250)),
       ])
       if (response.ok) {
         const data: Matchup = await response.json()
+        setAnalyticsState({
+          matchupGeneratedAt: new Date(),
+          projectResources: {
+            [data.project1.id]: {
+              readmeOpened: false,
+              repoOpened: false,
+              demoOpened: false,
+            },
+            [data.project2.id]: {
+              readmeOpened: false,
+              repoOpened: false,
+              demoOpened: false,
+            },
+          },
+        })
+        const firstLoad = JSON.parse(
+          localStorage.getItem('battles.isFirstLoad') || 'true',
+        ).value
+
+        if (!firstLoad) {
+          setSkipsBeforeVote((prev) => prev + 1)
+        } else {
+          setIsFirstLoad(false)
+        }
+
         setMatchup(data)
       } else {
         console.error('Failed to fetch matchup')
-
         toast({
-          title: 'Failed to fetch a new thing to vote on.',
-          description: 'Retrying automatically...',
+          title: 'There are no ships to battle right now.',
+          description: 'Searching again automatically',
         })
-
         setTimeout(
           () =>
             fetchMatchup({
@@ -367,7 +219,7 @@ export default function Matchups({ session }: { session: HsSession }) {
   }
 
   const handleVoteSubmit = async () => {
-    if (reason.split(' ').length < 10) {
+    if (fewerThanTenWords) {
       setError('Please provide a reason with at least 10 words.')
       return
     }
@@ -406,10 +258,21 @@ export default function Matchups({ session }: { session: HsSession }) {
             winnerRating: winner.rating,
             loserRating: loser.rating,
             // turnstileToken,
+            analytics: {
+              ...analyticsState,
+              skipsBeforeVote,
+            },
           }),
         })
 
         if (response.ok) {
+          setAnalyticsState({
+            projectResources: {},
+            matchupGeneratedAt: new Date(),
+          })
+          setSkipsBeforeVote(0)
+          setIsFirstLoad(true)
+
           // const json = await response.json();
           // if (json.reload) {
           //   window.location.reload();
@@ -445,6 +308,31 @@ export default function Matchups({ session }: { session: HsSession }) {
       console.error('Error fetching README:', error)
     }
   }
+
+  const handleFraudReport = useCallback(async () => {
+    if (debounceTimeoutRef.current) {
+      window.clearTimeout(debounceTimeoutRef.current)
+    }
+
+    if (!fraudProject || !fraudReason || !fraudType) return
+
+    debounceTimeoutRef.current = window.setTimeout(async () => {
+      try {
+        await sendFraudReport(fraudProject, fraudType, fraudReason)
+      } catch (error) {
+        console.error('Failed to flag project:', error)
+      }
+
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current)
+        debounceTimeoutRef.current = null
+      }
+    }, 300)
+
+    setFraudProject(undefined)
+    setFraudReason('')
+    setFraudType('')
+  }, [fraudProject, fraudType, fraudReason])
 
   if (isReadmeView) {
     return (
@@ -485,8 +373,8 @@ export default function Matchups({ session }: { session: HsSession }) {
 
           {voteBalance > 0 && (
             <div className="flex justify-center items-center space-x-4">
-              {voteBalance} more vote{voteBalance == 1 ? '' : 's'} until your
-              next ship's payout!
+              {voteBalance} more {pluralize(voteBalance, 'vote', false)} until
+              your next ship's payout!
             </div>
           )}
         </header>
@@ -515,6 +403,8 @@ export default function Matchups({ session }: { session: HsSession }) {
                   project={matchup.project1}
                   onVote={() => handleVoteClick(matchup.project1)}
                   onReadmeClick={() => handleReadmeClick(matchup.project1)}
+                  setAnalyticsState={setAnalyticsState}
+                  onFraudClick={onFraudClick}
                 />
               </div>
               <div className="flex items-center justify-center text-6xl font-bold text-indigo-600 dark:text-indigo-300">
@@ -525,8 +415,81 @@ export default function Matchups({ session }: { session: HsSession }) {
                   project={matchup.project2}
                   onVote={() => handleVoteClick(matchup.project2)}
                   onReadmeClick={() => handleReadmeClick(matchup.project2)}
+                  setAnalyticsState={setAnalyticsState}
+                  onFraudClick={onFraudClick}
                 />
               </div>
+
+              <Modal
+                isOpen={!!fraudProject}
+                close={() => setFraudProject(undefined)}
+              >
+                <h3 className="text-2xl font-bold">
+                  Why are you flagging {fraudProject?.title}?
+                </h3>
+                <select
+                  value={fraudType}
+                  onChange={(e) => setFraudType(e.target.value)}
+                  className="w-full my-4 p-1 text-black"
+                >
+                  <option value="">Select the reason for flagging</option>
+                  <option value="Incomplete README">Incomplete README</option>
+                  <option value="No screenshot">No screenshot</option>
+                  <option value="No demo link">No demo link</option>
+                  <option value="Suspected fraud">Suspected fraud</option>
+                  <option value="Wrong repo">
+                    Repo not found / not open source
+                  </option>
+                </select>
+
+                <AnimatePresence>
+                  {fraudType === 'Incomplete README' ||
+                  fraudType === 'No demo link' ||
+                  fraudType === 'No screenshot' ||
+                  fraudType === 'Wrong repo' ? (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'fit-content', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                    >
+                      <p className="mb-3">
+                        The creator of this project will be notified. Thanks for
+                        making High Seas better! :)
+                      </p>
+                    </motion.div>
+                  ) : null}
+
+                  {fraudType === 'Suspected fraud' ? (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'fit-content', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                    >
+                      <p className="mb-3">
+                        The creator of this project will not know you reported
+                        them. <b>Only the High Seas team will see this.</b>
+                      </p>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+
+                <textarea
+                  value={fraudReason}
+                  onChange={(e) => setFraudReason(e.target.value)}
+                  placeholder="Provide your reason here"
+                  className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-md mb-4 text-gray-900 dark:text-white bg-white dark:bg-gray-700 min-h-[150px]"
+                  rows={6}
+                />
+
+                <Button
+                  variant={'destructive'}
+                  disabled={!fraudType || !fraudReason}
+                  onClick={handleFraudReport}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
+                >
+                  Flag project
+                </Button>
+              </Modal>
             </div>
             {/* <div ref={turnstileRef} className="mb-4"></div> */}
             {selectedProject && (
@@ -555,15 +518,17 @@ export default function Matchups({ session }: { session: HsSession }) {
                 <button
                   id="submit-vote"
                   onClick={handleVoteSubmit}
-                  disabled={
-                    isSubmitting || reason.trim().split(' ').length < 10
-                  }
+                  disabled={isSubmitting || fewerThanTenWords}
                   className={`bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 mr-3 rounded-lg transition-colors duration-200 text-lg w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed ${
                     isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
-                  {reason.trim().split(' ').length < 10 ? (
-                    `${10 - reason.trim().split(' ').length} words left...`
+                  {fewerThanTenWords ? (
+                    reason.trim() ? (
+                      `${10 - reason.trim().split(' ').length} words left...`
+                    ) : (
+                      '10 words left...'
+                    )
                   ) : isSubmitting ? (
                     <>
                       <svg

@@ -1,43 +1,36 @@
 import { NextResponse } from 'next/server'
-import { getAllProjects } from '../../../../../lib/battles/airtable'
-import { generateMatchup } from '../../../../../lib/battles/matchupGenerator'
-import { Ships } from '../../../../../types/battles/airtable'
-// import Redis from "ioredis";
+import {
+  generateMatchup,
+  generateTutorialMatchup,
+} from '../../../../../lib/battles/matchupGenerator'
 import { getSession } from '@/app/utils/auth'
-// const redis = new Redis(process.env.REDIS_URL as string, {
-//   tls: {
-//     rejectUnauthorized: false,
-//   },
-// });
+import { getCachedProjects } from './get-cached-projects'
+import { NextRequest } from 'next/server'
 
-// const CACHE_DURATION = 5;
 export const dynamic = 'force-dynamic'
 
-async function getCachedProjects(): Promise<Ships[]> {
-  // const cachedProjects = await redis.get("all_projects");
-  // if (cachedProjects) {
-  //   return JSON.parse(cachedProjects);
-  // }
-  const projects = await getAllProjects()
-  // await redis.setex("all_projects", CACHE_DURATION, JSON.stringify(projects));
-  return projects
-}
+export async function GET(request: NextRequest) {
+  const isTutorial = request.nextUrl.searchParams.get('tutorial')
 
-export async function GET() {
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
-    const projects = await getCachedProjects()
-    const userSlackId = session.slackId
+    let matchup
+    if (isTutorial) {
+      matchup = generateTutorialMatchup()
+    } else {
+      const projects = await getCachedProjects()
+      const userSlackId = session.slackId
 
-    // TODO: this filtering could happen in the generateMatchup function!
-    const votableProjects = projects.filter(
-      (project) => project?.['entrant__slack_id']?.[0] !== userSlackId,
-    )
-    const matchup = await generateMatchup(votableProjects, userSlackId)
+      // TODO: this filtering could happen in the generateMatchup function!
+      const votableProjects = projects.filter(
+        (project) => project?.['entrant__slack_id']?.[0] !== userSlackId,
+      )
+      matchup = await generateMatchup(votableProjects, userSlackId)
+    }
 
     if (!matchup) {
       return NextResponse.json(
@@ -45,6 +38,7 @@ export async function GET() {
         { status: 404 },
       )
     }
+
     const rMatchup = {
       project1: {
         id: matchup.project1.id,
@@ -53,9 +47,10 @@ export async function GET() {
         readme_url: matchup.project1.readme_url,
         repo_url: matchup.project1.repo_url,
         deploy_url: matchup.project1.deploy_url,
-        rating: matchup.project1.rating,
+        // rating: matchup.project1.rating,
         ship_type: matchup.project1.ship_type,
         update_description: matchup.project1.update_description,
+        entrant__slack_id: matchup.project1.entrant__slack_id[0],
       },
       project2: {
         id: matchup.project2.id,
@@ -64,9 +59,10 @@ export async function GET() {
         readme_url: matchup.project2.readme_url,
         repo_url: matchup.project2.repo_url,
         deploy_url: matchup.project2.deploy_url,
-        rating: matchup.project2.rating,
+        // rating: matchup.project2.rating,
         ship_type: matchup.project2.ship_type,
         update_description: matchup.project2.update_description,
+        entrant__slack_id: matchup.project2.entrant__slack_id[0],
       },
       signature: matchup.signature,
       ts: matchup.ts,

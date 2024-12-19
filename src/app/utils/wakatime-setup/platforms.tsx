@@ -53,6 +53,10 @@ export default function Platforms({
               <hr className="my-8" />
               <SinglePlatform os={'linux'} wakaKey={wakaKey} />
               <hr className="my-8" />
+              <SinglePlatform os={'chrome'} wakaKey={wakaKey} />
+              <hr className="my-8" />
+              <SinglePlatform os={'kicad'} wakaKey={wakaKey} />
+              <hr className="my-8" />
               <p>
                 Script not working? High Seas is wakatime-compatible, so you can
                 configure wakatime plugins using the following:

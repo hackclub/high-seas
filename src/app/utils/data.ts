@@ -19,13 +19,29 @@ import { cookies } from 'next/headers'
 //#region Ships
 export type ShipType = 'project' | 'update'
 export type ShipStatus = 'shipped' | 'staged' | 'deleted'
-export interface Ship {
+export type YswsType =
+  | 'none'
+  | 'onboard'
+  | 'blot'
+  | 'sprig'
+  | 'bin'
+  | 'hackpad'
+  | 'llm'
+  | 'boba'
+  | 'cascade'
+  | 'retrospect'
+  | 'hackcraft'
+  | 'cider'
+  | 'browser buddy'
+  | 'cargo-cult'
+  | 'fraps'
+  | 'riceathon'
+  | 'counterspell'
+  | 'anchor'
+
+export interface Ship extends EditableShipFields {
   id: string // The Airtable row's ID.
-  title: string
-  repoUrl: string
-  deploymentUrl?: string
-  readmeUrl: string
-  screenshotUrl: string
+  autonumber: number
   // doubloonsPaid?: number;
   matchups_count: number
   hours: number | null
@@ -44,6 +60,14 @@ export interface Ship {
   reshippedAll: string[] | null
   reshippedFromAll: string[] | null
   paidOut: boolean
+  yswsType: YswsType
+}
+export interface EditableShipFields {
+  title: string
+  repoUrl: string
+  deploymentUrl?: string
+  readmeUrl: string
+  screenshotUrl: string
 }
 
 export async function fetchShips(
@@ -91,6 +115,7 @@ export async function fetchShips(
 
     const ship: Ship = {
       id: r.id,
+      autonumber: parseInt(r.fields.autonumber),
       title: r.fields.title,
       repoUrl: r.fields.repo_url,
       deploymentUrl: r.fields.deploy_url,
@@ -115,6 +140,7 @@ export async function fetchShips(
       reshippedAll,
       reshippedFromAll,
       paidOut: Boolean(r.fields.paid_out),
+      yswsType: r.fields.yswsType,
     }
 
     return ship
@@ -123,28 +149,47 @@ export async function fetchShips(
 //#endregion
 
 //#region Person
+const personCacheTtl = 60_000
+const personCache = new Map<
+  string,
+  { recordPromise: Promise<any>; timestamp: number }
+>()
+
 export async function person(): Promise<any> {
-  return new Promise((resolve, reject) => {
-    getSession().then(async (session) => {
-      if (!session) return reject('No session present')
+  const session = await getSession()
+  if (!session) throw new Error('No session present')
 
-      const record = await fetch(
-        `https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/people/${session.personId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-            'Content-Type': 'application/json',
-            'User-Agent': 'highseas.hackclub.com (person)',
-          },
-        },
-      )
-        .then((d) => d.json())
-        .catch(console.error)
-      if (!record) return reject('Person not found')
+  const personCached = personCache.get(session.personId)
+  if (personCached) {
+    const expired = Date.now() > personCached.timestamp + personCacheTtl
+    let rejected = false
+    personCached.recordPromise.catch(() => (rejected = true))
+    if (!expired && !rejected) {
+      console.log('Person cache HIT')
+      return personCached.recordPromise
+    }
+  }
+  console.log('Person cache MISS')
 
-      resolve(record)
-    })
+  const recordPromise = fetch(
+    `https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/people/${session.personId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+        'User-Agent': 'highseas.hackclub.com (person)',
+      },
+    },
+  ).then((r) => r.json())
+
+  personCache.set(session.personId, {
+    recordPromise,
+    timestamp: Date.now(),
   })
+
+  recordPromise.catch(() => personCache.delete(session.personId))
+
+  return recordPromise
 }
 //#endregion
 
@@ -198,11 +243,8 @@ export interface SignpostFeedItem {
   id: string
   createdTime: Date
   title: string
-  content: string
   autonumber: number
-  category: 'update' | 'announcement' | 'sale' | 'alert'
-  backgroundColor: string
-  textColor: string
+  link: string
 }
 export async function fetchSignpostFeed(): Promise<SignpostFeedItem[]> {
   const result = await fetch(
@@ -226,22 +268,124 @@ export async function fetchSignpostFeed(): Promise<SignpostFeedItem[]> {
         createdTime: string
         fields: {
           title: string
-          content: string
           autonumber: number
-          category: string
-          background_color: string
-          text_color: string
+          link: string
         }
       }) => ({
         id: r.id,
         createdTime: new Date(r.createdTime),
         title: r.fields.title,
-        content: r.fields.content,
         autonumber: Number(r.fields.autonumber),
-        category: r.fields.category,
-        backgroundColor: r.fields.background_color,
-        textColor: r.fields.text_color,
+        link: r.fields.link,
       }),
     )
+}
+//#endregion
+
+//#region Shop
+export interface ShopItem {
+  id: string
+  name: string
+  subtitle: string | null
+  imageUrl: string | null
+  enabledUs: boolean
+  enabledEu: boolean
+  enabledIn: boolean
+  enabledXx: boolean
+  enabledCa: boolean
+  priceUs: number
+  priceGlobal: number
+  fulfilledAtEnd: boolean
+  comingSoon: boolean
+  outOfStock: boolean
+  minimumHoursEstimated: number
+  maximumHoursEstimated: number
+}
+export async function fetchShopItems(): Promise<ShopItem[]> {
+  const result = await fetch(
+    'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/shop_items',
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        'User-Agent': 'highseas.hackclub.com (fetchShopItems)',
+      },
+    },
+  ).then((d) => d.json())
+
+  //TODO: Pagination.
+  return result.records
+    .filter((r: { fields: { enabled: boolean } }) => r.fields.enabled === true)
+    .map(({ id, fields }: any) => ({
+      id,
+      name: fields.name,
+      subtitle: fields.subtitle,
+      imageUrl: fields.image_url,
+      enabledUs: fields.enabled_us === true,
+      enabledEu: fields.enabled_eu === true,
+      enabledIn: fields.enabled_in === true,
+      enabledXx: fields.enabled_xx === true,
+      enabledCa: fields.enabled_ca === true,
+      priceUs: fields.tickets_us,
+      priceGlobal: fields.tickets_global,
+      fulfilledAtEnd: fields.fulfilled_at_end === true,
+      comingSoon: fields.coming_soon === true,
+      outOfStock: fields.out_of_stock === true,
+      minimumHoursEstimated: fields.minimum_hours_estimated,
+      maximumHoursEstimated: fields.maximum_hours_estimated,
+    }))
+}
+//#endregion
+
+//#region Best ships
+const bestShipsCacheTtl = 60_000
+let bestShipsTs = 0
+type BestShip = {
+  title: string
+  repoUrl: string
+  deployUrl: string
+  screenshotUrl: string
+  payout: number
+}
+let bestShipsCache: BestShip[] | undefined
+
+export async function getBestShips(): Promise<BestShip[]> {
+  const session = await getSession()
+  if (!session) throw new Error('No session present')
+
+  if (bestShipsCache) {
+    const expired = Date.now() > bestShipsTs + bestShipsCacheTtl
+    if (!expired) {
+      console.log('Best ships HIT')
+      return bestShipsCache
+    }
+  }
+
+  console.log('Best ships MISS')
+
+  const recordPromise = await fetch(
+    'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/tblHeGZNG00d4GBBV?limit=3&view=viwHvRRLCwPMOmRhj',
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+        'User-Agent': 'highseas.hackclub.com (best ships)',
+      },
+    },
+  ).then((r) => r.json())
+
+  const sanitised = recordPromise.records.map(
+    ({ fields }: { fields: any }) => ({
+      title: fields.title,
+      repoUrl: fields.repo_url,
+      deployUrl: fields.deploy_url,
+      screenshotUrl: fields.screenshot_url,
+      payout: fields.doubloon_payout,
+    }),
+  )
+
+  bestShipsCache = sanitised
+  bestShipsTs = Date.now()
+
+  return sanitised
 }
 //#endregion

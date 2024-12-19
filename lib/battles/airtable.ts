@@ -1,5 +1,6 @@
 import Airtable from 'airtable'
 import { Ships, Person, Battles } from '../../types/battles/airtable'
+import { getSession } from '@/app/utils/auth'
 
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.BASE_ID!,
@@ -25,6 +26,23 @@ export const getAllProjects = async (): Promise<Ships[]> => {
   const records = await base('ships')
     .select({
       filterByFormula: `eligible_for_voting`,
+      fields: [
+        'title',
+        'credited_hours',
+        'doubloon_payout',
+        'project_source',
+        'total_hours',
+        'rating',
+        'repo_url',
+        'readme_url',
+        'deploy_url',
+        'autonumber',
+        'screenshot_url',
+        'entrant__slack_id',
+        'ship_type',
+        'ship_time',
+        'update_description',
+      ],
     })
     .all()
   return records.map((record) => ({
@@ -75,6 +93,13 @@ export const submitVote = async (
     winnerRating: number
     loserRating: number
     ts: number
+    winner_readme_opened: boolean
+    winner_repo_opened: boolean
+    winner_demo_opened: boolean
+    loser_readme_opened: boolean
+    loser_repo_opened: boolean
+    loser_demo_opened: boolean
+    skips_before_vote: number
   } /*,
   bot: boolean,*/,
 ): Promise<Battles> => {
@@ -107,6 +132,13 @@ export const submitVote = async (
     loser_adjustment: newLoserRating - voteData.loserRating,
     is_tutorial_vote: !person.user_has_graduated,
     generated_at: voteData.ts,
+    winner_readme_opened: voteData.winner_readme_opened,
+    winner_repo_opened: voteData.winner_repo_opened,
+    winner_demo_opened: voteData.winner_demo_opened,
+    loser_readme_opened: voteData.loser_readme_opened,
+    loser_repo_opened: voteData.loser_repo_opened,
+    loser_demo_opened: voteData.loser_demo_opened,
+    skips_before_vote: voteData.skips_before_vote,
     /*bot,*/
   })
 

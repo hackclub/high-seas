@@ -41,28 +41,38 @@ const IdeaGenerator = () => {
   ]
 
   const generateIdea = async () => {
-    if (typing) return
+    if (typing || loading) return
+
     setLoading(true)
     setMessage(sample(thinkingWords))
     sample(thinkingSounds).play()
+
     let newIdea = ''
-    await Promise.all([
-      fetchIdea().then((i) => {
-        newIdea = i.idea
-      }),
-      new Promise((resolve) => setTimeout(resolve, 2000)),
-    ])
-    setTyping(true)
-    setLoading(false)
-    setMessage('')
-    yap(newIdea, {
-      letterCallback: ({ letter }) => {
-        setMessage((prev) => prev + letter)
-      },
-      endCallback: () => {
-        setTyping(false)
-      },
-    })
+
+    try {
+      await Promise.all([
+        fetchIdea().then((i) => {
+          newIdea = i.idea
+        }),
+        new Promise((resolve) => setTimeout(resolve, 2000)),
+      ])
+
+      setTyping(true)
+      setLoading(false)
+      setMessage('')
+
+      yap(newIdea, {
+        letterCallback: ({ letter }) => {
+          setMessage((prev) => prev + letter)
+        },
+        endCallback: () => {
+          setTyping(false)
+        },
+      })
+    } catch (error) {
+      console.error('Error generating idea:', error)
+      setLoading(false)
+    }
   }
 
   const activeClass = loading ? 'thinking' : typing ? 'typing' : 'idle'
@@ -76,9 +86,12 @@ const IdeaGenerator = () => {
     <div className="idea-generator flex flex-col justify-center items-center mb-24">
       <img
         src={imgSrc}
-        className={`mb-4 ${activeClass}`}
+        className={`mb-4 ${activeClass} ${
+          loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+        }`}
         alt="idea generator"
-        onClick={() => generateIdea()}
+        onClick={loading ? null : generateIdea}
+        style={{ pointerEvents: loading ? 'none' : 'auto' }}
       />
       <span className="idea-box text-white w-64">{message}</span>
     </div>

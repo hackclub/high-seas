@@ -10,7 +10,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { useMemo } from 'react'
 import { cantAffordWords, purchaseWords, sample } from '../../../../lib/flavor'
-
+import useLocalStorageState from '../../../../lib/useLocalStorageState.js'
+import { useState } from 'react'
+import Icon from '@hackclub/icons'
 const ActionArea = ({ item, filterIndex, affordable }) => {
   const buyWord = useMemo(() => sample(purchaseWords), [item.id])
   const getYourRacksUp = useMemo(() => sample(cantAffordWords), [item.id])
@@ -41,6 +43,8 @@ export const ShopItemComponent = ({
   filterIndex,
   personTicketBalance,
   id,
+  setFavouriteItems,
+  favouriteItems,
 }) => {
   const cardHoverProps = {
     whileHover: {
@@ -55,7 +59,7 @@ export const ShopItemComponent = ({
         className="h-full flex flex-col overflow-hidden shadow-lg transition-shadow duration-300 hover:shadow-xl"
       >
         <CardHeader className="pb-2">
-          <div className="flex justify-between items-start">
+          <div className="justify-between inline-block items-start">
             <CardTitle className="text-xl font-bold text-center">
               {item.name}
             </CardTitle>
@@ -98,7 +102,7 @@ export const ShopItemComponent = ({
           </CardContent>
         )}
 
-        <CardFooter className="pt-4">
+        <CardFooter className="pt-4 flex gap-1 ">
           <ActionArea
             item={item}
             filterIndex={filterIndex}
@@ -107,6 +111,25 @@ export const ShopItemComponent = ({
               parseInt(personTicketBalance)
             }
           />
+          <Button
+            onClick={() => {
+              setFavouriteItems((prevFav) => {
+                if (prevFav.includes(item.id)) {
+                  console.log('remove', prevFav)
+                  return prevFav.filter(
+                    (favItem) => String(favItem) !== item.id,
+                  )
+                } else {
+                  console.log('add', prevFav)
+                  return [...prevFav, item.id]
+                }
+              })
+            }}
+          >
+            <Icon
+              glyph={favouriteItems.includes(item.id) ? 'like-fill' : 'like'}
+            />
+          </Button>
         </CardFooter>
       </Card>
     </motion.div>

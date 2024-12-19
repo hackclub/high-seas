@@ -175,3 +175,13 @@ html {
   height: auto;
   margin: 0px;
 }
+
+progress::-moz-progress-bar {
+  background: blue;
+}
+progress::-webkit-progress-value {
+  background: blue;
+}
+progress {
+  color: blue;
+}

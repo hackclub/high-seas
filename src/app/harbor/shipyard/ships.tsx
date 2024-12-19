@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { stagedToShipped } from './ship-utils'
 import type { Ship } from '@/app/utils/data'
 import Image from 'next/image'
@@ -11,15 +11,18 @@ import { markdownComponents } from '@/components/markdown'
 import { Button, buttonVariants } from '@/components/ui/button'
 import NewShipForm from './new-ship-form'
 import EditShipForm from './edit-ship-form'
-import { getSession } from '@/app/utils/auth'
+import { getSession, HsSession } from '@/app/utils/auth'
 import Link from 'next/link'
-
+import TimeAgo from 'javascript-time-ago'
 import ShipPillCluster from '@/components/ui/ship-pill-cluster'
 import NoImgDino from '/public/no-img-dino.png'
 import NoImgBanner from '/public/no-img-banner.png'
 import ReadmeHelperImg from '/public/readme-helper.png'
 import NewUpdateForm from './new-update-form'
 import Modal from '../../../components/ui/modal'
+import RepoLink from '@/components/ui/repo_link'
+import { EditableShipFields } from '../../utils/data'
+import ThinkingDino from '/public/thinking.png'
 
 export default function Ships({
   ships = [],
@@ -34,18 +37,21 @@ export default function Ships({
   const [previousSelectedShip, setPreviousSelectedShip] = useState<Ship | null>(
     null,
   )
-
+  const [updateChainExpanded, setUpdateChainExpanded] = useState(false)
   const [readmeText, setReadmeText] = useState<string | null>(null)
   const [newShipVisible, setNewShipVisible] = useState(false)
   const [newUpdateShip, setNewUpdateShip] = useState<Ship | null>(null)
   const [session, setSession] = useState<HsSession | null>(null)
   const [isEditingShip, setIsEditingShip] = useState(false)
   const [errorModal, setErrorModal] = useState<string>()
+  const [shipToShip, setShipToShip] = useState<Ship | null>(null)
+  const [shipModal, setShipModal] = useState<boolean>(false)
   const canvasRef = useRef(null)
 
   const [isShipping, setIsShipping] = useState(false)
+  const [shipChains, setShipChains] = useState<Map<string, Ship[]>>()
 
-  const [shipChains, setShipChains] = useState<Map<string, string[]>>()
+  const timeAgo = new TimeAgo('en-US')
 
   useEffect(() => {
     getSession().then((sesh) => setSession(sesh))
@@ -92,57 +98,69 @@ export default function Ships({
     [ships],
   )
 
-  const [shippedShips, setShippedShips] = useState<Ship[]>([])
-
   useEffect(() => {
-    const localShippedShips = ships.filter(
-      (ship: Ship) =>
-        ship.shipStatus === 'shipped' && ship.shipType === 'project',
-    )
+    const shipUpdateChain = new Map<string, Ship[]>()
 
-    const localUpdateShips = ships.filter(
-      (ship: Ship) =>
-        ship.shipStatus === 'shipped' && ship.shipType === 'update',
-    )
+    console.log(ships.sort((a, b) => a.autonumber - b.autonumber))
 
-    // Consolidate projects and updates in a Map to handle "reshipping" logic efficiently
-    const shippedShipsMap = new Map(
-      localShippedShips.map((ship) => [ship.id, { ...ship }]),
-    )
+    ships
+      .sort((a, b) => a.autonumber - b.autonumber)
+      .forEach((ship) => {
+        if (!ship.reshippedFromId) {
+          // If the ship is a root ship, start a new chain
+          shipUpdateChain.set(ship.id, [ship])
+        } else {
+          // If the ship has a parent, find the chain by finding the HEAD ship with id ship.reshippedFromId
+          //const targetChain = shipUpdateChain.iter().map(|chain: Ship[]| chain[-1].id === ship.reshippedFromId) // look at the beautiful pseudocode
+          for (const [chainId, chain] of shipUpdateChain[Symbol.iterator]()) {
+            if (chain.at(-1)!.id === ship.reshippedFromId) {
+              shipUpdateChain.set(chainId, [...chain, ship])
+              break
+            }
+          }
+        }
+      })
 
-    for (const update of localUpdateShips) {
-      const reshippedFromId = update.reshippedFromId
-      const updateCopy = { ...update }
-
-      if (reshippedFromId && shippedShipsMap.has(reshippedFromId)) {
-        const originalShip = shippedShipsMap.get(reshippedFromId)
-        shippedShipsMap.set(reshippedFromId, {
-          ...updateCopy,
-          doubloonPayout:
-            updateCopy.doubloonPayout + (originalShip?.doubloonPayout || 0),
-        })
-      } else {
-        shippedShipsMap.set(updateCopy.id, updateCopy)
-      }
-    }
-
-    const sortedShips = Array.from(shippedShipsMap.values()).sort(
-      (a, b) => new Date(b?.createdTime) - new Date(a?.createdTime),
-    ) as Ship[]
-    setShippedShips(sortedShips)
+    setShipChains(shipUpdateChain)
   }, [ships])
 
-  // Populate shipChains with data from shippedShips in useEffect to avoid updating on every render
-  useEffect(() => {
-    const newShipChains = new Map<string, string[]>()
-    for (const ship of shippedShips) {
-      const wakatimeProjectName = ship.wakatimeProjectNames.join(',')
-      if (ship.reshippedAll) {
-        newShipChains.set(wakatimeProjectName, ship.reshippedAll)
-      }
+  function getChainFromAnyId(id?: string) {
+    if (!id) return
+
+    for (const [_, chain] of shipChains?.[Symbol.iterator]() ?? []) {
+      if (chain.map((s: Ship) => s.id).includes(id)) return chain
     }
-    setShipChains(newShipChains)
-  }, [shippedShips])
+  }
+
+  async function tryToShip(s: Ship) {
+    console.log('Shipping', s)
+
+    try {
+      setIsShipping(true)
+      const { error } = await stagedToShipped(s, ships)
+      if (error) {
+        setErrorModal(String(error))
+      } else {
+        location.reload()
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorModal(err.message)
+      }
+    } finally {
+      setIsShipping(false)
+    }
+  }
+
+  const selectedShipChain = selectedShip
+    ? shipChains?.get(selectedShip.id)
+    : undefined
+
+  const shippedShips = shipChains
+    ? Object.values(Object.fromEntries(shipChains)).filter(
+        (ships: Ship[]) => ships[0].shipStatus === 'shipped',
+      )
+    : []
 
   const SingleShip = ({
     s,
@@ -181,37 +199,74 @@ export default function Ships({
           </h2>
 
           <div className="flex flex-wrap items-start gap-2 text-sm">
-            <ShipPillCluster ship={s} shipChains={shipChains} />
+            <ShipPillCluster
+              chain={s.shipType === 'project' ? getChainFromAnyId(s.id) : [s]}
+            />
           </div>
         </div>
 
         {bareShips ? null : (
           <div className="mt-4 sm:mt-0 sm:ml-auto">
             {s.shipStatus === 'staged' ? (
-              <Button
-                id="ship-ship"
-                onClick={async (e) => {
-                  e.stopPropagation()
-                  console.log('Shipping', s)
-
-                  try {
-                    setIsShipping(true)
-                    await stagedToShipped(s, ships)
-                    location.reload()
-                  } catch (err: unknown) {
-                    if (err instanceof Error) {
-                      setErrorModal(err.message)
+              <>
+                <Button
+                  id="ship-ship"
+                  onClick={async (e) => {
+                    e.stopPropagation()
+                    if (sessionStorage.getItem('tutorial') === 'true') {
+                      await tryToShip(s)
                     } else {
-                      setErrorModal(String(err))
+                      setShipToShip(s)
+                      setShipModal(true)
                     }
-                  } finally {
-                    setIsShipping(false)
-                  }
-                }}
-                disabled={isShipping}
-              >
-                {isShipping ? 'Shipping...' : 'SHIP SHIP!'}
-              </Button>
+                  }}
+                  disabled={isShipping}
+                >
+                  {isShipping
+                    ? 'Shipping...'
+                    : s.shipType === 'project'
+                      ? 'SHIP SHIP!'
+                      : 'SHIP UPDATE!'}
+                </Button>
+
+                <Modal isOpen={shipModal} close={() => setShipModal(false)}>
+                  <div className="p-4 max-h-96 overflow-y-auto">
+                    <h2 className="text-3xl font-bold text-center">
+                      Confirm Shipping
+                    </h2>
+                    <p className="text-xl mt-5 text-center">
+                      Are you sure you want to ship {s.title}?
+                    </p>
+                    <p className="mt-3 text-center">
+                      Keep in mind that this can't be reverted! <br /> Your ship
+                      will start getting into matchups.
+                    </p>
+                    <div className="flex justify-center">
+                      <Image src={ThinkingDino} alt="Thinking Dino" />
+                    </div>
+                    <div className="flex justify-end mt-5">
+                      <Button
+                        onClick={() => setShipModal(false)}
+                        className="mr-5"
+                      >
+                        Go back
+                      </Button>
+
+                      <Button
+                        onClick={async () => {
+                          if (shipToShip) {
+                            await tryToShip(shipToShip)
+                          }
+                          setShipModal(false)
+                        }}
+                        disabled={isShipping}
+                      >
+                        {isShipping ? 'Shipping...' : 'Yes, ship it'}
+                      </Button>
+                    </div>
+                  </div>
+                </Modal>
+              </>
             ) : s.paidOut ? (
               !stagedShips.find(
                 (stagedShip) =>
@@ -228,7 +283,7 @@ export default function Ships({
                   Ship an update!
                 </Button>
               ) : (
-                <p>Ship your Update!</p>
+                <p className="opacity-50 text-sm">Pending draft update!</p>
               )
             ) : (
               <p>Awaiting payout</p>
@@ -265,26 +320,44 @@ export default function Ships({
       {stagedShips.length === 0 ? null : (
         <div className={`w-full mt-8`}>
           {bareShips ? null : (
-            <h2 className="text-center text-2xl mb-2 text-blue-500">
-              Draft Ships
-            </h2>
+            <h2 className="text-center text-2xl mb-2 text-blue-500">Drafts</h2>
           )}
 
           <div id="staged-ships-container" className="space-y-4">
-            {stagedShips.map((ship: Ship, idx: number) => (
-              <SingleShip
-                s={ship}
-                key={ship.id}
-                id={`staged-ship-${idx}`}
-                setNewShipVisible={setNewShipVisible}
-              />
-            ))}
+            {/* If the ship has a reshippedFromId, we're going to fill in the editable fields from the root ship. */}
+            {stagedShips.map((ship: Ship, idx: number) => {
+              const stagedShipParent = getChainFromAnyId(ship.id)
+
+              const editableFields: EditableShipFields = {
+                title: stagedShipParent?.[0].title,
+                repoUrl: stagedShipParent?.[0].repoUrl,
+                deploymentUrl: stagedShipParent?.[0].deploymentUrl,
+                readmeUrl: stagedShipParent?.[0].readmeUrl,
+                screenshotUrl: stagedShipParent?.[0].screenshotUrl,
+              }
+
+              return (
+                <SingleShip
+                  s={
+                    ship.reshippedFromId && stagedShipParent
+                      ? {
+                          ...ship,
+                          ...editableFields,
+                        }
+                      : ship
+                  }
+                  key={ship.id}
+                  id={`staged-ship-${idx}`}
+                  setNewShipVisible={setNewShipVisible}
+                />
+              )
+            })}
           </div>
         </div>
       )}
 
       <div className="w-full relative">
-        {shippedShips.length > 0 ? (
+        {shipChains && shippedShips.length > 0 ? (
           <div className={`space-y-4 ${bareShips ? '' : 'mt-8'}`}>
             {bareShips ? null : (
               <h2 className="text-center text-2xl text-blue-500">
@@ -292,18 +365,18 @@ export default function Ships({
               </h2>
             )}
 
-            {shippedShips.map((ship: Ship, idx: number) => (
+            {shippedShips.map((ships: Ship[], idx: number) => (
               <SingleShip
-                s={ship}
-                key={ship.id}
-                id={`shipped-ship-${idx}`}
+                s={ships[0]}
+                key={ships[0].id}
+                id={`shipped-ship-${idx}-${ships[0].shipStatus}`}
                 setNewShipVisible={setNewShipVisible}
               />
             ))}
           </div>
         ) : null}
 
-        {shippedShips.length < 1 && stagedShips.length < 1 ? (
+        {shipChains?.size === 0 ? (
           <>
             <div className="text-white mx-auto w-fit flex absolute -left-28 right-0 -top-28 pointer-events-none">
               <img src="/curly-arrow.svg" alt="" width="64" />
@@ -332,11 +405,11 @@ export default function Ships({
       </Modal>
 
       <Modal
-        isOpen={newUpdateShip && session}
+        isOpen={getChainFromAnyId(newUpdateShip?.id) && session}
         close={() => setNewUpdateShip(null)}
       >
         <NewUpdateForm
-          shipToUpdate={newUpdateShip}
+          shipChain={getChainFromAnyId(newUpdateShip?.id)!}
           canvasRef={canvasRef}
           closeForm={() => setNewUpdateShip(null)}
           setShips={setShips}
@@ -349,7 +422,7 @@ export default function Ships({
         close={() => setSelectedShip(null)}
         hideCloseButton={false}
       >
-        <Card
+        <div
           className="relative w-full max-w-2xl"
           style={{
             maxHeight: '75vh',
@@ -357,11 +430,15 @@ export default function Ships({
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="absolute top-0 left-0 right-0 h-48 z-10">
+          <div className="absolute top-0 left-0 right-0 h-48">
             <Image
               src={selectedShip?.screenshotUrl}
+              style={{
+                maskImage:
+                  'linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0))',
+              }}
               alt={`Screenshot of ${selectedShip?.title}`}
-              className="object-cover max-w-full"
+              className="object-cover max-w-full rounded"
               fill={true}
               priority
               unoptimized
@@ -370,13 +447,12 @@ export default function Ships({
                 target.src = NoImgBanner.src
               }}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white" />
           </div>
 
-          <div className=" flex-grow pt-48" id="selected-ship-card">
-            <CardHeader className="relative">
+          <div className=" flex-grow pt-32" id="selected-ship-card">
+            <div className="relative">
               <h2 className="text-3xl font-bold">{selectedShip?.title}</h2>
-              <p className="opacity-50">
+              <p className="opacity-75">
                 {selectedShip?.wakatimeProjectNames ? (
                   `Wakatime project name: ${selectedShip?.wakatimeProjectNames}`
                 ) : (
@@ -386,9 +462,9 @@ export default function Ships({
                   </div>
                 )}
               </p>
-            </CardHeader>
+            </div>
 
-            <CardContent className="space-y-4">
+            <div className="space-y-4 mt-4">
               <div>
                 <div className="flex flex-row gap-3 h-12">
                   <Link
@@ -399,24 +475,14 @@ export default function Ships({
                     prefetch={false}
                   >
                     <Button
-                      className="w-full h-full"
+                      className="w-full h-full text-lg"
                       disabled={!selectedShip?.deploymentUrl}
                     >
                       Play
                       <Icon glyph="view-forward" />
                     </Button>
                   </Link>
-                  <Link
-                    id="selected-ship-repo-button"
-                    target="_blank"
-                    className={`${buttonVariants({
-                      variant: 'outline',
-                    })} h-full`}
-                    href={selectedShip?.repoUrl}
-                    prefetch={false}
-                  >
-                    <Icon glyph="github" /> GitHub Repo
-                  </Link>
+                  <RepoLink repo={selectedShip?.repoUrl} />
 
                   <Button
                     id="selected-ship-edit-button"
@@ -445,11 +511,11 @@ export default function Ships({
                         opacity: 0,
                         height: 0,
                       }}
-                      transition={{ duration: 0.2, ease: 'easeInOut' }}
                     >
-                      <Card className="p-2 mt-2 bg-neutral-100">
+                      <Card className="p-2 mt-2 text-white !bg-white/15">
                         <EditShipForm
                           ship={selectedShip}
+                          shipChain={getChainFromAnyId(selectedShip.id)}
                           closeForm={() => setIsEditingShip(false)}
                           setShips={setShips}
                         />
@@ -458,16 +524,116 @@ export default function Ships({
                   )}
                 </AnimatePresence>
 
-                <motion.div className="flex items-center gap-4 mt-4">
-                  <ShipPillCluster
-                    ship={selectedShip}
-                    shipChains={shipChains}
-                  />
-                </motion.div>
+                {selectedShipChain ? (
+                  <motion.div className="flex items-center gap-4 mt-4">
+                    <ShipPillCluster
+                      transparent={true}
+                      chain={selectedShipChain}
+                    />
+                  </motion.div>
+                ) : null}
+
+                {selectedShipChain && selectedShipChain!.length > 1 ? (
+                  <>
+                    <button
+                      onClick={() => setUpdateChainExpanded((p) => !p)}
+                      className="mt-2 inline-flex items-center"
+                    >
+                      {updateChainExpanded ? 'Hide' : 'View'}{' '}
+                      {selectedShipChain.length - 1} update
+                      {selectedShipChain.length - 1 === 1 ? ' ' : 's '}
+                      <motion.span
+                        animate={{
+                          rotate: updateChainExpanded ? '0deg' : '-90deg',
+                        }}
+                      >
+                        <Icon glyph="down-caret" />
+                      </motion.span>
+                    </button>
+
+                    <AnimatePresence>
+                      {updateChainExpanded ? (
+                        <motion.div
+                          initial={{
+                            opacity: 0,
+                            height: 0,
+                          }}
+                          animate={{
+                            opacity: 1,
+                            height: 'fit-content',
+                          }}
+                          exit={{
+                            opacity: 0,
+                            height: 0,
+                          }}
+                          transition={{ duration: 0.2, ease: 'easeInOut' }}
+                        >
+                          <ol className="border-l-4 border-[#9AD9EE] pl-2 ml-2 rounded-lg space-y-2">
+                            {selectedShipChain
+                              ? selectedShipChain.map(
+                                  (ship: Ship, idx: number) => (
+                                    <li key={idx} className="mt-2 ml-2 rounded">
+                                      <p className="inline-flex justify-between items-center w-full text-sm p-1">
+                                        <div
+                                          className="absolute left-2 w-3 h-3 rounded-full bg-[#9AD9EE]"
+                                          style={{
+                                            translate: 'calc(-50% + 2px)',
+                                          }}
+                                        ></div>
+                                        <span>
+                                          {idx === 0
+                                            ? 'Start'
+                                            : `Update ${idx + 1}`}
+                                          <span className="text-xs ml-2 text-indigo-100">
+                                            {timeAgo.format(
+                                              new Date(ship.createdTime),
+                                            )}
+                                          </span>
+                                        </span>
+                                        <span className="inline-flex gap-1">
+                                          <ShipPillCluster
+                                            transparent={true}
+                                            size="small"
+                                            chain={[ship]}
+                                          />
+                                        </span>
+                                      </p>
+                                      <p className="text-xs p-1 text-indigo-100">
+                                        {ship.updateDescription}
+                                      </p>
+                                    </li>
+                                  ),
+                                )
+                              : null}
+                          </ol>
+
+                          {selectedShipChain.at(-1)?.shipStatus !== 'staged' ? (
+                            <Button
+                              onClick={async (e) => {
+                                e.stopPropagation()
+                                setNewUpdateShip(selectedShip)
+                              }}
+                              className={`${buttonVariants({ variant: 'outline' })} block mx-auto mt-4`}
+                            >
+                              Ship a new update
+                            </Button>
+                          ) : null}
+                        </motion.div>
+                      ) : null}
+                    </AnimatePresence>
+                  </>
+                ) : null}
 
                 {selectedShip?.shipType === 'update' ? (
                   <>
-                    <hr className="my-5" />
+                    <Image
+                      src="/hr.svg"
+                      className="w-2/3 mx-auto my-3"
+                      alt=""
+                      width={461}
+                      height={11}
+                    />
+
                     <div>
                       <h3 className="text-xl">Update description</h3>
                       <p>{selectedShip?.updateDescription}</p>
@@ -475,7 +641,13 @@ export default function Ships({
                   </>
                 ) : null}
 
-                <hr className="my-5" />
+                <Image
+                  src="/hr.svg"
+                  className="w-2/3 mx-auto my-3"
+                  alt=""
+                  width={461}
+                  height={11}
+                />
 
                 {readmeText ? (
                   <div className="prose max-w-none">
@@ -500,7 +672,6 @@ export default function Ships({
                       </div>
                     ) : (
                       <>
-                        <h3 className="text-xl">Main Project README</h3>
                         <ReactMarkdown
                           components={markdownComponents}
                           rehypePlugins={[rehypeRaw]}
@@ -514,9 +685,9 @@ export default function Ships({
                   <p className="text-center">Loading README...</p>
                 )}
               </div>
-            </CardContent>
+            </div>
           </div>
-        </Card>
+        </div>
       </Modal>
 
       <Modal isOpen={!!errorModal} close={() => setErrorModal(undefined)}>

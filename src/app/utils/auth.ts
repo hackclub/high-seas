@@ -7,7 +7,7 @@ export interface HsSession {
   /// The Person record ID in the high seas base
   personId: string
 
-  authType: 'slack-oauth' | 'magic-link'
+  authType: 'slack-oauth' | 'magic-link' | 'impersonation'
   slackId: string
   name?: string
   firstName?: string
@@ -75,6 +75,27 @@ async function hashSession(session: HsSession) {
   return hashHex
 }
 
+export async function impersonate(slackId: string) {
+  // only allow impersonation in development while testing
+  if (process.env.NODE_ENV !== 'development') {
+    return
+  }
+
+  // look for airtable user with this record
+  const person = await getSelfPerson(slackId)
+  const id = person.id
+  const email = person.fields.email
+
+  const session: HsSession = {
+    personId: id,
+    authType: 'impersonation',
+    slackId,
+    email,
+  }
+
+  await signAndSet(session)
+}
+
 async function signAndSet(session: HsSession) {
   session.sig = await hashSession(session)
 
@@ -107,6 +128,9 @@ export async function createSlackSession(slackOpenidToken: string) {
 
     if (!person) {
       const body = JSON.stringify({
+        performUpsert: {
+          fieldsToMergeOn: ['email'],
+        },
         records: [
           {
             fields: {
