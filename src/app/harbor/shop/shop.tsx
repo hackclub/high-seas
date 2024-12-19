@@ -82,7 +82,6 @@ export default function Shop({ session }: { session: HsSession }) {
           {bannerText}
         </p>
 
-        <h1>{personTicketBalance ?? 'wut'}</h1>
         <ShopkeeperComponent balance={personTicketBalance} cursed={cursed} />
         <br />
         <Progress val={favouriteItems} items={shopItems} />
