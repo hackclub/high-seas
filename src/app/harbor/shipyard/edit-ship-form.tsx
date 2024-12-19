@@ -43,7 +43,9 @@ export default function EditShipForm({
     const formData = new FormData(e.target)
     const formValues = Object.fromEntries(formData.entries())
 
-    const editableFieldsForRootShipUpdate: EditableShipFields = {
+    const latestShip = shipChain.at(-1) || ship
+
+    const editableFieldsForLatestShipUpdate: EditableShipFields = {
       title: formValues.title as string,
       repoUrl: formValues.repoUrl as string,
       deploymentUrl: formValues.deploymentUrl as string,
@@ -71,8 +73,8 @@ export default function EditShipForm({
     }
 
     const newShip: Ship = {
-      ...shipChain[0],
-      ...editableFieldsForRootShipUpdate,
+      ...latestShip,
+      ...editableFieldsForLatestShipUpdate,
     }
     // If we're editing the root ship, update the desc with the new one from the form
     if (!ship.reshippedFromId && ship.shipType === 'update') {
