@@ -23,32 +23,23 @@ export default function FeedItems() {
   }
 
   if (!feedItems || feedItems.length === 0) {
-    return <p>No feed updates yet! Check back soon.</p>
+    return <p>No changelog posts yet! Check back soon.</p>
   }
 
   return (
     <div className="flex flex-col gap-3">
       {feedItems.map((item, idx) => {
         return (
-          <JaggedCardSmall key={idx} bgColor={`#${item.backgroundColor}`}>
-            <p className="text-sm text-muted">
-              {timeAgo.format(new Date(item.createdTime))}
-            </p>
-            <p style={{ color: `#${item.textColor}` }}>
-              <span className="text-xl">
-                {item.title}
-                <span
-                  className={`ml-4 px-1.5 py-0.5 rounded-full text-sm bg-white/20`}
-                >
-                  {item.category}
-                </span>
-              </span>
-              <br />
-              <span style={{ color: `#${item.textColor}` }}>
-                <Markdown>{item.content}</Markdown>
-              </span>
-            </p>
-          </JaggedCardSmall>
+          <a key={idx} className="block" href={item.link ?? '#'}>
+            <JaggedCardSmall bgColor="white">
+              <p className="text-sm opacity-50 and">
+                {timeAgo.format(new Date(item.createdTime))}
+              </p>
+              <p>
+                <Markdown>{item.title}</Markdown>
+              </p>
+            </JaggedCardSmall>
+          </a>
         )
       })}
     </div>

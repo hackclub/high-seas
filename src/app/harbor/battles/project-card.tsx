@@ -91,6 +91,21 @@ export default function ProjectCard({
                   },
                 }))
               }}
+              onAuxClick={(e) => {
+                setAnalyticsState((prev) => ({
+                  ...prev,
+                  projectResources: {
+                    ...prev.projectResources,
+                    [project.id]: {
+                      readmeOpened: false,
+                      repoOpened: false,
+                      demoOpened: false,
+                      ...prev.projectResources[project.id],
+                      repoOpened: true,
+                    },
+                  },
+                }))
+              }}
               onContextMenu={(e) => {
                 setAnalyticsState((prev) => ({
                   ...prev,
@@ -122,6 +137,21 @@ export default function ProjectCard({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => {
+                setAnalyticsState((prev) => ({
+                  ...prev,
+                  projectResources: {
+                    ...prev.projectResources,
+                    [project.id]: {
+                      readmeOpened: false,
+                      repoOpened: false,
+                      demoOpened: false,
+                      ...prev.projectResources[project.id],
+                      demoOpened: true,
+                    },
+                  },
+                }))
+              }}
+              onAuxClick={(e) => {
                 setAnalyticsState((prev) => ({
                   ...prev,
                   projectResources: {
@@ -175,12 +205,7 @@ export default function ProjectCard({
               }}
               id="readme-button"
             >
-              <Pill
-                msg="README"
-                color="purple"
-                glyph="docs-fill"
-                classes="text-lg"
-              />
+              <Pill msg="README" glyph="docs-fill" classes="text-lg" />
             </button>
           )}
         </div>
@@ -200,6 +225,12 @@ export default function ProjectCard({
             )}
           </p>
         )}
+        <a
+          target="_blank"
+          href={`https://hackclub.slack.com/team/${project.entrant__slack_id}`}
+        >
+          <Pill glyph="slack" color="purple" msg="Chat on Slack" />
+        </a>
       </div>
       <div className="p-4 bg-gray-100 dark:bg-gray-700">
         <button

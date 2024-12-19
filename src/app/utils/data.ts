@@ -243,11 +243,8 @@ export interface SignpostFeedItem {
   id: string
   createdTime: Date
   title: string
-  content: string
   autonumber: number
-  category: 'update' | 'announcement' | 'sale' | 'alert'
-  backgroundColor: string
-  textColor: string
+  link: string
 }
 export async function fetchSignpostFeed(): Promise<SignpostFeedItem[]> {
   const result = await fetch(
@@ -271,21 +268,15 @@ export async function fetchSignpostFeed(): Promise<SignpostFeedItem[]> {
         createdTime: string
         fields: {
           title: string
-          content: string
           autonumber: number
-          category: string
-          background_color: string
-          text_color: string
+          link: string
         }
       }) => ({
         id: r.id,
         createdTime: new Date(r.createdTime),
         title: r.fields.title,
-        content: r.fields.content,
         autonumber: Number(r.fields.autonumber),
-        category: r.fields.category,
-        backgroundColor: r.fields.background_color,
-        textColor: r.fields.text_color,
+        link: r.fields.link,
       }),
     )
 }

@@ -141,25 +141,46 @@ async function updateHours(): Promise<void> {
       .select({
         filterByFormula: and(
           "ship__project_source = 'high_seas'",
-          'ysws_db_record_id != BLANK()',
           "OR(last_sync_time = BLANK(), DATETIME_DIFF(TODAY(), last_sync_time, 'days') > 1)",
+          // the following 2 lines should be redundant, but in implementation airtable is sending different results without both lines.
+          // contrary to the documentation https://support.airtable.com/docs/identifying-blank-values
+          'ysws_db_record_id != BLANK()',
+          "ysws_db_record_id != ''",
         ),
         maxRecords: 3,
       })
       .all()
 
+    if (yswsSubmissions.length === 0) {
+      console.log('no submissions to update')
+      return
+    }
+    console.log('Updating hours for ysws submissions')
+
     for (let i = 0; i < yswsSubmissions.length; i++) {
       const submission = yswsSubmissions[i]
+      console.log('submission', submission.id)
       const yswsRecordID = submission?.fields?.ysws_db_record_id
       const submissionHours =
         submission?.fields?.['ship__chain__credited_hours']?.[0]
       const submissionTime = submission?.fields?.['ship__created_time']?.[0]
-      if (!yswsRecordID || !submissionHours || !submissionTime) {
+      if (
+        !yswsRecordID ||
+        !(Boolean(submissionHours) || submissionHours === 0) ||
+        !submissionTime
+      ) {
+        console.log(
+          'missing fields',
+          yswsRecordID,
+          submissionHours,
+          submissionTime,
+        )
         continue
       }
       new Promise((resolve) => setTimeout(resolve, 1000))
       const yswsRecord = await yswsBase('Grants Awarded').find(yswsRecordID)
       if (!yswsRecord) {
+        console.log('ysws record not found', yswsRecordID)
         continue
       }
       const hours = yswsRecord.fields['Override Hours Spent']

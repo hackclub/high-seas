@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Ships } from '../../../../types/battles/airtable'
 import Icon from '@hackclub/icons'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -49,6 +49,7 @@ export default function Matchups({ session }: { session: HsSession }) {
   const [fraudProject, setFraudProject] = useState<Ship>()
   const [fraudType, setFraudType] = useState<string>()
   const [fraudReason, setFraudReason] = useState<string>()
+  const debounceTimeoutRef = useRef<number | null>(null)
 
   const { toast } = useToast()
 
@@ -80,15 +81,17 @@ export default function Matchups({ session }: { session: HsSession }) {
   })
 
   useEffect(() => {
-    window.onbeforeunload = () => {
-      return !!selectedProject || !!fraudProject
-    }
-
     safePerson().then((sp) => {
       setCursed(sp.cursed)
       setBlessed(sp.blessed)
     })
   }, [])
+
+  const unloader = () => !!selectedProject || !!fraudProject
+  useEffect(() => {
+    window.addEventListener('beforeunload', unloader)
+    return () => window.removeEventListener('beforeunload', unloader)
+  })
 
   useEffect(() => {
     setFewerThanTenWords(reason.trim().split(' ').length < 10)
@@ -306,6 +309,31 @@ export default function Matchups({ session }: { session: HsSession }) {
     }
   }
 
+  const handleFraudReport = useCallback(async () => {
+    if (debounceTimeoutRef.current) {
+      window.clearTimeout(debounceTimeoutRef.current)
+    }
+
+    if (!fraudProject || !fraudReason || !fraudType) return
+
+    debounceTimeoutRef.current = window.setTimeout(async () => {
+      try {
+        await sendFraudReport(fraudProject, fraudType, fraudReason)
+      } catch (error) {
+        console.error('Failed to flag project:', error)
+      }
+
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current)
+        debounceTimeoutRef.current = null
+      }
+    }, 300)
+
+    setFraudProject(undefined)
+    setFraudReason('')
+    setFraudType('')
+  }, [fraudProject, fraudType, fraudReason])
+
   if (isReadmeView) {
     return (
       <div className="min-h-[75vh] bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-900 p-4 sm:p-6 md:p-8">
@@ -404,17 +432,21 @@ export default function Matchups({ session }: { session: HsSession }) {
                   onChange={(e) => setFraudType(e.target.value)}
                   className="w-full my-4 p-1 text-black"
                 >
-                  <option value="">Select the type of fraud</option>
+                  <option value="">Select the reason for flagging</option>
                   <option value="Incomplete README">Incomplete README</option>
                   <option value="No screenshot">No screenshot</option>
                   <option value="No demo link">No demo link</option>
                   <option value="Suspected fraud">Suspected fraud</option>
+                  <option value="Wrong repo">
+                    Repo not found / not open source
+                  </option>
                 </select>
 
                 <AnimatePresence>
                   {fraudType === 'Incomplete README' ||
                   fraudType === 'No demo link' ||
-                  fraudType === 'No screenshot' ? (
+                  fraudType === 'No screenshot' ||
+                  fraudType === 'Wrong repo' ? (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'fit-content', opacity: 1 }}
@@ -452,14 +484,10 @@ export default function Matchups({ session }: { session: HsSession }) {
                 <Button
                   variant={'destructive'}
                   disabled={!fraudType || !fraudReason}
-                  onClick={async () => {
-                    if (!fraudProject || !fraudReason || !fraudType) return
-                    await sendFraudReport(fraudProject, fraudType, fraudReason)
-                    setFraudProject(undefined)
-                  }}
+                  onClick={handleFraudReport}
                   className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
                 >
-                  Report Fraud
+                  Flag project
                 </Button>
               </Modal>
             </div>
@@ -496,7 +524,11 @@ export default function Matchups({ session }: { session: HsSession }) {
                   }`}
                 >
                   {fewerThanTenWords ? (
-                    `${10 - reason.trim().split(' ').length} words left...`
+                    reason.trim() ? (
+                      `${10 - reason.trim().split(' ').length} words left...`
+                    ) : (
+                      '10 words left...'
+                    )
                   ) : isSubmitting ? (
                     <>
                       <svg

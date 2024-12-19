@@ -138,7 +138,7 @@ export default function Signpost() {
       <BestShips />
 
       <h2 className="mt-8 font-heading text-2xl font-bold mb-4 text-center">
-        What's happening?
+        Changelog
       </h2>
       <FeedItems />
     </motion.div>

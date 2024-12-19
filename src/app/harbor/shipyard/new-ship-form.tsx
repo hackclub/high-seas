@@ -448,7 +448,7 @@ export default function NewShipForm({
         {sessionStorage?.getItem('tutorial') !== 'true' && (
           <div id="yswsType-field">
             <label htmlFor="yswsType">
-              Was this created for a YSWS program? (optional) <br />
+              Was this created for a Hack Club program? (optional) <br />
             </label>
             <span className="text-xs opacity-50">
               This doesn't affect your submission, it's just feedback for us!
