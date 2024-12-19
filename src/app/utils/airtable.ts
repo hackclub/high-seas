@@ -1,7 +1,7 @@
 'use server'
 
 import { getSession } from './auth'
-import { person } from './data'
+import { person, updateShowInLeaderboard } from './data'
 
 export const getSelfPerson = async (slackId: string) => {
   const url = `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/people`
@@ -221,4 +221,58 @@ export async function reportTourStep(tourStepId: string) {
       ],
     }),
   })
+}
+
+export async function reportLeaderboardParticipating(participating: boolean) {
+  const session = await getSession()
+
+  if (!session) {
+    const err = new Error(
+      'No session when trying to set leaderboard participation',
+    )
+    console.error(err)
+    throw err
+  }
+
+  try {
+    const response = await fetch(
+      'https://api.airtable.com/v0/appTeNFYcUiYfGcR6/people',
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          records: [
+            {
+              id: session.personId,
+              fields: {
+                show_in_leaderboard: participating,
+              },
+            },
+          ],
+        }),
+      },
+    )
+
+    if (!response.ok) {
+      const error = new Error(
+        `Failed to update leaderboard participation: ${response.status} ${response.statusText}`,
+      )
+      console.error(error)
+      throw error
+    }
+  } catch (err) {
+    console.error('Error updating leaderboard participation:', err)
+    throw err
+  }
+
+  // update the person cache
+  updateShowInLeaderboard(participating)
+}
+
+export async function getLeaderboardParticipating(): Promise<boolean> {
+  const record = await person()
+  return !!record.fields.show_in_leaderboard
 }

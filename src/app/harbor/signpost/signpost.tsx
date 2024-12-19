@@ -13,6 +13,7 @@ import Referral from './referral'
 
 import pluralize from '../../../../lib/pluralize.js'
 import BestShips from './best-ships'
+import LeaderboardOptIn from './leaderboard'
 
 export default function Signpost() {
   let wakaKey: string | null = null
@@ -72,9 +73,10 @@ export default function Signpost() {
         The Signpost
         <img
           src="/signpost.png"
+          alt="a signpost with 4 boards"
           width={32}
           className="inline-block ml-4 hidden sm:inline"
-        ></img>
+        />
       </h1>
 
       <p className="text-center text-white text-xs sm:text-sm mb-8">
@@ -102,7 +104,7 @@ export default function Signpost() {
                     You've logged {pluralize(hms.hours, 'hour')},{' '}
                     {pluralize(hms.minutes, 'minute')},{' '}
                   </span>
-                  <br className="sm:hidden"></br>
+                  <br className="sm:hidden" />
                   <span>
                     and {pluralize(hms.seconds, 'second')} of coding time so
                     far!
@@ -119,7 +121,7 @@ export default function Signpost() {
             </>
           )}
         </p>
-        <p></p>
+        <p />
       </div>
 
       <JaggedCard shadow={false} small={!showInstructions}>
@@ -136,6 +138,8 @@ export default function Signpost() {
       </JaggedCard>
 
       <BestShips />
+
+      <LeaderboardOptIn />
 
       <h2 className="mt-8 font-heading text-2xl font-bold mb-4 text-center">
         Changelog

@@ -191,6 +191,25 @@ export async function person(): Promise<any> {
 
   return recordPromise
 }
+
+export async function updateShowInLeaderboard(
+  showInLeaderboard: boolean,
+): Promise<void> {
+  const session = await getSession()
+  if (!session) throw new Error('No session present')
+
+  const cached = personCache.get(session.personId)
+  if (cached) {
+    const record = await cached.recordPromise
+    record.fields.show_in_leaderboard = showInLeaderboard
+
+    // Update the cache.
+    personCache.set(session.personId, {
+      recordPromise: Promise.resolve(record),
+      timestamp: record.timestamp,
+    })
+  }
+}
 //#endregion
 
 //#region Wakatime
