@@ -1,7 +1,12 @@
 import { useState } from 'react'
 
 import { Howl } from 'howler'
-import { sample, shopGreeting, shopNoMoney, shopGetOut } from '../../../../lib/flavor'
+import {
+  sample,
+  shopGreeting,
+  shopNoMoney,
+  shopGetOut,
+} from '../../../../lib/flavor'
 import { yap } from '../../../../lib/yap'
 
 async function shopkeeperSay(text) {
@@ -17,7 +22,7 @@ const bellSoundUrls = [
 ]
 const bellSounds = bellSoundUrls.map((url) => new Howl({ src: [url] }))
 
-export const ShopkeeperComponent = ({ balance: number, cursed: boolean }) => {
+export function ShopkeeperComponent({ balance = 0, cursed: boolean }) {
   const [atCounter, setAtCounter] = useState(false)
   const [bellIndex, setBellIndex] = useState(0)
   const [bellClickCount, setBellClickCount] = useState(0)
@@ -47,6 +52,7 @@ export const ShopkeeperComponent = ({ balance: number, cursed: boolean }) => {
 
   return (
     <>
+      {balance}
       <div className="cursor-pointer" onClick={handleServiceBellClick}>
         🛎️
       </div>

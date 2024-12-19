@@ -81,7 +81,8 @@ export default function Shop({ session }: { session: HsSession }) {
         <p className="text-xl animate-pulse mb-6 rotate-[-7deg] inline-block">
           {bannerText}
         </p>
-        
+
+        <h1>{personTicketBalance ?? 'wut'}</h1>
         <ShopkeeperComponent balance={personTicketBalance} cursed={cursed} />
         <br />
         <Progress val={favouriteItems} items={shopItems} />
