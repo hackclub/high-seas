@@ -1,4 +1,4 @@
-import type React from 'react'
+import React, { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Icon from '@hackclub/icons'
 import JaggedCard from '../jagged-card'
@@ -17,6 +17,18 @@ export default function Modal({
   children: React.ReactNode
   props?: any
 }) {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !hideCloseButton) {
+        close(event)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [hideCloseButton, close])
+
   return (
     <AnimatePresence>
       {isOpen ? (
