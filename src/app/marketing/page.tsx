@@ -7,7 +7,7 @@ import { IdeaGenerator } from '../../components/idea-generator.js'
 
 import shop1 from './art/shop/shop1.png'
 import { getSession } from '../utils/auth'
-
+import Projects from './components/Projects'
 import EmailSubmissionForm from './components/email-submission-form'
 import ScrollShop from './components/ScrollShop.jsx'
 import ScrollShopReverse from './components/ScrollShopReverse.jsx'
@@ -825,6 +825,8 @@ export default async function Marketing() {
           </div>
         </div>
       </div>
+
+      <Projects />
 
       <div className="bg-[#F567D7] p-8">
         <div className="xl:mx-44 md:mx-22 mt-4">
