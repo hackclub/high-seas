@@ -1,7 +1,12 @@
 <div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://highseas.hackclub.com/api/stats?theme=dark">
+    <source media="(prefers-color-scheme: light)" srcset="https://highseas.hackclub.com/api/stats?theme=light">
+    <img alt="stats display" src="https://highseas.hackclub.com/api/stats">
+  </picture>
+  
   <img src="https://github.com/user-attachments/assets/a7da63c4-eb4b-4fe6-b048-e441d1cb86d9" width="400">
   <h1>Build personal projects. Get free stuff.</h1>
-  <img src="https://highseas.hackclub.com/api/stats" alt="stats display" />
 </div>
 
 _Welcome to the Hack Club High Seas._
