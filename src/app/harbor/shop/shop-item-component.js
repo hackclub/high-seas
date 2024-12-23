@@ -31,10 +31,14 @@ const ActionArea = ({ item, filterIndex, affordable }) => {
     return <Button disabled={true}>💸 {getYourRacksUp}</Button>
   }
 
-
   return (
     <form action={`/api/buy/${item.id}`} method="GET" className="w-full">
-      <input type="hidden" name="region" value={filterIndex === 1 ? 'us' : 'global'} /> {/* hidden input for obtaining region */}
+      <input
+        type="hidden"
+        name="region"
+        value={filterIndex === 1 ? 'us' : 'global'}
+      />{' '}
+      {/* hidden input for obtaining region */}
       <Button
         type="submit"
         className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 text-3xl enchanted"
@@ -122,7 +126,9 @@ export const ShopItemComponent = ({
             onClick={() => {
               setFavouriteItems((prevFav) => {
                 if (prevFav.includes(item.id)) {
-                  return prevFav.filter((favItem) => String(favItem) !== item.id)
+                  return prevFav.filter(
+                    (favItem) => String(favItem) !== item.id,
+                  )
                 } else {
                   return [...prevFav, item.id]
                 }
