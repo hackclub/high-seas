@@ -88,6 +88,7 @@ export default function NewShipForm({
     { label: 'Counterspell', value: 'counterspell' },
     { label: 'Anchor', value: 'anchor' },
     { label: 'Dessert', value: 'dessert' },
+    { label: 'Asylum', value: 'asylum' },
   ]
 
   // Initialize confetti on mount
