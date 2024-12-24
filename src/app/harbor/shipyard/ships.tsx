@@ -171,129 +171,135 @@ export default function Ships({
     s: Ship
     id: string
     setNewShipVisible: any
-  }) => (
-    <div
-      key={s.id}
-      id={id}
-      onClick={() => setSelectedShip(s)}
-      className="cursor-pointer"
-    >
-      <Card className="flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 hover:bg-gray-100 transition-colors duration-200">
-        <div className="flex gap-4 items-center">
-          <div className="w-16 h-16 relative mb-4 sm:mb-0 sm:mr-4 flex-shrink-0">
-            <img
-              src={s.screenshotUrl}
-              alt={`Screenshot of ${s.title}`}
-              className="object-cover w-full h-full absolute top-0 left-0 rounded"
-              onError={({ target }) => {
-                target.src = NoImgDino.src
-              }}
-            />
+  }) => {
+    const latestShip = getChainFromAnyId(s.id)?.at(-1) || s
+
+    return (
+      <div
+        key={s.id}
+        id={id}
+        onClick={() => setSelectedShip(s)}
+        className="cursor-pointer"
+      >
+        <Card className="flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 hover:bg-gray-100 transition-colors duration-200">
+          <div className="flex gap-4 items-center">
+            <div className="w-16 h-16 relative mb-4 sm:mb-0 sm:mr-4 flex-shrink-0">
+              <img
+                src={latestShip.screenshotUrl}
+                alt={`Screenshot of ${latestShip.title}`}
+                className="object-cover w-full h-full absolute top-0 left-0 rounded"
+                onError={({ target }) => {
+                  target.src = NoImgDino.src
+                }}
+              />
+            </div>
+            <h2 className="text-xl font-semibold text-left mb-2 sm:hidden block">
+              {s.title}
+            </h2>
           </div>
-          <h2 className="text-xl font-semibold text-left mb-2 sm:hidden block">
-            {s.title}
-          </h2>
-        </div>
-        <div className="flex-grow">
-          <h2 className="text-xl font-semibold text-left mb-2 sm:block hidden">
-            {s.title}
-          </h2>
+          <div className="flex-grow">
+            <h2 className="text-xl font-semibold text-left mb-2 sm:block hidden">
+              {latestShip.title}
+            </h2>
 
-          <div className="flex flex-wrap items-start gap-2 text-sm">
-            <ShipPillCluster
-              chain={s.shipType === 'project' ? getChainFromAnyId(s.id) : [s]}
-            />
+            <div className="flex flex-wrap items-start gap-2 text-sm">
+              <ShipPillCluster
+                chain={s.shipType === 'project' ? getChainFromAnyId(s.id) : [s]}
+              />
+            </div>
           </div>
-        </div>
 
-        {bareShips ? null : (
-          <div className="mt-4 sm:mt-0 sm:ml-auto">
-            {s.shipStatus === 'staged' ? (
-              <>
-                <Button
-                  id="ship-ship"
-                  onClick={async (e) => {
-                    e.stopPropagation()
-                    if (sessionStorage.getItem('tutorial') === 'true') {
-                      await tryToShip(s)
-                    } else {
-                      setShipToShip(s)
-                      setShipModal(true)
-                    }
-                  }}
-                  disabled={isShipping}
-                >
-                  {isShipping
-                    ? 'Shipping...'
-                    : s.shipType === 'project'
-                      ? 'SHIP SHIP!'
-                      : 'SHIP UPDATE!'}
-                </Button>
+          {bareShips ? null : (
+            <div className="mt-4 sm:mt-0 sm:ml-auto">
+              {s.shipStatus === 'staged' ? (
+                <>
+                  <Button
+                    id="ship-ship"
+                    onClick={async (e) => {
+                      e.stopPropagation()
+                      if (sessionStorage.getItem('tutorial') === 'true') {
+                        await tryToShip(s)
+                      } else {
+                        setShipToShip(s)
+                        setShipModal(true)
+                      }
+                    }}
+                    disabled={isShipping}
+                  >
+                    {isShipping
+                      ? 'Shipping...'
+                      : s.shipType === 'project'
+                        ? 'SHIP SHIP!'
+                        : 'SHIP UPDATE!'}
+                  </Button>
 
-                <Modal isOpen={shipModal} close={() => setShipModal(false)}>
-                  <div className="p-4 max-h-96 overflow-y-auto">
-                    <h2 className="text-3xl font-bold text-center">
-                      Confirm Shipping
-                    </h2>
-                    <p className="text-xl mt-5 text-center">
-                      Are you sure you want to ship {s.title}?
-                    </p>
-                    <p className="mt-3 text-center">
-                      Keep in mind that this can't be reverted! <br /> Your ship
-                      will start getting into matchups.
-                    </p>
-                    <div className="flex justify-center">
-                      <Image src={ThinkingDino} alt="Thinking Dino" />
+                  <Modal isOpen={shipModal} close={() => setShipModal(false)}>
+                    <div className="p-4 max-h-96 overflow-y-auto">
+                      <h2 className="text-3xl font-bold text-center">
+                        Confirm Shipping
+                      </h2>
+                      <p className="text-xl mt-5 text-center">
+                        Are you sure you want to ship {latestShip.title}?
+                      </p>
+                      <p className="mt-3 text-center">
+                        Keep in mind that this can't be reverted! <br /> Your
+                        ship will start getting into matchups.
+                      </p>
+                      <div className="flex justify-center">
+                        <Image src={ThinkingDino} alt="Thinking Dino" />
+                      </div>
+                      <div className="flex justify-end mt-5">
+                        <Button
+                          onClick={() => setShipModal(false)}
+                          className="mr-5"
+                        >
+                          Go back
+                        </Button>
+
+                        <Button
+                          onClick={async () => {
+                            if (shipToShip) {
+                              await tryToShip(shipToShip)
+                            }
+                            setShipModal(false)
+                          }}
+                          disabled={isShipping}
+                        >
+                          {isShipping ? 'Shipping...' : 'Yes, ship it'}
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex justify-end mt-5">
-                      <Button
-                        onClick={() => setShipModal(false)}
-                        className="mr-5"
-                      >
-                        Go back
-                      </Button>
-
-                      <Button
-                        onClick={async () => {
-                          if (shipToShip) {
-                            await tryToShip(shipToShip)
-                          }
-                          setShipModal(false)
-                        }}
-                        disabled={isShipping}
-                      >
-                        {isShipping ? 'Shipping...' : 'Yes, ship it'}
-                      </Button>
-                    </div>
-                  </div>
-                </Modal>
-              </>
-            ) : s.paidOut ? (
-              !stagedShips.find(
-                (stagedShip) =>
-                  stagedShip.wakatimeProjectNames.join(',') ===
-                  s.wakatimeProjectNames.join(','),
-              ) ? (
-                <Button
-                  onClick={async (e) => {
-                    e.stopPropagation()
-                    console.log('Shipping an update...', s)
-                    setNewUpdateShip(s)
-                  }}
-                >
-                  Ship an update!
-                </Button>
+                  </Modal>
+                </>
+              ) : latestShip.paidOut ? (
+                !stagedShips.find(
+                  (stagedShip) =>
+                    stagedShip.wakatimeProjectNames.join(',') ===
+                    s.wakatimeProjectNames.join(','),
+                ) ? (
+                  <Button
+                    onClick={async (e) => {
+                      e.stopPropagation()
+                      console.log('Shipping an update...', s)
+                      setNewUpdateShip(s)
+                    }}
+                  >
+                    Ship an update!
+                  </Button>
+                ) : (
+                  <p className="opacity-50 text-sm">Pending draft update!</p>
+                )
               ) : (
-                <p className="opacity-50 text-sm">Pending draft update!</p>
-              )
-            ) : (
-              <p>Awaiting payout</p>
-            )}
-          </div>
-        )}
-      </Card>
-    </div>
-  )
+                <p>Awaiting payout</p>
+              )}
+            </div>
+          )}
+        </Card>
+      </div>
+    )
+  }
+
+  const latestShip = getChainFromAnyId(selectedShip?.id)?.at(-1) || selectedShip
 
   return (
     <>
@@ -330,11 +336,11 @@ export default function Ships({
               const stagedShipParent = getChainFromAnyId(ship.id)
 
               const editableFields: EditableShipFields = {
-                title: stagedShipParent?.[0].title,
-                repoUrl: stagedShipParent?.[0].repoUrl,
-                deploymentUrl: stagedShipParent?.[0].deploymentUrl,
-                readmeUrl: stagedShipParent?.[0].readmeUrl,
-                screenshotUrl: stagedShipParent?.[0].screenshotUrl,
+                title: latestShip?.title,
+                repoUrl: latestShip?.repoUrl,
+                deploymentUrl: latestShip?.deploymentUrl,
+                readmeUrl: latestShip?.readmeUrl,
+                screenshotUrl: latestShip?.screenshotUrl,
               }
 
               return (
@@ -433,12 +439,12 @@ export default function Ships({
         >
           <div className="absolute top-0 left-0 right-0 h-48">
             <Image
-              src={selectedShip?.screenshotUrl}
+              src={latestShip?.screenshotUrl}
               style={{
                 maskImage:
                   'linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0))',
               }}
-              alt={`Screenshot of ${selectedShip?.title}`}
+              alt={`Screenshot of ${latestShip?.title}`}
               className="object-cover max-w-full rounded"
               fill={true}
               priority
@@ -452,10 +458,10 @@ export default function Ships({
 
           <div className=" flex-grow pt-32" id="selected-ship-card">
             <div className="relative">
-              <h2 className="text-3xl font-bold">{selectedShip?.title}</h2>
+              <h2 className="text-3xl font-bold">{latestShip?.title}</h2>
               <p className="opacity-75">
-                {selectedShip?.wakatimeProjectNames ? (
-                  `Wakatime project name: ${selectedShip?.wakatimeProjectNames}`
+                {latestShip?.wakatimeProjectNames ? (
+                  `Wakatime project name: ${latestShip?.wakatimeProjectNames}`
                 ) : (
                   <div className="flex items-center gap-1">
                     <Icon glyph="important" />
@@ -472,18 +478,18 @@ export default function Ships({
                     id="selected-ship-play-button"
                     className="flex items-center flex-grow"
                     target="_blank"
-                    href={selectedShip?.deploymentUrl || '#'}
+                    href={latestShip?.deploymentUrl || '#'}
                     prefetch={false}
                   >
                     <Button
                       className="w-full h-full text-lg"
-                      disabled={!selectedShip?.deploymentUrl}
+                      disabled={!latestShip?.deploymentUrl}
                     >
                       Play
                       <Icon glyph="view-forward" />
                     </Button>
                   </Link>
-                  <RepoLink repo={selectedShip?.repoUrl} />
+                  <RepoLink repo={latestShip?.repoUrl} />
 
                   <Button
                     id="selected-ship-edit-button"
@@ -515,7 +521,7 @@ export default function Ships({
                     >
                       <Card className="p-2 mt-2 text-white !bg-white/15">
                         <EditShipForm
-                          ship={selectedShip}
+                          ship={latestShip}
                           shipChain={getChainFromAnyId(selectedShip.id)}
                           closeForm={() => setIsEditingShip(false)}
                           setShips={setShips}
@@ -650,12 +656,12 @@ export default function Ships({
                   height={11}
                 />
 
-                {selectedShip?.feedback && (
+                {latestShip?.feedback && (
                   <>
                     <Card className="p-4 m-5">
                       <h5 className="text-xl font-bold mb-2">Feedback</h5>
                       <p className="text-base whitespace-pre-line">
-                        {selectedShip.feedback}
+                        {latestShip.feedback}
                       </p>
                       <p className="text-xs text-gray-500 mt-3 italic">
                         This summary is auto-generated from the votes on this
