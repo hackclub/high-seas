@@ -67,7 +67,9 @@ export async function createShip(formData: FormData, isTutorial: boolean) {
             update_description: isShipUpdate
               ? formData.get('updateDescription')
               : null,
-            wakatime_project_name: formData.get('wakatime_project_name'),
+            wakatime_project_name: formData
+              .get('wakatime_project_name')
+              ?.toString(),
             project_source: isTutorial ? 'tutorial' : 'high_seas',
             for_ysws,
           },
@@ -122,6 +124,9 @@ export async function createShipUpdate(
      * Secondly, the reshipped_to field on the reshipped ship should be updated to be the new update ship's record ID.
      */
 
+    const wakatimeProjectNames =
+      formData.get('wakatime_project_name')?.toString() || ''
+
     // Step 1:
     const res: { id: string; fields: any } = await new Promise(
       (resolve, reject) => {
@@ -142,6 +147,7 @@ export async function createShipUpdate(
                   : [reshippedFromShip.id],
                 credited_hours,
                 for_ysws: reshippedFromShip.yswsType,
+                wakatime_project_name: wakatimeProjectNames,
               },
             },
           ],
@@ -208,7 +214,7 @@ export async function createShipUpdate(
         : [reshippedFromShip.id],
       credited_hours,
       total_hours: (reshippedFromShip.total_hours ?? 0) + credited_hours,
-      wakatimeProjectNames: reshippedFromShip.wakatimeProjectNames,
+      wakatimeProjectNames: wakatimeProjectNames?.split('$$xXseparatorXx$$'),
       for_ysws,
     }
   })
