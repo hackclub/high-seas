@@ -13,11 +13,11 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json(
-        { error: 'Voting closed' },
-        { status: 418 },
-      )
+    { error: 'Voting closed' },
+    { status: 418 },
+  )
 
-  try {
+  /*try {
     // let isBot = false;
     const voteData = await request.json()
 
@@ -91,14 +91,14 @@ export async function POST(request: Request) {
     voteData.loser_demo_opened = loserAnalytics.demoOpened
     voteData.skips_before_vote = voteData.analytics.skipsBeforeVote
 
-    const _result = await submitVote(voteData /*, isBot*/)
+    const _result = await submitVote(voteData /*, isBot*_/)
 
-    return NextResponse.json({ ok: true /*, reload: isBot */ })
+    return NextResponse.json({ ok: true /*, reload: isBot *_/ })
   } catch (error) {
     console.error('Error submitting vote:', error)
     return NextResponse.json(
       { error: 'Failed to submit vote' },
       { status: 500 },
     )
-  }
+  }*/
 }
