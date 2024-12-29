@@ -12,10 +12,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  return NextResponse.json(
-    { error: 'Voting closed' },
-    { status: 418 },
-  )
+  return NextResponse.json({ error: 'Voting closed' }, { status: 418 })
 
   /*try {
     // let isBot = false;
