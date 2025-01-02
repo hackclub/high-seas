@@ -33,7 +33,7 @@ interface Matchup {
   ts: number
 }
 
-export default function Matchups({ session }: { session: HsSession }) {
+export default function Battles({ session }: { session: HsSession }) {
   const [matchup, setMatchup] = useState<Matchup | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedProject, setSelectedProject] = useState<Ships | null>(null)
