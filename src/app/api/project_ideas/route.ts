@@ -1,4 +1,4 @@
-'use server'
+import 'server-only'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { sample } from '../../../../lib/flavor'
