@@ -10,14 +10,14 @@ import {
   PopoverContent,
 } from '@/components/ui/popover'
 import Icon from '@hackclub/icons'
-import { safePerson } from '@/app/utils/airtable'
+import { getSafePerson } from '@/app/utils/get-safe-person'
 
 export default function Referral() {
   const [shareLink, setShareLink] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    safePerson().then((sp) => {
+    getSafePerson().then((sp) => {
       if (sp?.referralLink) {
         setShareLink(sp.referralLink)
       }

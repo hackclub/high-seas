@@ -7,10 +7,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 
 import { LoadingSpinner } from '../../../components/ui/loading_spinner.js'
-import {
-  getVotesRemainingForNextPendingShip,
-  safePerson,
-} from '@/app/utils/airtable'
+import { getVotesRemainingForNextPendingShip } from '@/app/utils/get-votes-remaining-for-next-pending-ship'
+import { getSafePerson } from '@/app/utils/get-safe-person'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
 import { useToast } from '@/hooks/use-toast'
 import { HsSession } from '@/app/utils/auth'
@@ -33,7 +31,7 @@ interface Matchup {
   ts: number
 }
 
-export default function Matchups({ session }: { session: HsSession }) {
+export default function Battles({ session }: { session: HsSession }) {
   const [matchup, setMatchup] = useState<Matchup | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedProject, setSelectedProject] = useState<Ships | null>(null)
@@ -81,7 +79,7 @@ export default function Matchups({ session }: { session: HsSession }) {
   })
 
   useEffect(() => {
-    safePerson().then((sp) => {
+    getSafePerson().then((sp) => {
       setCursed(sp.cursed)
       setBlessed(sp.blessed)
     })
@@ -174,33 +172,8 @@ export default function Matchups({ session }: { session: HsSession }) {
     }, interval)
   }
 
-  // useEffect(() => {
-  //   if (turnstileRef.current) {
-  //     let widgetId;
-
-  //     const genToken = () => {
-  //       widgetId = window.turnstile!.render(turnstileRef.current, {
-  //         sitekey: "0x4AAAAAAAzOAaBz1TUgJG68", // Site key
-  //         theme: "dark",
-  //         callback: (token: string) => {
-  //           console.log(token);
-  //           setTurnstileToken(token);
-  //         },
-  //       });
-  //     };
-  //     genToken();
-
-  //     const genTokenInterval = setInterval(genToken, 4 * 60 * 1_000); // Every 4 minutes
-
-  //     return () => {
-  //       window.turnstile!.reset(widgetId);
-  //       clearInterval(genTokenInterval);
-  //     };
-  //   }
-  // }, [selectedProject]);
-
   const fetchVoteBalance = async () => {
-    setVoteBalance(await getVotesRemainingForNextPendingShip(session.slackId))
+    setVoteBalance(await getVotesRemainingForNextPendingShip())
   }
 
   const fetchMatchup = async (

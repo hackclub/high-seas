@@ -1,19 +1,12 @@
-'use server'
+import 'server-only'
 
 import { getSession } from './auth'
 import { person, updateShowInLeaderboard } from './data'
 
-export const getSelfPerson = async (slackId: string) => {
-  const session = await getSession()
-  if (!session) {
-    throw new Error('No session when trying to get self person')
+export const getPersonBySlackId = async (slackId: string) => {
+  if (!slackId) {
+    throw new Error('No slackId provided')
   }
-  if (session.slackId !== slackId) {
-    const err = new Error('Session slackId does not match provided slackId')
-    console.error(err)
-    throw err
-  }
-
   const url = `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/people`
   const filterByFormula = encodeURIComponent(`{slack_id} = '${slackId}'`)
   const response = await fetch(`${url}?filterByFormula=${filterByFormula}`, {
@@ -37,6 +30,15 @@ export const getSelfPerson = async (slackId: string) => {
     throw e
   }
   return data.records[0]
+}
+
+export const getSelfPerson = async () => {
+  const session = await getSession()
+  if (!session) {
+    throw new Error('No session when trying to get self person')
+  }
+
+  return getPersonBySlackId(session?.slackId)
 }
 
 export const getSignpostUpdates = async () => {
@@ -138,16 +140,14 @@ export async function getPersonByMagicToken(token: string): Promise<{
   return { id, email, slackId }
 }
 
-export async function getSelfPersonIdentifier(slackId: string) {
-  const person = await getSelfPerson(slackId)
+export async function getSelfPersonIdentifier() {
+  const person = await getSelfPerson()
   return person.fields.identifier
 }
 
 export const getPersonTicketBalanceAndTutorialStatutWowThisMethodNameSureIsLongPhew =
-  async (
-    slackId: string,
-  ): Promise<{ tickets: number; hasCompletedTutorial: boolean }> => {
-    const person = await getSelfPerson(slackId)
+  async (): Promise<{ tickets: number; hasCompletedTutorial: boolean }> => {
+    const person = await getSelfPerson()
     const tickets = person.fields.settled_tickets as number
     const hasCompletedTutorial = person.fields.academy_completed === true
 
@@ -155,8 +155,8 @@ export const getPersonTicketBalanceAndTutorialStatutWowThisMethodNameSureIsLongP
   }
 
 // deprecate
-export async function getVotesRemainingForNextPendingShip(slackId: string) {
-  const person = await getSelfPerson(slackId)
+export async function getVotesRemainingForNextPendingShip() {
+  const person = await getSelfPerson()
   return person['fields']['votes_remaining_for_next_pending_ship'] as number
 }
 
@@ -175,7 +175,7 @@ export interface SafePerson {
 }
 
 // Good method
-export async function safePerson(): Promise<SafePerson> {
+export async function getSafePerson(): Promise<SafePerson> {
   const record = await person()
 
   const id = record.id

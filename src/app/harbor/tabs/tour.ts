@@ -2,7 +2,8 @@ import Shepherd, { type Tour } from 'shepherd.js'
 import './shepherd.css'
 import { offset } from '@floating-ui/dom'
 import Cookies from 'js-cookie'
-import { reportTourStep, safePerson } from '../../utils/airtable'
+import { reportTourStep } from '@/app/utils/report-tour-step'
+import { getSafePerson } from '@/app/utils/get-safe-person'
 
 const waitForElement = (
   selector: string,
@@ -58,7 +59,7 @@ const t = new Shepherd.Tour({
 
 let hasSetUp = false
 export function tour() {
-  safePerson().then(({ hasCompletedTutorial }) => {
+  getSafePerson().then(({ hasCompletedTutorial }) => {
     console.log('Setting tutorial sessionstorage to', hasCompletedTutorial)
     sessionStorage.setItem('tutorial', (!hasCompletedTutorial).toString())
   })

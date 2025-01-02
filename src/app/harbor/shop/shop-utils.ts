@@ -2,7 +2,7 @@
 
 import Airtable from 'airtable'
 import { getSession } from '@/app/utils/auth'
-import { getSelfPerson } from '@/app/utils/airtable'
+import { getSelfPerson } from '@/app/utils/get-self-person'
 import { NextResponse } from 'next/server'
 
 const base = () => {
@@ -37,7 +37,7 @@ export async function getPerson() {
   if (!('slackId' in session)) {
     return
   }
-  const person = await getSelfPerson(session.slackId)
+  const person = await getSelfPerson()
   if (!person) {
     return NextResponse.json(
       { error: "i don't even know who you are" },
@@ -52,7 +52,7 @@ export async function getShop(): Promise<ShopItem[]> {
   if (!('slackId' in session)) {
     return
   }
-  const person = await getSelfPerson(session.slackId)
+  const person = await getSelfPerson()
 
   return new Promise((resolve, reject) => {
     base()('shop_items')

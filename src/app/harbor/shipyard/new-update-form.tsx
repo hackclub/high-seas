@@ -4,7 +4,7 @@ import type { Ship } from '@/app/utils/data'
 import { Button } from '@/components/ui/button'
 import JSConfetti from 'js-confetti'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { getWakaSessions } from '@/app/utils/waka'
+import { getWakaSessions } from '@/app/utils/get-waka-sessions'
 import Icon from '@hackclub/icons'
 
 export default function NewUpdateForm({

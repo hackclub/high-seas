@@ -1,6 +1,4 @@
-'use server'
-
-import { getSession } from '@/app/utils/auth'
+import { getSession } from '@/app/utils/get-session'
 import SignOut from './sign_out'
 import SignIn from './sign_in'
 import Image from 'next/image'

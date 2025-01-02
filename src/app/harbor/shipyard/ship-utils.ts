@@ -1,9 +1,9 @@
 'use server'
 
-import { getSelfPerson } from '@/app/utils/airtable'
+import { getSelfPerson } from '@/app/utils/get-self-person'
 import { getSession } from '@/app/utils/auth'
 import { fetchShips, person } from '@/app/utils/data'
-import { getWakaSessions } from '@/app/utils/waka'
+import { getWakaSessions } from '@/app/utils/get-waka-sessions'
 import { cookies } from 'next/headers'
 import type { Ship } from '@/app/utils/data'
 import Airtable from 'airtable'
@@ -45,7 +45,7 @@ export async function createShip(formData: FormData, isTutorial: boolean) {
 
   const slackId = session.slackId
   return await withLock(`ship:${slackId}`, async () => {
-    const entrantId = await getSelfPerson(slackId).then((p) => p.id)
+    const entrantId = await getSelfPerson().then((p) => p.id)
 
     const isShipUpdate = formData.get('isShipUpdate')
 
@@ -100,7 +100,7 @@ export async function createShipUpdate(
   const slackId = session.slackId
 
   return withLock(`update:${slackId}`, async () => {
-    const entrantId = await getSelfPerson(slackId).then((p) => p.id)
+    const entrantId = await getSelfPerson().then((p) => p.id)
 
     // This pattern makes sure the ship data is not fraudulent
     const ships = await fetchShips(slackId)

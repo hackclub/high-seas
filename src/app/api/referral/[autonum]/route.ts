@@ -1,4 +1,4 @@
-'use server'
+import 'server-only'
 
 import { getPersonByAuto } from '@/app/utils/airtable'
 import { redirect } from 'next/navigation'

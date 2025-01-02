@@ -10,7 +10,8 @@ import SignPost from '../signpost/signpost'
 import { tour } from './tour'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
 import { useRouter } from 'next/navigation'
-import { getSession, type HsSession } from '@/app/utils/auth'
+import { type HsSession } from '@/app/utils/auth'
+import { getSession } from '@/app/utils/get-session'
 import {
   Popover,
   PopoverTrigger,

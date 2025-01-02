@@ -1,7 +1,6 @@
-'use server'
+import 'server-only'
 
 import { sql } from '@vercel/postgres'
-import Airtable from 'airtable'
 
 async function processPendingInviteJobs() {
   const { rows } =
