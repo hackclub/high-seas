@@ -2,7 +2,8 @@
 
 import { notFound } from 'next/navigation'
 import Harbor from '../harbor/tabs/tabs'
-import { createMagicSession, getSession } from '../utils/auth'
+import { createMagicSession } from '../utils/create-magic-session'
+import { getSession } from '../utils/get-session'
 import { Card } from '@/components/ui/card'
 import { SoundButton } from '../../components/sound-button.js'
 import { useEffect } from 'react'
