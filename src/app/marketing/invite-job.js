@@ -1,19 +1,17 @@
-'use server'
-
 import { sql } from '@vercel/postgres'
 import { headers } from 'next/headers'
 
-async function sendInviteJob({ email, userAgent }) {
+export async function sendInviteJob({ email, userAgent }) {
   const headersList = headers()
   const ipAddress = headersList.get('x-forwarded-for')
 
-  const result =
+  const _result =
     await sql`INSERT INTO invite_job (email, ip_address, user_agent) VALUES (${email}, ${ipAddress}, ${userAgent});`
 
   // return result;
 }
 
-async function processPendingInviteJobs() {
+export async function processPendingInviteJobs() {
   const { rows } =
     await sql`SELECT * FROM invite_job WHERE airtable_invite_record_id IS NULL LIMIT 10`
 
@@ -61,5 +59,3 @@ async function processPendingInviteJobs() {
     await sql`UPDATE invite_job SET airtable_invite_record_id = ${id} WHERE email = ${email} AND airtable_invite_record_id IS NULL;`
   }
 }
-
-export { sendInviteJob, processPendingInviteJobs }

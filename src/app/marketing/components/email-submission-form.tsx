@@ -6,7 +6,7 @@ import { Button } from '../../../components/ui/button'
 import Icon from '@hackclub/icons'
 import Modal from '../../../components/ui/modal'
 import { handleEmailSubmission } from '../marketing-utils'
-import { sendInviteJob } from '../invite-job'
+import { sendInviteJob } from '../send-invite-job'
 import { usePlausible } from 'next-plausible'
 
 export default function EmailSubmissionForm() {
