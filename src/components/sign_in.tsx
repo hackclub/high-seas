@@ -1,6 +1,3 @@
-'use server'
-
-import { buttonVariants } from '@/components/ui/button'
 import { headers } from 'next/headers'
 
 export default async function SignIn({
