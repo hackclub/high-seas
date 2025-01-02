@@ -5,13 +5,6 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.BASE_ID!,
 )
 
-//TODO: Delete this file it's weird
-import { getWakaSessions } from '@/app/utils/waka'
-
-export async function wakaSessions() {
-  return await getWakaSessions()
-}
-
 export async function getStickyUrls(): string[] {
   const allStickies = (await base('sticky_holidays').select({}).all()).sort(
     (a, b) => a.fields.id - b.fields.id,
