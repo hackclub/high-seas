@@ -1,10 +1,11 @@
-'use server'
+import 'server-only'
+
 import { kv } from '@vercel/kv'
 import { v4 as uuidv4 } from 'uuid'
 
 const LOCK_TIMEOUT = 30 * 1000 // 30 seconds
 
-export async function aquireLock(key: string): Promise<string | null> {
+async function aquireLock(key: string): Promise<string | null> {
   const lockKey = `lock:${key}`
   const lockValue = uuidv4()
   const acquired = await kv.set(lockKey, lockValue, {
@@ -14,7 +15,7 @@ export async function aquireLock(key: string): Promise<string | null> {
   return acquired ? lockValue : null
 }
 
-export async function releaseLock(
+async function releaseLock(
   lockKey: string,
   lockValue: string,
 ): Promise<void> {
