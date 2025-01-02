@@ -121,6 +121,10 @@ export default function NewShipForm({
     fetchProjects()
   }, [ships])
 
+  useEffect(() => {
+    setUsedRepos(ships.map((ship) => ship.repoUrl))
+  }, [ships])
+
   const handleForm = async (formData: FormData) => {
     setStaging(true)
 
@@ -167,6 +171,8 @@ export default function NewShipForm({
         description:
           "If you're shipping an update to a project, use the 'ship an update' button instead.",
       })
+      setStaging(false)
+      return
     }
 
     const screenshotUrl = formData.get('screenshot_url') as string
