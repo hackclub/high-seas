@@ -9,6 +9,9 @@ export async function sendFraudReport(
   reason: string,
 ) {
   const session = await getSession()
+  if (!session) {
+    throw new Error('Unauthorized request')
+  }
 
   const res = await fetch(
     'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/flagged_projects',
