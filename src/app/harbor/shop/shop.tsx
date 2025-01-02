@@ -9,7 +9,7 @@ import JaggedCardSmall from '@/components/jagged-card-small'
 
 import { ShopItemComponent } from './shop-item-component.js'
 import { ShopkeeperComponent } from './shopkeeper.js'
-import { safePerson } from '@/app/utils/airtable'
+import { getSafePerson } from '@/app/utils/get-safe-person'
 import Progress from './progress.tsx'
 export default function Shop({ session }: { session: HsSession }) {
   const [filterIndex, setFilterIndex] = useLocalStorageState(
@@ -28,7 +28,7 @@ export default function Shop({ session }: { session: HsSession }) {
   useEffect(() => {
     setBannerText(sample(shopBanner))
     getShop().then((shop) => setShopItems(shop))
-    safePerson().then((sp) => setPersonTicketBalance(sp.settledTickets))
+    getSafePerson().then((sp) => setPersonTicketBalance(sp.settledTickets))
   }, [])
   const [favouriteItems, setFavouriteItems] = useState(
     JSON.parse(localStorage.getItem('favouriteItems') ?? '[]'),

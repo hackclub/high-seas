@@ -1,10 +1,8 @@
 import { Button } from '@/components/ui/button'
 import Icon from '@hackclub/icons'
 import { useEffect, useState } from 'react'
-import {
-  getLeaderboardParticipating,
-  reportLeaderboardParticipating,
-} from '@/app/utils/airtable'
+import { getLeaderboardParticipating } from '@/app/utils/get-leaderboard-participating'
+import { reportLeaderboardParticipating } from '@/app/utils/report-leaderboard-participating'
 
 export default function LeaderboardOptIn() {
   const [optedIn, setOptedIn] = useState(false)

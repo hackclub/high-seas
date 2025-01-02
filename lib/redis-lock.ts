@@ -15,10 +15,7 @@ async function aquireLock(key: string): Promise<string | null> {
   return acquired ? lockValue : null
 }
 
-async function releaseLock(
-  lockKey: string,
-  lockValue: string,
-): Promise<void> {
+async function releaseLock(lockKey: string, lockValue: string): Promise<void> {
   const currentLockValue = await kv.get(lockKey)
   if (currentLockValue === lockValue) {
     await kv.del(lockKey)

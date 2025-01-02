@@ -1,7 +1,8 @@
 'use server'
 
 import { cookies, headers } from 'next/headers'
-import { getPersonByMagicToken, getSelfPerson } from './airtable'
+import { getPersonByMagicToken } from './airtable'
+import { getPersonBySlackId } from './airtable'
 
 export interface HsSession {
   /// The Person record ID in the high seas base
@@ -82,7 +83,7 @@ export async function impersonate(slackId: string) {
   }
 
   // look for airtable user with this record
-  const person = await getSelfPerson(slackId)
+  const person = await getPersonBySlackId(slackId)
   const id = person.id
   const email = person.fields.email
 
@@ -124,7 +125,7 @@ export async function createSlackSession(slackOpenidToken: string) {
 
     if (!payload) throw new Error('Failed to decode the Slack OpenId JWT')
 
-    let person = (await getSelfPerson(payload.sub as string)) as any
+    let person = (await getPersonBySlackId(payload.sub as string)) as any
 
     if (!person) {
       const body = JSON.stringify({

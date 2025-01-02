@@ -3,7 +3,7 @@
 import Ships from './ships'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
 import { useEffect } from 'react'
-import { getVotesRemainingForNextPendingShip } from '@/app/utils/airtable'
+import { getVotesRemainingForNextPendingShip } from '@/app/utils/get-votes-remaining-for-next-pending-ship'
 import Pill from '@/components/ui/pill'
 import { fetchShips, Ship } from '@/app/utils/data'
 import { IdeaGenerator } from './idea-generator/impl'
@@ -44,7 +44,7 @@ export default function Shipyard({ session }: any) {
   useEffect(() => {
     fetchShips(session.slackId).then((ships) => setShips(ships))
 
-    getVotesRemainingForNextPendingShip(session.slackId).then((balance) =>
+    getVotesRemainingForNextPendingShip().then((balance) =>
       setVoteBalance(balance),
     )
   }, [])

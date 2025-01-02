@@ -1,12 +1,12 @@
 import { getSession } from '@/app/utils/auth'
 import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
-import { getSelfPerson } from '@/app/utils/airtable'
+import { getSelfPerson } from '@/app/utils/get-self-person'
 import { base } from 'airtable'
 
 export async function GET(request, { params }) {
   const session = await getSession()
-  const person = await getSelfPerson(session.slackId)
+  const person = await getSelfPerson()
   if (!person) {
     return NextResponse.json(
       { error: "i don't even know who you are" },
