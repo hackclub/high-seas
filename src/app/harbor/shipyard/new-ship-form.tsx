@@ -38,6 +38,19 @@ async function getReadmeFromRepo(url: string) {
   return (await testReadmeLink(readmeURI)) ? readmeURI : null
 }
 
+// rate limit params
+const maxSubmissions = 5
+const rateLimitWindow = 3600 * 1000
+
+function getSubmissions() {
+  const submissions = localStorage.getItem('shipSubmissions')
+  return submissions ? JSON.parse(submissions) : []
+}
+
+function saveSubmissions(submissions: number[]) {
+  localStorage.setItem('shipSubmissions', JSON.stringify(submissions))
+}
+
 export default function NewShipForm({
   ships,
   canvasRef,
@@ -49,7 +62,11 @@ export default function NewShipForm({
   canvasRef: any
   closeForm: any
   session: any
+  timeout: number
 }) {
+  const [rateLimitExceeded, setRateLimitExceeded] = useState<boolean>(false)
+  const [timeRemaining, setTimeRemaining] = useState<number>(0)
+  const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [staging, setStaging] = useState(false)
   const confettiRef = useRef<JSConfetti | null>(null)
   const [usedRepos, setUsedRepos] = useState<string[]>([])
@@ -91,6 +108,21 @@ export default function NewShipForm({
     { label: 'Asylum', value: 'asylum' },
   ]
 
+  useEffect(() => {
+    if (rateLimitExceeded && timeRemaining > 0) {
+      const timeout = setTimeout(() => {
+        setRateLimitExceeded(false)
+        setTimeRemaining(0)
+      }, timeRemaining)
+      timeoutId.current = timeout as NodeJS.Timeout
+      return () => {
+        if (timeoutId.current !== null) {
+          clearTimeout(timeoutId.current)
+        }
+      }
+    }
+  }, [rateLimitExceeded, timeRemaining])
+
   // Initialize confetti on mount
   useEffect(() => {
     confettiRef.current = new JSConfetti({ canvas: canvasRef.current })
@@ -122,146 +154,168 @@ export default function NewShipForm({
   }, [ships])
 
   const handleForm = async (formData: FormData) => {
-    setStaging(true)
+    const submissions = getSubmissions()
+    const now = Date.now()
+    const filteredSubmissions = submissions.filter(
+      (s: number) => now - s < rateLimitWindow,
+    )
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    if (selectedProjects === null || selectedProjects?.length === 0) {
+    if (filteredSubmissions.length >= maxSubmissions) {
+      setRateLimitExceeded(true)
+      const oldest = filteredSubmissions[0]
+      const timeRemaining = rateLimitWindow - (now - oldest)
+      setTimeRemaining(timeRemaining)
       toast({
-        title: 'Select a project',
-        description: 'Please select at least one Hackatime project!',
+        title: 'Rate Limit Exceeded',
+        description: `You have reached your submission limit. Try again in ${Math.ceil(timeRemaining / 1000)} seconds.`,
       })
-      setStaging(false)
       return
-    }
-
-    const deploymentUrl = formData.get('deployment_url') as string
-    if (
-      ['github.com', 'gitlab.com', 'bitbucket.org'].some((domain) =>
-        deploymentUrl.includes(domain),
-      )
-    ) {
-      toast({
-        title: "That's not a demo link!",
-        description:
-          'Submit a link to a deployed project or a video demo of what your project is instead!',
-      })
-      setStaging(false)
-      return
-    }
-
-    if (deploymentUrl.includes('drive.google')) {
-      toast({
-        title: "Drive links aren't allowed",
-        description:
-          "Drive links aren't allowed. Link to a deployed project directly, or if you can't upload your video somewhere else",
-      })
-      setStaging(false)
-      return
-    }
-
-    const repoUrl = formData.get('repo_url') as string
-    if (usedRepos.includes(repoUrl)) {
-      toast({
-        title: 'You already submitted a project from this repo!',
-        description:
-          "If you're shipping an update to a project, use the 'ship an update' button instead.",
-      })
-    }
-
-    const screenshotUrl = formData.get('screenshot_url') as string
-    const readmeUrl = formData.get('readme_url') as string
-    const [screenshotRes, readmeRes] = await Promise.all([
-      fetch(screenshotUrl).catch((e) => console.error(e)),
-      fetch(readmeUrl).catch((e) => console.error(e)),
-    ])
-    if (!screenshotRes) {
-      toast({
-        title: "We couldn't load your screenshot link!",
-        description: 'Try #cdn instead!',
-      })
-      setStaging(false)
-      return
-    }
-    if (!screenshotRes?.headers?.get('content-type')?.startsWith('image')) {
-      toast({
-        title: "That's not an image!",
-        description: 'Submit a link to an image of your project instead!',
-      })
-      setStaging(false)
-      return
-    }
-
-    if (screenshotUrl.includes('cdn.discordapp.com')) {
-      toast({
-        title: "That screenshot doesn't work!",
-        description:
-          'Discord links are temporary, please host your files in #cdn!',
-      })
-      setStaging(false)
-      return
-    }
-
-    if (!screenshotUrl.startsWith('https://')) {
-      toast({
-        title: "That screenshot doesn't work!",
-        description:
-          'Please use http or https links (no data urls), please host your files in #cdn!',
-      })
-      setStaging(false)
-      return
-    }
-    if (
-      deploymentUrl.includes('localhost') ||
-      deploymentUrl.includes('127.0.0.1')
-    ) {
-      toast({
-        title: "That's not a demo link!",
-        description:
-          'Please make sure your link isnt a local link.. Please submit a deployed link instead!',
-      })
-      setStaging(false)
-      return
-    }
-
-    if (readmeUrl.includes('github.com')) {
-      toast({
-        title: "This isn't a markdown link!",
-        description:
-          'Submit a link to the raw README file in your repo instead!',
-      })
-      setStaging(false)
-      return
-    }
-
-    if (
-      readmeRes.status !== 200 ||
-      !['text/plain', 'text/markdown'].includes(
-        readmeRes?.headers?.get('content-type')?.split(';')[0] || '',
-      )
-    ) {
-      toast({
-        title: "That's not a valid README link!",
-        description: 'Submit a link to a README file in your repo instead!',
-      })
-      setStaging(false)
-      return
-    }
-
-    formData.append('yswsType', yswsType)
-
-    const isTutorial = sessionStorage?.getItem('tutorial') === 'true'
-    confettiRef.current?.addConfetti()
-    closeForm()
-    if (isTutorial) {
-      window.location.reload()
     } else {
-      const _newShip = await createShip(formData, false)
-      setStaging(false)
-    }
+      const newSubmissions = [...filteredSubmissions, now]
+      saveSubmissions(newSubmissions)
 
-    // ideally we don't have to reload the page here.
-    window.location.reload()
+      // continuing with submission
+      setStaging(true)
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      if (selectedProjects === null || selectedProjects?.length === 0) {
+        toast({
+          title: 'Select a project',
+          description: 'Please select at least one Hackatime project!',
+        })
+        setStaging(false)
+        return
+      }
+
+      const deploymentUrl = formData.get('deployment_url') as string
+      if (
+        ['github.com', 'gitlab.com', 'bitbucket.org'].some((domain) =>
+          deploymentUrl.includes(domain),
+        )
+      ) {
+        toast({
+          title: "That's not a demo link!",
+          description:
+            'Submit a link to a deployed project or a video demo of what your project is instead!',
+        })
+        setStaging(false)
+        return
+      }
+
+      if (deploymentUrl.includes('drive.google')) {
+        toast({
+          title: "Drive links aren't allowed",
+          description:
+            "Drive links aren't allowed. Link to a deployed project directly, or if you can't upload your video somewhere else",
+        })
+        setStaging(false)
+        return
+      }
+
+      const repoUrl = formData.get('repo_url') as string
+      if (usedRepos.includes(repoUrl)) {
+        toast({
+          title: 'You already submitted a project from this repo!',
+          description:
+            "If you're shipping an update to a project, use the 'ship an update' button instead.",
+        })
+      }
+
+      const screenshotUrl = formData.get('screenshot_url') as string
+      const readmeUrl = formData.get('readme_url') as string
+      const [screenshotRes, readmeRes] = await Promise.all([
+        fetch(screenshotUrl).catch((e) => console.error(e)),
+        fetch(readmeUrl).catch((e) => console.error(e)),
+      ])
+      if (!screenshotRes) {
+        toast({
+          title: "We couldn't load your screenshot link!",
+          description: 'Try #cdn instead!',
+        })
+        setStaging(false)
+        return
+      }
+      if (!screenshotRes?.headers?.get('content-type')?.startsWith('image')) {
+        toast({
+          title: "That's not an image!",
+          description: 'Submit a link to an image of your project instead!',
+        })
+        setStaging(false)
+        return
+      }
+
+      if (screenshotUrl.includes('cdn.discordapp.com')) {
+        toast({
+          title: "That screenshot doesn't work!",
+          description:
+            'Discord links are temporary, please host your files in #cdn!',
+        })
+        setStaging(false)
+        return
+      }
+
+      if (!screenshotUrl.startsWith('https://')) {
+        toast({
+          title: "That screenshot doesn't work!",
+          description:
+            'Please use http or https links (no data urls), please host your files in #cdn!',
+        })
+        setStaging(false)
+        return
+      }
+      if (
+        deploymentUrl.includes('localhost') ||
+        deploymentUrl.includes('127.0.0.1')
+      ) {
+        toast({
+          title: "That's not a demo link!",
+          description:
+            'Please make sure your link isnt a local link.. Please submit a deployed link instead!',
+        })
+        setStaging(false)
+        return
+      }
+
+      if (readmeUrl.includes('github.com')) {
+        toast({
+          title: "This isn't a markdown link!",
+          description:
+            'Submit a link to the raw README file in your repo instead!',
+        })
+        setStaging(false)
+        return
+      }
+
+      if (
+        readmeRes.status !== 200 ||
+        !['text/plain', 'text/markdown'].includes(
+          readmeRes?.headers?.get('content-type')?.split(';')[0] || '',
+        )
+      ) {
+        toast({
+          title: "That's not a valid README link!",
+          description: 'Submit a link to a README file in your repo instead!',
+        })
+        setStaging(false)
+        return
+      }
+
+      formData.append('yswsType', yswsType)
+
+      const isTutorial = sessionStorage?.getItem('tutorial') === 'true'
+      confettiRef.current?.addConfetti()
+      closeForm()
+      if (isTutorial) {
+        window.location.reload()
+      } else {
+        const _newShip = await createShip(formData, false)
+        setStaging(false)
+      }
+
+      // ideally we don't have to reload the page here.
+      window.location.reload()
+    }
   }
 
   const projectDropdownList = projects?.map((p: any) => ({
@@ -464,12 +518,18 @@ export default function NewShipForm({
           </div>
         )}
 
-        <Button type="submit" disabled={staging} id="new-ship-submit">
+        <Button
+          type="submit"
+          disabled={staging || rateLimitExceeded}
+          id="new-ship-submit"
+        >
           {staging ? (
             <>
               <Icon glyph="more" />
               Staging!
             </>
+          ) : rateLimitExceeded ? (
+            `Try again in ${Math.ceil(timeRemaining / 1000)}s`
           ) : (
             'Submit as a draft'
           )}
