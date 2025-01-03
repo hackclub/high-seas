@@ -39,16 +39,16 @@ async function getReadmeFromRepo(url: string) {
 }
 
 // rate limit params
-const maxSubmissions = 5;
-const rateLimitWindow = 3600 * 1000;
+const maxSubmissions = 5
+const rateLimitWindow = 3600 * 1000
 
 function getSubmissions() {
-  const submissions = localStorage.getItem('shipSubmissions');
-  return submissions ? JSON.parse(submissions) : [];
+  const submissions = localStorage.getItem('shipSubmissions')
+  return submissions ? JSON.parse(submissions) : []
 }
 
 function saveSubmissions(submissions: number[]) {
-  localStorage.setItem('shipSubmissions', JSON.stringify(submissions));
+  localStorage.setItem('shipSubmissions', JSON.stringify(submissions))
 }
 
 export default function NewShipForm({
@@ -64,9 +64,9 @@ export default function NewShipForm({
   session: any
   timeout: number
 }) {
-  const [rateLimitExceeded, setRateLimitExceeded] = useState<boolean>(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(0);
-  const timeoutId = useRef<NodeJS.Timeout | null>(null);
+  const [rateLimitExceeded, setRateLimitExceeded] = useState<boolean>(false)
+  const [timeRemaining, setTimeRemaining] = useState<number>(0)
+  const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [staging, setStaging] = useState(false)
   const confettiRef = useRef<JSConfetti | null>(null)
   const [usedRepos, setUsedRepos] = useState<string[]>([])
@@ -111,17 +111,17 @@ export default function NewShipForm({
   useEffect(() => {
     if (rateLimitExceeded && timeRemaining > 0) {
       const timeout = setTimeout(() => {
-        setRateLimitExceeded(false);
-        setTimeRemaining(0);
-      }, timeRemaining);
-      timeoutId.current = timeout as NodeJS.Timeout;
+        setRateLimitExceeded(false)
+        setTimeRemaining(0)
+      }, timeRemaining)
+      timeoutId.current = timeout as NodeJS.Timeout
       return () => {
         if (timeoutId.current !== null) {
-          clearTimeout(timeoutId.current);
+          clearTimeout(timeoutId.current)
         }
-      };
+      }
     }
-  }, [rateLimitExceeded, timeRemaining]);
+  }, [rateLimitExceeded, timeRemaining])
 
   // Initialize confetti on mount
   useEffect(() => {
@@ -154,27 +154,29 @@ export default function NewShipForm({
   }, [ships])
 
   const handleForm = async (formData: FormData) => {
-    const submissions = getSubmissions();
-    const now = Date.now();
-    const filteredSubmissions = submissions.filter((s: number) => now - s < rateLimitWindow);
+    const submissions = getSubmissions()
+    const now = Date.now()
+    const filteredSubmissions = submissions.filter(
+      (s: number) => now - s < rateLimitWindow,
+    )
 
     if (filteredSubmissions.length >= maxSubmissions) {
-      setRateLimitExceeded(true);
-      const oldest = filteredSubmissions[0];
-      const timeRemaining = rateLimitWindow - (now - oldest);
-      setTimeRemaining(timeRemaining);
+      setRateLimitExceeded(true)
+      const oldest = filteredSubmissions[0]
+      const timeRemaining = rateLimitWindow - (now - oldest)
+      setTimeRemaining(timeRemaining)
       toast({
         title: 'Rate Limit Exceeded',
         description: `You have reached your submission limit. Try again in ${Math.ceil(timeRemaining / 1000)} seconds.`,
-      });
-      return;
+      })
+      return
     } else {
-      const newSubmissions = [...filteredSubmissions, now];
-      saveSubmissions(newSubmissions);
-      
+      const newSubmissions = [...filteredSubmissions, now]
+      saveSubmissions(newSubmissions)
+
       // continuing with submission
-      setStaging(true);
-      
+      setStaging(true)
+
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       if (selectedProjects === null || selectedProjects?.length === 0) {
@@ -185,7 +187,7 @@ export default function NewShipForm({
         setStaging(false)
         return
       }
-  
+
       const deploymentUrl = formData.get('deployment_url') as string
       if (
         ['github.com', 'gitlab.com', 'bitbucket.org'].some((domain) =>
@@ -200,7 +202,7 @@ export default function NewShipForm({
         setStaging(false)
         return
       }
-  
+
       if (deploymentUrl.includes('drive.google')) {
         toast({
           title: "Drive links aren't allowed",
@@ -210,7 +212,7 @@ export default function NewShipForm({
         setStaging(false)
         return
       }
-  
+
       const repoUrl = formData.get('repo_url') as string
       if (usedRepos.includes(repoUrl)) {
         toast({
@@ -219,7 +221,7 @@ export default function NewShipForm({
             "If you're shipping an update to a project, use the 'ship an update' button instead.",
         })
       }
-  
+
       const screenshotUrl = formData.get('screenshot_url') as string
       const readmeUrl = formData.get('readme_url') as string
       const [screenshotRes, readmeRes] = await Promise.all([
@@ -242,7 +244,7 @@ export default function NewShipForm({
         setStaging(false)
         return
       }
-  
+
       if (screenshotUrl.includes('cdn.discordapp.com')) {
         toast({
           title: "That screenshot doesn't work!",
@@ -252,7 +254,7 @@ export default function NewShipForm({
         setStaging(false)
         return
       }
-  
+
       if (!screenshotUrl.startsWith('https://')) {
         toast({
           title: "That screenshot doesn't work!",
@@ -274,7 +276,7 @@ export default function NewShipForm({
         setStaging(false)
         return
       }
-  
+
       if (readmeUrl.includes('github.com')) {
         toast({
           title: "This isn't a markdown link!",
@@ -284,7 +286,7 @@ export default function NewShipForm({
         setStaging(false)
         return
       }
-  
+
       if (
         readmeRes.status !== 200 ||
         !['text/plain', 'text/markdown'].includes(
@@ -298,9 +300,9 @@ export default function NewShipForm({
         setStaging(false)
         return
       }
-  
+
       formData.append('yswsType', yswsType)
-  
+
       const isTutorial = sessionStorage?.getItem('tutorial') === 'true'
       confettiRef.current?.addConfetti()
       closeForm()
@@ -310,12 +312,10 @@ export default function NewShipForm({
         const _newShip = await createShip(formData, false)
         setStaging(false)
       }
-  
+
       // ideally we don't have to reload the page here.
       window.location.reload()
-
     }
-
   }
 
   const projectDropdownList = projects?.map((p: any) => ({
