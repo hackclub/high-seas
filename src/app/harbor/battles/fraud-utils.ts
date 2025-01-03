@@ -5,7 +5,7 @@ import { Ship } from '@/app/utils/data'
 
 export async function sendFraudReport(
   project: Ship,
-  type: string,
+  types: string[],
   reason: string,
 ) {
   const session = await getSession()
@@ -24,7 +24,7 @@ export async function sendFraudReport(
             fields: {
               project: [project.id],
               reporter: [session?.personId],
-              reason: type,
+              reason: types,
               details: reason,
             },
           },
@@ -35,5 +35,5 @@ export async function sendFraudReport(
     .then((data) => data.json())
     .then(console.log)
 
-  console.log(project, type, reason)
+  console.log(project, types, reason)
 }
