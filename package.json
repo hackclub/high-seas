@@ -39,7 +39,7 @@
     "js-confetti": "^0.12.0",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.446.0",
-    "next": "14.2.13",
+    "next": "14.2.15",
     "next-plausible": "^3.12.2",
     "openai": "^4.68.4",
     "react": "^18",
