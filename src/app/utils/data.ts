@@ -1,5 +1,6 @@
 'use server'
 
+import Airtable from 'airtable'
 /* @malted says:
  * Hi! Welcome to `data.ts` :)
  * These are critical functions primarily used by `middleware.ts`.
@@ -387,27 +388,38 @@ export async function getBestShips(): Promise<BestShip[]> {
 
   console.log('Best ships MISS')
 
-  const recordPromise = await fetch(
-    'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/tblHeGZNG00d4GBBV?limit=3&view=viwHvRRLCwPMOmRhj',
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-        'User-Agent': 'highseas.hackclub.com (best ships)',
-      },
-    },
-  ).then((r) => r.json())
+  Airtable.configure({
+    apiKey: process.env.AIRTABLE_API_KEY,
+    endpointUrl: 'https://middleman.hackclub.com/airtable/',
+  })
 
-  const sanitised = recordPromise.records.map(
-    ({ fields }: { fields: any }) => ({
-      title: fields.title,
-      repoUrl: fields.repo_url,
-      deployUrl: fields.deploy_url,
-      screenshotUrl: fields.screenshot_url,
-      payout: fields.doubloon_payout,
-      entrantSlackId: fields.entrant__slack_id[0],
-    }),
-  )
+  const base = Airtable.base('appTeNFYcUiYfGcR6')
+  const ships = base('ships')
+
+  const records = await ships
+    .select({
+      maxRecords: 3,
+      filterByFormula: 'project_of_the_week != BLANK()',
+      sort: [{ field: 'project_of_the_week', direction: 'desc' }],
+      fields: [
+        'title',
+        'repo_url',
+        'deploy_url',
+        'screenshot_url',
+        'doubloon_payout',
+        'entrant__slack_id',
+      ],
+    })
+    .all()
+
+  const sanitised = records.map(({ fields }: { fields: any }) => ({
+    title: fields.title,
+    repoUrl: fields.repo_url,
+    deployUrl: fields.deploy_url,
+    screenshotUrl: fields.screenshot_url,
+    payout: fields.doubloon_payout,
+    entrantSlackId: fields.entrant__slack_id[0],
+  }))
 
   bestShipsCache = sanitised
   bestShipsTs = Date.now()
