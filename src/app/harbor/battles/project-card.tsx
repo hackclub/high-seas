@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Ships } from '../../../../types/battles/airtable'
-import Image from "next/legacy/image"
+import Image from "next/image"
 import Pill from '@/components/ui/pill'
 import Icon from '@hackclub/icons'
 
@@ -41,16 +41,19 @@ export default function ProjectCard({
   const truncatedText = project.update_description?.slice(0, 50)
 
   return (
-    <div className="relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl">
+    (<div className="relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl">
       {project.screenshot_url && (
         <div className="relative h-48 w-full" style={imageStyle}>
           <Image
             src={project.screenshot_url}
             alt={`Screenshot of ${project.title}`}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
-          />
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            style={{
+              maxWidth: "100%",
+              height: "auto"
+            }} />
         </div>
       )}
       <div className="p-6">
@@ -250,6 +253,6 @@ export default function ProjectCard({
           Flag project
         </button>
       </div>
-    </div>
-  )
+    </div>)
+  );
 }

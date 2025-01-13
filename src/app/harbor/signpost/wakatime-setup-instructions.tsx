@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import JaggedCard from '@/components/jagged-card'
 import Pill from '@/components/ui/pill'
 import Icon from '@hackclub/icons'
-import Image from "next/legacy/image"
+import Image from "next/image"
 import DoubloonsImage from '/public/doubloon.svg'
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
@@ -27,7 +27,7 @@ export default function WakatimeSetupInstructions({
   }, [])
 
   return (
-    <JaggedCard>
+    (<JaggedCard>
       <div className="flex gap-2 items-center">
         <motion.div animate={{ rotate: open ? 0 : -90 }}>
           <Icon
@@ -47,7 +47,6 @@ export default function WakatimeSetupInstructions({
           </div>
         </div>
       </div>
-
       <AnimatePresence>
         {open ? (
           <motion.div
@@ -64,7 +63,14 @@ export default function WakatimeSetupInstructions({
                   msg="Doubloons"
                   color="green"
                   glyphImage={
-                    <Image src={DoubloonsImage} alt="Doubloons" height={20} />
+                    <Image
+                      src={DoubloonsImage}
+                      alt="Doubloons"
+                      height={20}
+                      style={{
+                        maxWidth: "100%",
+                        height: "auto"
+                      }} />
                   }
                 />{' '}
                 you get when your projects are voted on in the{' '}
@@ -76,7 +82,14 @@ export default function WakatimeSetupInstructions({
                   msg="Doubloons"
                   color="green"
                   glyphImage={
-                    <Image src={DoubloonsImage} alt="Doubloons" height={20} />
+                    <Image
+                      src={DoubloonsImage}
+                      alt="Doubloons"
+                      height={20}
+                      style={{
+                        maxWidth: "100%",
+                        height: "auto"
+                      }} />
                   }
                 />{' '}
                 can be exchnged for items in the{' '}
@@ -153,6 +166,6 @@ export default function WakatimeSetupInstructions({
           </motion.div>
         ) : null}
       </AnimatePresence>
-    </JaggedCard>
-  )
+    </JaggedCard>)
+  );
 }

@@ -15,7 +15,7 @@ import { cantAffordWords, purchaseWords, sample } from '../../../../lib/flavor'
 import Icon from '@hackclub/icons'
 import { transcript } from '../../../../lib/transcript'
 import Modal from '@/components/ui/modal'
-import Image from "next/legacy/image"
+import Image from "next/image"
 const ActionArea = ({ item, filterIndex, affordable }) => {
   const buyWord = useMemo(() => sample(purchaseWords), [item.id])
   const getYourRacksUp = useMemo(() => sample(cantAffordWords), [item.id])
@@ -96,7 +96,7 @@ export const ShopItemComponent = ({
   const linkIndex = Number(filterIndex) - 1
 
   return (
-    <motion.div {...cardHoverProps} className="cursor-pointer">
+    (<motion.div {...cardHoverProps} className="cursor-pointer">
       <Modal isOpen={detailsModal} close={() => setDetailsModal(false)}>
         <div className="flex flex-col max-h-[60vh] overflow-y-auto px-2 mb-5">
           <h2 className="text-3xl">{item.name}</h2>
@@ -123,7 +123,10 @@ export const ShopItemComponent = ({
             alt=""
             width={461}
             height={11}
-          />
+            style={{
+              maxWidth: "100%",
+              height: "auto"
+            }} />
 
           {item.limited_qty && (
             <i className="mt-3 text-amber-100">
@@ -165,7 +168,6 @@ export const ShopItemComponent = ({
           Close
         </Button>
       </Modal>
-
       <Card
         onClick={(e) => {
           if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'FORM') {
@@ -253,6 +255,6 @@ export const ShopItemComponent = ({
           </Button>
         </CardFooter>
       </Card>
-    </motion.div>
-  )
+    </motion.div>)
+  );
 }

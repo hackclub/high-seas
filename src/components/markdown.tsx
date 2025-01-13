@@ -1,4 +1,4 @@
-import Image from "next/legacy/image"
+import Image from "next/image"
 import { Components } from 'react-markdown'
 
 export const markdownComponents: Components = {
@@ -88,6 +88,9 @@ export const markdownComponents: Components = {
       alt=""
       width={461}
       height={11}
-    />
+      style={{
+        maxWidth: "100%",
+        height: "auto"
+      }} />
   ),
 }

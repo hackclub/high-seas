@@ -3,7 +3,7 @@ import JaggedCard from '@/components/jagged-card'
 import Pill from '@/components/ui/pill'
 import { useEffect, useState } from 'react'
 import DoubloonsImage from '/public/doubloon.svg'
-import Image from "next/legacy/image"
+import Image from "next/image"
 
 export default function BestShips() {
   const [bestShips, setBestShips] = useState<Ship[]>()
@@ -13,16 +13,15 @@ export default function BestShips() {
   }, [])
 
   return (
-    <div>
+    (<div>
       <h2 className="mt-8 font-heading text-2xl font-bold mb-4 text-center">
         Best ships this week
       </h2>
-
       {bestShips ? (
         <div className="flex gap-4 overflow-x-scroll">
           {bestShips.map((partialShip: any, idx: number) => {
             return (
-              <JaggedCard
+              (<JaggedCard
                 shadow={false}
                 className="w-96 h-full flex flex-col gap-2 justify-between items-center"
                 key={idx}
@@ -32,7 +31,14 @@ export default function BestShips() {
                   msg={`${partialShip.payout} doubloons`}
                   classes="bg-white/15 text-white"
                   glyphImage={
-                    <Image src={DoubloonsImage} alt="Doubloons" height={20} />
+                    <Image
+                      src={DoubloonsImage}
+                      alt="Doubloons"
+                      height={20}
+                      style={{
+                        maxWidth: "100%",
+                        height: "auto"
+                      }} />
                   }
                 />
                 <div className="flex gap-3">
@@ -84,13 +90,13 @@ export default function BestShips() {
                     />
                   </a>
                 </div>
-              </JaggedCard>
-            )
+              </JaggedCard>)
+            );
           })}
         </div>
       ) : (
         <p>Loading...</p>
       )}
-    </div>
-  )
+    </div>)
+  );
 }
