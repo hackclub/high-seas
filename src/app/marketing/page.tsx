@@ -1,6 +1,6 @@
 import './index.css'
 
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import Link from 'next/link'
 
 import { IdeaGenerator } from '../../components/idea-generator.js'

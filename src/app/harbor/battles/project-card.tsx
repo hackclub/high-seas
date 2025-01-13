@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Ships } from '../../../../types/battles/airtable'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import Pill from '@/components/ui/pill'
 import Icon from '@hackclub/icons'
 

@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Marquee from 'react-fast-marquee'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 
 import Photo1 from '../marquee/1.jpeg'
 import Photo2 from '../marquee/2.png'

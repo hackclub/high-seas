@@ -3,7 +3,7 @@
 import { getSession } from '@/app/utils/auth'
 import SignOut from './sign_out'
 import SignIn from './sign_in'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import Logo from '/public/logo.png'
 
 export default async function Nav() {

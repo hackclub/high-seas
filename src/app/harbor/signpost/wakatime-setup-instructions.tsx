@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import JaggedCard from '@/components/jagged-card'
 import Pill from '@/components/ui/pill'
 import Icon from '@hackclub/icons'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import DoubloonsImage from '/public/doubloon.svg'
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'

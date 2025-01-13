@@ -2,7 +2,7 @@ import type { Ship } from '@/app/utils/server/data'
 import Pill from './pill'
 
 import DoubloonsImage from '/public/doubloon.svg'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import pluralize from '../../../lib/pluralize'
 
 export default function ShipPillCluster({

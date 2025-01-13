@@ -3,7 +3,7 @@ import JaggedCard from '@/components/jagged-card'
 import Pill from '@/components/ui/pill'
 import { useEffect, useState } from 'react'
 import DoubloonsImage from '/public/doubloon.svg'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 
 export default function BestShips() {
   const [bestShips, setBestShips] = useState<Ship[]>()

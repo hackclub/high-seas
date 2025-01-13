@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { stagedToShipped } from './ship-utils'
 import type { Ship } from '@/app/utils/server/data'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import Icon from '@hackclub/icons'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'

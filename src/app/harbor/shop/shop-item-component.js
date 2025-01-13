@@ -15,7 +15,7 @@ import { cantAffordWords, purchaseWords, sample } from '../../../../lib/flavor'
 import Icon from '@hackclub/icons'
 import { transcript } from '../../../../lib/transcript'
 import Modal from '@/components/ui/modal'
-import Image from 'next/image'
+import Image from "next/legacy/image"
 const ActionArea = ({ item, filterIndex, affordable }) => {
   const buyWord = useMemo(() => sample(purchaseWords), [item.id])
   const getYourRacksUp = useMemo(() => sample(cantAffordWords), [item.id])
