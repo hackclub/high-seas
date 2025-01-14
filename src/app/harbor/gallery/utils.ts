@@ -11,6 +11,7 @@ interface AirtableShipRow {
     screenshot_url: string
     hours: number
     rating: number
+    entrant__ysws_submission: string[]
   }
 }
 
@@ -45,6 +46,7 @@ export async function getShips(offset: string | undefined): Promise<{
       repoUrl: r.fields.repo_url,
       screenshotUrl: r.fields.screenshot_url,
       rating: r.fields.rating,
+      isInYswsDatabase: r.fields.entrant__ysws_submission,
     }
   })
 

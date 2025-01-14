@@ -1,0 +1,23 @@
+  [1m[38;2;173;127;168m▲ Next.js 14.2.13[39m[22m
+  - Local:        http://localhost:3001
+  - Environments: .env.local
+  - Experiments (use with caution):
+    · instrumentationHook
+
+ [32m[1m✓[22m[39m Starting...
+ [37m[1m○[22m[39m Compiling /instrumentation ...
+  [1m[38;2;173;127;168m▲ Next.js 14.2.13[39m[22m
+  - Local:        http://localhost:3001
+  - Environments: .env.local
+  - Experiments (use with caution):
+    · instrumentationHook
+
+ [32m[1m✓[22m[39m Starting...
+ [37m[1m○[22m[39m Compiling /instrumentation ...
+ [32m[1m✓[22m[39m Compiled /instrumentation in 1425ms (1601 modules)
+ [32m[1m✓[22m[39m Ready in 3.1s
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 4.3s (6081 modules)
+ GET / [32m200[39m in 5766ms
+ GET / [32m200[39m in 117ms
+ GET / [32m200[39m in 58ms
