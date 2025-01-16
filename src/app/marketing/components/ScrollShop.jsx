@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Marquee from 'react-fast-marquee'
-import Image from "next/image"
+import Image from 'next/image'
 
 import Photo1 from '../marquee/1.jpeg'
 import Photo2 from '../marquee/2.png'
@@ -12,7 +12,7 @@ import Photo5 from '../marquee/5.jpeg'
 
 export default function ScrollShop() {
   return (
-    (<Marquee autoFill pauseOnHover speed="75">
+    <Marquee autoFill pauseOnHover speed="75">
       <div
         style={{ width: '200px', margin: '0 10px' }}
         className="border-dashed border-4 border-blue-800 p-4"
@@ -24,10 +24,11 @@ export default function ScrollShop() {
           height={100}
           sizes="100vw"
           style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "cover"
-          }} />
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
+        />
       </div>
       <div
         style={{ width: '200px', margin: '0 10px' }}
@@ -40,10 +41,11 @@ export default function ScrollShop() {
           height={100}
           sizes="100vw"
           style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "cover"
-          }} />
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
+        />
       </div>
       <div
         style={{ width: '200px', margin: '0 10px' }}
@@ -56,10 +58,11 @@ export default function ScrollShop() {
           height={100}
           sizes="100vw"
           style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "cover"
-          }} />
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
+        />
       </div>
       <div
         style={{ width: '200px', margin: '0 10px' }}
@@ -72,10 +75,11 @@ export default function ScrollShop() {
           height={100}
           sizes="100vw"
           style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "cover"
-          }} />
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
+        />
       </div>
       <div
         style={{ width: '200px', margin: '0 10px' }}
@@ -88,10 +92,11 @@ export default function ScrollShop() {
           height={100}
           sizes="100vw"
           style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "cover"
-          }} />
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
+        />
       </div>
       <div
         style={{ width: '200px', margin: '0 10px' }}
@@ -104,10 +109,11 @@ export default function ScrollShop() {
           height={100}
           sizes="100vw"
           style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "cover"
-          }} />
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
+        />
       </div>
       <div
         style={{ width: '200px', margin: '0 10px' }}
@@ -120,10 +126,11 @@ export default function ScrollShop() {
           height={100}
           sizes="100vw"
           style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "cover"
-          }} />
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
+        />
       </div>
       <div
         style={{ width: '200px', margin: '0 10px' }}
@@ -136,10 +143,11 @@ export default function ScrollShop() {
           height={100}
           sizes="100vw"
           style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "cover"
-          }} />
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
+        />
       </div>
       <div
         style={{ width: '200px', margin: '0 10px' }}
@@ -152,11 +160,12 @@ export default function ScrollShop() {
           height={100}
           sizes="100vw"
           style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "cover"
-          }} />
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
+        />
       </div>
-    </Marquee>)
-  );
+    </Marquee>
+  )
 }

@@ -3,14 +3,14 @@
 import { getSession } from '@/app/utils/auth'
 import SignOut from './sign_out'
 import SignIn from './sign_in'
-import Image from "next/image"
+import Image from 'next/image'
 import Logo from '/public/logo.png'
 
 export default async function Nav() {
   const session = await getSession()
 
   return (
-    (<div className="absolute flex items-center justify-between top-0 left-0 right-0 h-14 px-2 m-0 sm:m-2 bg-transparent z-30 text-white">
+    <div className="absolute flex items-center justify-between top-0 left-0 right-0 h-14 px-2 m-0 sm:m-2 bg-transparent z-30 text-white">
       <div
         style={{
           position: 'fixed',
@@ -23,9 +23,10 @@ export default async function Nav() {
             alt="High Seas!"
             height={48}
             style={{
-              maxWidth: "100%",
-              height: "auto"
-            }} />
+              maxWidth: '100%',
+              height: 'auto',
+            }}
+          />
         </a>
       </div>
       <span />
@@ -39,9 +40,10 @@ export default async function Nav() {
               alt="profile picture"
               className="rounded-full"
               style={{
-                maxWidth: "100%",
-                height: "auto"
-              }} />
+                maxWidth: '100%',
+                height: 'auto',
+              }}
+            />
             <p className="hidden lg:block">Hey, {session.givenName}!</p>{' '}
           </div>
         ) : null}
@@ -53,6 +55,6 @@ export default async function Nav() {
           <SignIn variant="small" session={session} />
         )}
       </div>
-    </div>)
-  );
+    </div>
+  )
 }

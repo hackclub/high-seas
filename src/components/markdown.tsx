@@ -1,4 +1,4 @@
-import Image from "next/image"
+import Image from 'next/image'
 import { Components } from 'react-markdown'
 
 export const markdownComponents: Components = {
@@ -89,8 +89,9 @@ export const markdownComponents: Components = {
       width={461}
       height={11}
       style={{
-        maxWidth: "100%",
-        height: "auto"
-      }} />
+        maxWidth: '100%',
+        height: 'auto',
+      }}
+    />
   ),
 }
