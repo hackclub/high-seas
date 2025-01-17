@@ -20,10 +20,14 @@ export default function ScrollShop() {
         <Image
           src="https://cloud-a823iqif6-hack-club-bot.vercel.app/0image.png"
           alt="Photo 1"
-          layout="responsive"
           width={100}
           height={100}
-          objectFit="cover"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
         />
       </div>
       <div
@@ -33,10 +37,14 @@ export default function ScrollShop() {
         <Image
           src="https://cloud-djbef06tx-hack-club-bot.vercel.app/0image.png"
           alt="Photo 2"
-          layout="responsive"
           width={100}
           height={100}
-          objectFit="cover"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
         />
       </div>
       <div
@@ -46,10 +54,14 @@ export default function ScrollShop() {
         <Image
           src="https://cloud-1e0x3bwfz-hack-club-bot.vercel.app/0image.png"
           alt="Photo 3"
-          layout="responsive"
           width={100}
           height={100}
-          objectFit="cover"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
         />
       </div>
       <div
@@ -59,10 +71,14 @@ export default function ScrollShop() {
         <Image
           src="https://cloud-d8js788lz-hack-club-bot.vercel.app/0image.png"
           alt="Photo 4"
-          layout="responsive"
           width={100}
           height={100}
-          objectFit="cover"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
         />
       </div>
       <div
@@ -72,10 +88,14 @@ export default function ScrollShop() {
         <Image
           src="https://noras-secret-cdn.hackclub.dev/shop/raspberry_pi_5.png"
           alt="Photo 5"
-          layout="responsive"
           width={100}
           height={100}
-          objectFit="cover"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
         />
       </div>
       <div
@@ -85,10 +105,14 @@ export default function ScrollShop() {
         <Image
           src="https://noras-secret-cdn.hackclub.dev/shop/gh_miir_backpack.png"
           alt="Photo 5"
-          layout="responsive"
           width={100}
           height={100}
-          objectFit="cover"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
         />
       </div>
       <div
@@ -98,10 +122,14 @@ export default function ScrollShop() {
         <Image
           src="https://noras-secret-cdn.hackclub.dev/shop/bambu_a1_mini.png"
           alt="Photo 5"
-          layout="responsive"
           width={100}
           height={100}
-          objectFit="cover"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
         />
       </div>
       <div
@@ -111,10 +139,14 @@ export default function ScrollShop() {
         <Image
           src="https://noras-secret-cdn.hackclub.dev/shop/ipad.png"
           alt="Photo 5"
-          layout="responsive"
           width={100}
           height={100}
-          objectFit="cover"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
         />
       </div>
       <div
@@ -124,10 +156,14 @@ export default function ScrollShop() {
         <Image
           src="https://noras-secret-cdn.hackclub.dev/shop/fw_13.png"
           alt="Photo 5"
-          layout="responsive"
           width={100}
           height={100}
-          objectFit="cover"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'cover',
+          }}
         />
       </div>
     </Marquee>

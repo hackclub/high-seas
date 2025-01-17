@@ -48,8 +48,12 @@ export default function ProjectCard({
             src={project.screenshot_url}
             alt={`Screenshot of ${project.title}`}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            style={{
+              maxWidth: '100%',
+              height: 'auto',
+            }}
           />
         </div>
       )}

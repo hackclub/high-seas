@@ -47,7 +47,6 @@ export default function WakatimeSetupInstructions({
           </div>
         </div>
       </div>
-
       <AnimatePresence>
         {open ? (
           <motion.div
@@ -64,7 +63,15 @@ export default function WakatimeSetupInstructions({
                   msg="Doubloons"
                   color="green"
                   glyphImage={
-                    <Image src={DoubloonsImage} alt="Doubloons" height={20} />
+                    <Image
+                      src={DoubloonsImage}
+                      alt="Doubloons"
+                      height={20}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
+                    />
                   }
                 />{' '}
                 you get when your projects are voted on in the{' '}
@@ -76,7 +83,15 @@ export default function WakatimeSetupInstructions({
                   msg="Doubloons"
                   color="green"
                   glyphImage={
-                    <Image src={DoubloonsImage} alt="Doubloons" height={20} />
+                    <Image
+                      src={DoubloonsImage}
+                      alt="Doubloons"
+                      height={20}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
+                    />
                   }
                 />{' '}
                 can be exchnged for items in the{' '}

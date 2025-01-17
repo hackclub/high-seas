@@ -106,7 +106,6 @@ export default async function Marketing() {
           </div>
         </div>
       </div>
-
       <div className="watergradient">
         <div className="py-24 pt-12" id="howthisworks">
           <div className="flex justify-center items-center mb-6">
@@ -143,6 +142,10 @@ export default async function Marketing() {
                   alt="dragons battling"
                   width={400}
                   height={400}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </div>
             </div>
@@ -155,6 +158,10 @@ export default async function Marketing() {
                   width={400}
                   height={400}
                   className="left-0 absolute bobble opacity-95"
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
                 <Image
                   src="/howtobacks.svg"
@@ -162,6 +169,10 @@ export default async function Marketing() {
                   width={400}
                   height={400}
                   className="opacity-0 h-1 xl:h-auto"
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </div>
               <div className="flex flex-col justify-center items-center mb-8 xl:mb-0 xl:mr-8 w-full xl:w-auto text-center p-8 xl:px-16 xl:py-10 rounded-md relative pop">
@@ -237,6 +248,10 @@ export default async function Marketing() {
                   alt="treasure chest"
                   width={400}
                   height={400}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </div>
             </div>
@@ -431,6 +446,10 @@ export default async function Marketing() {
                         className="w-full h-auto"
                         width="300"
                         height="300"
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
                   </div>
@@ -462,6 +481,10 @@ export default async function Marketing() {
                         className="w-full h-auto"
                         width="300"
                         height="300"
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
                   </div>
@@ -807,7 +830,6 @@ export default async function Marketing() {
           </div>
         </div>
       </div>
-
       <div className="relative h-screen">
         <img
           src="/footerbkgr.svg"
@@ -825,7 +847,6 @@ export default async function Marketing() {
           </div>
         </div>
       </div>
-
       <div className="bg-[#F567D7] p-8">
         <div className="xl:mx-44 md:mx-22 mt-4">
           <p className="mb-4 text-lg text-pink-950">
@@ -928,7 +949,6 @@ export default async function Marketing() {
           </div>
         </div>
       </div>
-
       <img
         src="/footerbelow.svg"
         alt="under footer image"
@@ -1028,7 +1048,15 @@ const Prize = () => {
           className="w-full object-cover absolute opacity-60"
         />
         <div className="w-64 h-64 my-4 rounded-sm flex flex-col justify-center items-center">
-          <Image src={shop1} alt="Shop item" className="w-full h-auto" />
+          <Image
+            src={shop1}
+            alt="Shop item"
+            className="w-full h-auto"
+            style={{
+              maxWidth: '100%',
+              height: 'auto',
+            }}
+          />
         </div>
       </div>
     </div>
@@ -1075,6 +1103,10 @@ const PrizeCard: React.FC<PrizeProps> = ({
               className="w-full h-auto"
               width="300"
               height="300"
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+              }}
             />
           </div>
         </div>

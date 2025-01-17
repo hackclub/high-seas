@@ -88,6 +88,10 @@ export const markdownComponents: Components = {
       alt=""
       width={461}
       height={11}
+      style={{
+        maxWidth: '100%',
+        height: 'auto',
+      }}
     />
   ),
 }

@@ -253,7 +253,14 @@ export default function Ships({
                         ship will start getting into matchups.
                       </p>
                       <div className="flex justify-center">
-                        <Image src={ThinkingDino} alt="Thinking Dino" />
+                        <Image
+                          src={ThinkingDino}
+                          alt="Thinking Dino"
+                          style={{
+                            maxWidth: '100%',
+                            height: 'auto',
+                          }}
+                        />
                       </div>
                       <div className="flex justify-end mt-5">
                         <Button
@@ -314,7 +321,6 @@ export default function Ships({
         ref={canvasRef}
         className="fixed w-screen left-0 top-0 pointer-events-none"
       />
-
       {bareShips ? null : (
         <motion.div
           className="w-fit mx-auto mb-0 mt-3"
@@ -330,7 +336,6 @@ export default function Ships({
           </Button>
         </motion.div>
       )}
-
       {stagedShips.length === 0 ? null : (
         <div className={`w-full mt-8`}>
           {bareShips ? null : (
@@ -369,7 +374,6 @@ export default function Ships({
           </div>
         </div>
       )}
-
       <div className="w-full relative">
         {shipChains && shippedShips.length > 0 ? (
           <div className={`space-y-4 ${bareShips ? '' : 'mt-8'}`}>
@@ -405,7 +409,6 @@ export default function Ships({
           </>
         ) : null}
       </div>
-
       <Modal
         isOpen={newShipVisible && session}
         close={() => setNewShipVisible(false)}
@@ -417,7 +420,6 @@ export default function Ships({
           session={session}
         />
       </Modal>
-
       <Modal
         isOpen={getChainFromAnyId(newUpdateShip?.id) && session}
         close={() => setNewUpdateShip(null)}
@@ -430,7 +432,6 @@ export default function Ships({
           session={session}
         />
       </Modal>
-
       <Modal
         isOpen={!!selectedShip}
         close={() => setSelectedShip(null)}
@@ -447,18 +448,21 @@ export default function Ships({
           <div className="absolute top-0 left-0 right-0 h-48">
             <Image
               src={latestShip?.screenshotUrl}
-              style={{
-                maskImage:
-                  'linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0))',
-              }}
               alt={`Screenshot of ${latestShip?.title}`}
               className="object-cover max-w-full rounded"
               fill={true}
               priority
               unoptimized
-              sizes="4rem"
               onError={({ target }) => {
                 target.src = NoImgBanner.src
+              }}
+              sizes="4rem"
+              style={{
+                maskImage:
+                  'linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0))',
+
+                maxWidth: '100%',
+                height: 'auto',
               }}
             />
           </div>
@@ -646,6 +650,10 @@ export default function Ships({
                       alt=""
                       width={461}
                       height={11}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
                     />
 
                     <div>
@@ -661,6 +669,10 @@ export default function Ships({
                   alt=""
                   width={461}
                   height={11}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
 
                 {latestShip?.feedback && (
@@ -682,6 +694,10 @@ export default function Ships({
                       alt=""
                       width={461}
                       height={11}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
                     />
                   </>
                 )}
@@ -705,6 +721,10 @@ export default function Ships({
                           width={400}
                           height={100}
                           className="mx-auto object-cover mt-2"
+                          style={{
+                            maxWidth: '100%',
+                            height: 'auto',
+                          }}
                         />
                       </div>
                     ) : (
@@ -726,7 +746,6 @@ export default function Ships({
           </div>
         </div>
       </Modal>
-
       <Modal isOpen={!!errorModal} close={() => setErrorModal(undefined)}>
         <p className="text-3xl mb-4">Arrrr! Something broke.</p>
         <p className="mb-12">{errorModal}</p>

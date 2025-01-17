@@ -123,6 +123,10 @@ export const ShopItemComponent = ({
             alt=""
             width={461}
             height={11}
+            style={{
+              maxWidth: '100%',
+              height: 'auto',
+            }}
           />
 
           {item.limited_qty && (
@@ -165,7 +169,6 @@ export const ShopItemComponent = ({
           Close
         </Button>
       </Modal>
-
       <Card
         onClick={(e) => {
           if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'FORM') {

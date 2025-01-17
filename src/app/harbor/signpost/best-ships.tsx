@@ -17,7 +17,6 @@ export default function BestShips() {
       <h2 className="mt-8 font-heading text-2xl font-bold mb-4 text-center">
         Best ships this week
       </h2>
-
       {bestShips ? (
         <div className="flex gap-4 overflow-x-scroll">
           {bestShips.map((partialShip: any, idx: number) => {
@@ -32,7 +31,15 @@ export default function BestShips() {
                   msg={`${partialShip.payout} doubloons`}
                   classes="bg-white/15 text-white"
                   glyphImage={
-                    <Image src={DoubloonsImage} alt="Doubloons" height={20} />
+                    <Image
+                      src={DoubloonsImage}
+                      alt="Doubloons"
+                      height={20}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
+                    />
                   }
                 />
                 <div className="flex gap-3">

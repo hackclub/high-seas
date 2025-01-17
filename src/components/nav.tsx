@@ -18,12 +18,18 @@ export default async function Nav() {
         }}
       >
         <a href="/">
-          <Image src={Logo} alt="High Seas!" height={48} />
+          <Image
+            src={Logo}
+            alt="High Seas!"
+            height={48}
+            style={{
+              maxWidth: '100%',
+              height: 'auto',
+            }}
+          />
         </a>
       </div>
-
       <span />
-
       <div className="flex gap-4 items-center text-nowrap">
         {session?.picture && session.givenName ? (
           <div className="flex gap-2 items-center">
@@ -33,6 +39,10 @@ export default async function Nav() {
               height={32}
               alt="profile picture"
               className="rounded-full"
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+              }}
             />
             <p className="hidden lg:block">Hey, {session.givenName}!</p>{' '}
           </div>

@@ -35,7 +35,7 @@ export default function ShipPillCluster({
   return (
     <>
       {/* {JSON.stringify(chain[0].reshippedFromId)},,
-      {JSON.stringify(chain[0].shipStatus)} */}
+    {JSON.stringify(chain[0].shipStatus)} */}
       {
         /*!chain[0].reshippedFromId && */ chain[0].shipStatus === 'staged' ? (
           <Pill
@@ -62,7 +62,15 @@ export default function ShipPillCluster({
                 msg={pluralize(roundedPayout, 'doubloon', true)}
                 glyphSize={size === 'small' ? 16 : 20}
                 glyphImage={
-                  <Image src={DoubloonsImage} alt="doubloons" height={20} />
+                  <Image
+                    src={DoubloonsImage}
+                    alt="doubloons"
+                    height={20}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
+                  />
                 }
               />
             ) : (
