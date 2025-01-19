@@ -60,7 +60,6 @@ export interface Ship extends EditableShipFields {
   yswsType: YswsType
   feedback: string | null
   isInYswsBase: boolean
-  hidden: boolean
 }
 export interface EditableShipFields {
   title: string
@@ -143,7 +142,6 @@ export async function fetchShips(
       yswsType: r.fields.yswsType,
       feedback: r.fields.ai_feedback_summary,
       isInYswsBase: Boolean(r.fields.has_ysws_submission_id),
-      hidden: Boolean(r.fields.hidden),
     }
 
     return ship
