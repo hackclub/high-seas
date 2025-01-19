@@ -56,7 +56,7 @@ export default function ShipPillCluster({
       {chain[0].shipStatus === 'shipped' ? (
         <>
           {allShipsHaveVoteRequirementMet ? (
-            chain.at(-1)?.doubloonPayout != null ? (
+            chain.at(-1)?.matchups_count >= 10 || chain.at(-1)?.hidden ? (
               <Pill
                 classes={`${transparent && 'bg-white/15 text-white'} ${size === 'small' ? 'text-xs' : ''}`}
                 msg={pluralize(roundedPayout, 'doubloon', true)}
