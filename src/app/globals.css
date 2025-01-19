@@ -4,7 +4,7 @@
 
 body {
   /* font-family: Arial, Helvetica, sans-serif; */
-  font-family: var(--font-main);
+  font-family: var(--font-main, 'Arial Rounded MT Bold');
 }
 
 html,
@@ -21,6 +21,12 @@ main {
 
 .font-main {
   font-family: var(--font-main);
+}
+
+@font-face {
+  font-family: 'Arial Rounded MT Bold';
+  src: url('https://cloud-az9i57zos-hack-club-bot.vercel.app/0arialroundedmtbold.ttf')
+    format('truetype');
 }
 
 input,
