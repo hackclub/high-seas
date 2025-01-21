@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
-import { setTavernRsvpStatus, getTavernRsvpStatus } from '@/app/utils/tavern'
+import {
+  setTavernRsvpStatus,
+  getTavernRsvpStatus,
+  submitMyTavernLocation,
+} from '@/app/utils/tavern'
 import { Card } from '@/components/ui/card'
 import dynamic from 'next/dynamic'
 import {
@@ -54,16 +58,16 @@ const RsvpStatusSwitcher = ({ tavernEvents }) => {
         <div>
           <label>Which tavern will you attend?</label>
           <select
-            onChange={() => {
+            onChange={async () => {
               setWhichTavern(event.target.value)
-              setWhichTavern(event.target.value)
+              await submitMyTavernLocation(event.target.value)
             }}
             value={whichTavern}
             className="ml-2 text-gray-600 rounded-sm"
           >
-            <option>Select</option>
+            <option value="">Select</option>
             {tavernEvents.map((te, idx) => (
-              <option key={idx} value={te.city}>
+              <option key={idx} value={te.id}>
                 {te.city}
               </option>
             ))}
