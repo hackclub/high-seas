@@ -38,6 +38,11 @@ const RsvpStatusSwitcher = ({ tavernEvents }) => {
   const onOptionChangeHandler = (e) => {
     setRsvpStatus(e.target.value)
     setTavernRsvpStatus(e.target.value)
+
+    if (e.target.value !== 'participant') {
+      setWhichTavern('none')
+      submitMyTavernLocation(null)
+    }
   }
 
   return (
