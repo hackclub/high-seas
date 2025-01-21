@@ -15,17 +15,7 @@ import { Card } from '@/components/ui/card'
 const MAP_ZOOM = 2,
   MAP_CENTRE: LatLngExpression = [0, 0]
 
-export default function Map() {
-  const [tavernPeople, setTavernPeople] = useState<TavernPersonItem[]>([])
-  const [tavernEvents, setTavernEvents] = useState<TavernEventItem[]>([])
-
-  useEffect(() => {
-    Promise.all([getTavernPeople(), getTavernEvents()]).then(([tp, te]) => {
-      setTavernPeople(tp)
-      setTavernEvents(te)
-    })
-  }, [])
-
+export default function Map({ tavernEvents, tavernPeople }) {
   return (
     <div>
       <MapContainer

@@ -13,6 +13,7 @@ export type TavernPersonItem = {
   coordinates: string
 }
 export type TavernEventItem = {
+  id: string
   city: string
   geocode: string
   organizers: string[]
@@ -60,6 +61,7 @@ export const getTavernEvents = async () => {
     .all()
 
   const items = records.map((r) => ({
+    id: r.id,
     city: r.get('city'),
     geocode: r.get('map_geocode'),
     organizers: r.get('organizers') ?? [],
