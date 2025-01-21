@@ -39,7 +39,7 @@ const RsvpStatusSwitcher = ({ tavernEvents }) => {
     setRsvpStatus(e.target.value)
     setTavernRsvpStatus(e.target.value)
 
-    if (e.target.value !== 'participant') {
+    if (e.target.value !== 'participant' && e.target.value !== 'organizer') {
       setWhichTavern('none')
       submitMyTavernLocation(null)
     }
@@ -59,7 +59,8 @@ const RsvpStatusSwitcher = ({ tavernEvents }) => {
         <option value="participant">I want to attend a tavern near me</option>
       </select>
 
-      {tavernEvents && rsvpStatus === 'participant' ? (
+      {tavernEvents &&
+      (rsvpStatus === 'participant' || rsvpStatus === 'organizer') ? (
         <div>
           <label>Which tavern will you attend?</label>
           <select
