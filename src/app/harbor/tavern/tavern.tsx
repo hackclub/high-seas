@@ -74,7 +74,7 @@ const RsvpStatusSwitcher = ({ tavernEvents }) => {
             <option value="">Select</option>
             {tavernEvents.map((te, idx) => (
               <option key={idx} value={te.id}>
-                {JSON.parse(atob(te.geocode.substring(3))).i}
+                {te.locality}
               </option>
             ))}
           </select>

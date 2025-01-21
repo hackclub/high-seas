@@ -16,6 +16,7 @@ export type TavernEventItem = {
   id: string
   city: string
   geocode: string
+  locality: string
   organizers: string[]
 }
 
@@ -64,6 +65,7 @@ export const getTavernEvents = async () => {
     id: r.id,
     city: r.get('city'),
     geocode: r.get('map_geocode'),
+    locality: r.get('locality'),
     organizers: r.get('organizers') ?? [],
   })) as TavernEventItem[]
 
