@@ -1,18 +1,28 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
 import { setTavernRsvpStatus, getTavernRsvpStatus } from '@/app/utils/tavern'
 import { Card } from '@/components/ui/card'
 import dynamic from 'next/dynamic'
+import {
+  getTavernEvents,
+  getTavernPeople,
+  TavernEventItem,
+  TavernPersonItem,
+} from './tavern-utils'
 
 const Map = dynamic(() => import('./map'), {
   ssr: false,
 })
 
-const RsvpStatusSwitcher = () => {
+const RsvpStatusSwitcher = ({ tavernEvents }) => {
   const [rsvpStatus, setRsvpStatus] = useLocalStorageState(
     'cache.rsvpStatus',
+    'none',
+  )
+  const [whichTavern, setWhichTavern] = useLocalStorageState(
+    'cache.whichTavern',
     'none',
   )
 
@@ -39,11 +49,44 @@ const RsvpStatusSwitcher = () => {
         <option value="organizer">I can organize a tavern near me</option>
         <option value="participant">I want to attend a tavern near me</option>
       </select>
+
+      {tavernEvents && rsvpStatus === 'participant' ? (
+        <div>
+          <label>Which tavern will you attend?</label>
+          <select
+            onChange={() => {
+              setWhichTavern(event.target.value)
+              setWhichTavern(event.target.value)
+            }}
+            value={whichTavern}
+            className="ml-2 text-gray-600 rounded-sm"
+          >
+            <option>Select</option>
+            {tavernEvents.map((te, idx) => (
+              <option key={idx} value={te.city}>
+                {te.city}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
     </div>
   )
 }
 
 export default function Tavern() {
+  const [tavernPeople, setTavernPeople] = useState<TavernPersonItem[]>([])
+  const [tavernEvents, setTavernEvents] = useState<TavernEventItem[]>([])
+
+  useEffect(() => {
+    Promise.all([getTavernPeople(), getTavernEvents()]).then(([tp, te]) => {
+      setTavernPeople(tp)
+      setTavernEvents(te)
+
+      console.log({ te })
+    })
+  }, [])
+
   return (
     <div className="container mx-auto px-4 py-8 text-white relative">
       <div className="text-white">
@@ -97,9 +140,9 @@ export default function Tavern() {
             😉
           </p>
         </Card>
-        <RsvpStatusSwitcher />
+        <RsvpStatusSwitcher tavernEvents={tavernEvents} />
 
-        <Map />
+        <Map tavernEvents={tavernEvents} tavernPeople={tavernPeople} />
       </div>
     </div>
   )

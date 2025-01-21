@@ -28,6 +28,25 @@ export const setTavernRsvpStatus = async (rsvpStatus: RsvpStatus) => {
   return result.get('tavern_rsvp_status')
 }
 
+export const setWhichTavern = async (city: string) => {
+  // check auth
+  const session = await getSession()
+  if (!session) {
+    return
+  }
+  if (!session.personId) {
+    return
+  }
+
+  // update status
+  const base = Airtable.base(process.env.BASE_ID)
+  const result = await base('people').update(session.personId, {
+    tavern_rsvp_status: rsvpStatus,
+  })
+
+  return result.get('tavern_rsvp_status')
+}
+
 export const getTavernRsvpStatus = async () => {
   // check auth
   const session = await getSession()
