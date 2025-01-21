@@ -49,7 +49,7 @@ const RsvpStatusSwitcher = ({ tavernEvents }) => {
         className="ml-2 text-gray-600 rounded-sm"
       >
         <option disabled>Select</option>
-        <option value="none">Nope, can't do neither</option>
+        <option value="none">Nope, can't do either</option>
         <option value="organizer">I can organize a tavern near me</option>
         <option value="participant">I want to attend a tavern near me</option>
       </select>
