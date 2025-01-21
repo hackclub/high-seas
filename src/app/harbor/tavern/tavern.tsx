@@ -73,12 +73,14 @@ const RsvpStatusSwitcher = ({ tavernEvents }) => {
             <option value="">Select</option>
             {tavernEvents.map((te, idx) => (
               <option key={idx} value={te.id}>
-                {te.city}
+                {JSON.parse(atob(te.geocode.substring(3))).i}
               </option>
             ))}
           </select>
         </div>
-      ) : null}
+      ) : (
+        <p>Loading...</p>
+      )}
     </div>
   )
 }
