@@ -32,7 +32,7 @@ export default function Map({ tavernEvents, tavernPeople, selectedTavern }) {
         className="h-96 rounded-lg"
         center={[0, 0]}
         zoom={2}
-        scrollWheelZoom={false}
+        scrollWheelZoom={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -61,10 +61,10 @@ export default function Map({ tavernEvents, tavernPeople, selectedTavern }) {
           />
           <p>Mystic Tavern without organizer</p>
         </div>
-        <div className="flex flex-row justify-start items-center gap-2">
+        {/* <div className="flex flex-row justify-start items-center gap-2">
           <div className="h-7 w-7 rounded-full border-2 border-white bg-[#cfdfff]"></div>
           <p>Someone unable to organize or attend</p>
-        </div>
+        </div> */}
         <div className="flex flex-row justify-start items-center gap-2">
           <div className="h-7 w-7 rounded-full border-2 border-white bg-[#ffd66e]"></div>
           <p>Someone able to organize</p>
@@ -73,10 +73,10 @@ export default function Map({ tavernEvents, tavernPeople, selectedTavern }) {
           <div className="h-7 w-7 rounded-full border-2 border-white bg-[#f82b60]"></div>
           <p>Someone able to attend</p>
         </div>
-        <div className="flex flex-row justify-start items-center gap-2">
+        {/* <div className="flex flex-row justify-start items-center gap-2">
           <div className="h-7 w-7 rounded-full border-2 border-white bg-[#666666]"></div>
           <p>Someone who has not responded</p>
-        </div>
+        </div> */}
       </Card>
     </div>
   )
@@ -116,43 +116,48 @@ function TavernMarkers(props: MapProps) {
 
   console.log(props)
 
-  const peopleMarkers = props.people.map((t) => {
-    let iconClass = `rounded-full border-2 border-white w-full h-full `
+  const peopleMarkers = props.people
+    .map((t) => {
+      let iconClass = `rounded-full border-2 border-white w-full h-full `
 
-    switch (t.status) {
-      case 'none': {
-        iconClass += 'bg-[#cfdfff]'
-        break
-      }
-      case 'organizer': {
-        iconClass += 'bg-[#ffd66e]'
-        break
-      }
-      case 'participant': {
-        iconClass += 'bg-[#f82b60]'
-        break
-      }
-      default: {
-        iconClass += 'bg-[#666666]'
-        break
-      }
-    }
-
-    const icon = new DivIcon({
-      className: iconClass,
-      iconSize: [25, 25],
-    })
-
-    return (
-      <Marker
-        key={t.coordinates}
-        position={
-          t.coordinates.split(', ').map((c) => Number(c)) as LatLngExpression
+      switch (t.status) {
+        case 'none': {
+          // iconClass += 'bg-[#cfdfff]'
+          // break
+          return null
         }
-        icon={icon}
-      />
-    )
-  })
+        case 'organizer': {
+          iconClass += 'bg-[#ffd66e]'
+          break
+        }
+        case 'participant': {
+          iconClass += 'bg-[#f82b60]'
+          break
+        }
+        default: {
+          // iconClass += 'bg-[#666666]'
+          // break
+          return null
+        }
+      }
+
+      const icon = new DivIcon({
+        className: iconClass,
+        iconSize: [25, 25],
+      })
+
+      return (
+        <Marker
+          key={t.coordinates}
+          position={
+            t.coordinates.split(', ').map((c) => Number(c)) as LatLngExpression
+          }
+          icon={icon}
+        />
+      )
+    })
+    .filter((e) => e !== null)
+
   const eventMarkers = props.events
     .map((e) => {
       if (!e.geocode) {

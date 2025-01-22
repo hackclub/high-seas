@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import Modal from '../../../components/ui/modal'
 import { EditableShipFields } from '../../utils/server/data'
 
-const editMessages = [
+export const editMessages = [
   'Orpheus hopes you know that she put a lot of effort into recording your changes~',
   'Heidi scribbles down your changes hastily...',
   "Orpheus put your Ship changes in the logbook. They're going nowhere, rest assured.",
