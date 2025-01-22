@@ -39,7 +39,6 @@ export default function Map({ tavernEvents, tavernPeople, selectedTavern }) {
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
         />
         <TavernMarkers people={tavernPeople} events={tavernEvents} />
-        <UserLocation />
         <MapUpdater selectedTavern={selectedTavern} />
       </MapContainer>
       <Card className="mt-8 p-3 flex flex-row justify-center items-center gap-5 flex-wrap">
@@ -83,22 +82,6 @@ export default function Map({ tavernEvents, tavernPeople, selectedTavern }) {
   )
 }
 
-function UserLocation() {
-  const map = useMap()
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((loc) => {
-        if (map !== null) {
-          map.setView([loc.coords.latitude, loc.coords.longitude], 11)
-        }
-      })
-    }
-  }, [map])
-
-  return null
-}
-
 function MapUpdater({
   selectedTavern,
 }: {
@@ -107,13 +90,21 @@ function MapUpdater({
   const map = useMap()
 
   useEffect(() => {
-    if (selectedTavern && selectedTavern.geocode && map) {
+    if (!map) return
+
+    if (selectedTavern && selectedTavern.geocode) {
       const geocodeData = JSON.parse(
         atob(selectedTavern.geocode.slice(2).trim()),
       )
       if (geocodeData.o.status === 'OK') {
         map.setView([geocodeData.o.lat, geocodeData.o.lng], 11)
       }
+    } else if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((loc) => {
+        if (map !== null) {
+          map.setView([loc.coords.latitude, loc.coords.longitude], 11)
+        }
+      })
     }
   }, [selectedTavern, map])
 

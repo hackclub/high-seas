@@ -6,6 +6,7 @@ import {
   setTavernRsvpStatus,
   getTavernRsvpStatus,
   submitMyTavernLocation,
+  getMyTavernLocation,
 } from '@/app/utils/tavern'
 import { Card } from '@/components/ui/card'
 import dynamic from 'next/dynamic'
@@ -104,7 +105,9 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
               value={whichTavern}
               className="ml-2 text-gray-600 rounded-sm"
             >
-              <option value="">Select</option>
+              <option value="" disabled>
+                Select
+              </option>
               {tavernEvents.map((te, idx) => (
                 <option key={idx} value={te.id}>
                   {te.locality}
@@ -127,11 +130,14 @@ export default function Tavern() {
   )
 
   useEffect(() => {
-    Promise.all([getTavernPeople(), getTavernEvents()]).then(([tp, te]) => {
+    Promise.all([
+      getTavernPeople(),
+      getTavernEvents(),
+      getMyTavernLocation(),
+    ]).then(([tp, te, myTavernLocation]) => {
       setTavernPeople(tp)
       setTavernEvents(te)
-
-      console.log({ te })
+      setSelectedTavern(myTavernLocation)
     })
   }, [])
 
