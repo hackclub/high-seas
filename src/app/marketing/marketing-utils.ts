@@ -4,7 +4,7 @@ import Airtable from 'airtable'
 import { createWaka } from '../utils/waka'
 import { getSession } from '../utils/auth'
 
-import createBackgroundJob from '../api/cron/create-background-job'
+// import createBackgroundJob from '../api/cron/create-background-job'
 
 const highSeasPeopleTable = () => {
   const highSeasBaseId = process.env.BASE_ID
