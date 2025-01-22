@@ -101,9 +101,7 @@ function MapUpdater({
       }
     } else if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((loc) => {
-        if (map !== null) {
-          map.setView([loc.coords.latitude, loc.coords.longitude], 11)
-        }
+        map.setView([loc.coords.latitude, loc.coords.longitude], 11)
       })
     }
   }, [selectedTavern, map])
@@ -115,6 +113,8 @@ function TavernMarkers(props: MapProps) {
   const map = useMap()
 
   if (!map) return null
+
+  console.log(props)
 
   const peopleMarkers = props.people.map((t) => {
     let iconClass = `rounded-full border-2 border-white w-full h-full `

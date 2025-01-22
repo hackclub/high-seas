@@ -74,6 +74,15 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
     }
   }
 
+  const eventsByCountry = tavernEvents.reduce((acc, event) => {
+    const country = event.locality.split(', ').at(-1)
+    if (!acc[country]) {
+      acc[country] = []
+    }
+    acc[country].push(event)
+    return acc
+  }, {})
+
   return (
     <>
       <Modal
@@ -112,15 +121,30 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
               value={whichTavern}
               className="ml-2 text-gray-600 rounded-sm"
             >
-              <option value="" disabled>
-                Select
-              </option>
-              {tavernEvents.map((te, idx) => (
-                <option key={idx} value={te.id}>
-                  {te.locality}
-                  {te.organizers.length === 0 ? ' (no organizers yet!)' : ''}
-                </option>
-              ))}
+              <option value="">Select</option>
+              {Object.keys(eventsByCountry)
+                .sort()
+                .map((country) => (
+                  <optgroup key={country} label={country}>
+                    {eventsByCountry[country].map((te) => (
+                      <option key={te.id} value={te.id}>
+                        {te.locality}
+                        {te.organizers.length === 0
+                          ? ' (no organizers yet!)'
+                          : ''}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              {/* {tavernEvents.map((te, idx) => {
+                console.log(te)
+                return (
+                  <option key={idx} value={te.id}>
+                    {te.locality}
+                    {te.organizers.length === 0 ? ' (no organizers yet!)' : ''}
+                  </option>
+                )
+              })} */}
             </select>
 
             <label>What is your shirt size?</label>
