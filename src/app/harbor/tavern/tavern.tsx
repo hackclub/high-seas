@@ -20,6 +20,8 @@ import {
 } from './tavern-utils'
 import Modal from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/use-toast'
+import { editMessages } from '../shipyard/edit-ship-form'
 
 const Map = dynamic(() => import('./map'), {
   ssr: false,
@@ -40,6 +42,15 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
   )
   const [attendeeNoOrganizerModal, setAttendeeNoOrganizerModal] =
     useState(false)
+
+  const { toast } = useToast()
+  useEffect(() => {
+    toast({
+      title: 'Saved',
+      description:
+        editMessages[Math.floor(Math.random() * editMessages.length)],
+    })
+  }, [rsvpStatus, whichTavern, shirtSize])
 
   useEffect(() => {
     // set rsvp status
@@ -99,71 +110,73 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
         <br />
         Please consider volunteering to organize this tavern, me hearty!
       </Modal>
-      <div className="text-center mb-6 mt-12" id="region-select">
-        <label>Will you join?</label>
-        <select
-          onChange={onOptionChangeHandler}
-          value={rsvpStatus}
-          className="ml-2 text-gray-600 rounded-sm"
-        >
-          <option disabled>Select</option>
-          <option value="none">Nope, can't do either</option>
-          <option value="organizer">I can organize a tavern near me</option>
-          <option value="participant">I want to attend a tavern near me</option>
-        </select>
+      <div
+        className="text-center mb-6 mt-12 flex flex-col gap-2"
+        id="region-select"
+      >
+        <label>
+          Will you join?
+          <select
+            onChange={onOptionChangeHandler}
+            value={rsvpStatus}
+            className="ml-2 text-gray-600 rounded-sm"
+          >
+            <option disabled>Select</option>
+            <option value="none">Nope, can't do either</option>
+            <option value="organizer">I can organize a tavern near me</option>
+            <option value="participant">
+              I want to attend a tavern near me
+            </option>
+          </select>
+        </label>
 
         {tavernEvents &&
         (rsvpStatus === 'participant' || rsvpStatus === 'organizer') ? (
-          <div>
-            <label>Which tavern will you attend?</label>
-            <select
-              onChange={onTavernChangeHandler}
-              value={whichTavern}
-              className="ml-2 text-gray-600 rounded-sm"
-            >
-              <option value="">Select</option>
-              {Object.keys(eventsByCountry)
-                .sort()
-                .map((country) => (
-                  <optgroup key={country} label={country}>
-                    {eventsByCountry[country].map((te) => (
-                      <option key={te.id} value={te.id}>
-                        {te.locality}
-                        {te.organizers.length === 0
-                          ? ' (no organizers yet!)'
-                          : ''}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              {/* {tavernEvents.map((te, idx) => {
-                console.log(te)
-                return (
-                  <option key={idx} value={te.id}>
-                    {te.locality}
-                    {te.organizers.length === 0 ? ' (no organizers yet!)' : ''}
-                  </option>
-                )
-              })} */}
-            </select>
+          <>
+            <label>
+              Which tavern will you attend?
+              <select
+                onChange={onTavernChangeHandler}
+                value={whichTavern}
+                className="ml-2 text-gray-600 rounded-sm"
+              >
+                <option value="">Select</option>
+                {Object.keys(eventsByCountry)
+                  .sort()
+                  .map((country) => (
+                    <optgroup key={country} label={country}>
+                      {eventsByCountry[country].map((te) => (
+                        <option key={te.id} value={te.id}>
+                          {te.locality}
+                          {te.organizers.length === 0
+                            ? ' (no organizers yet!)'
+                            : ''}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+              </select>
+            </label>
 
-            <label>What is your shirt size?</label>
-            <select
-              onChange={async (e) => {
-                setShirtSize(e.target.value)
-                await submitShirtSize(e.target.value)
-              }}
-              value={shirtSize}
-              className="ml-2 text-gray-600 rounded-sm"
-            >
-              <option disabled>Select</option>
-              <option value="Small">Small</option>
-              <option value="Medium">Medium</option>
-              <option value="Large">Large</option>
-              <option value="XL">XL</option>
-              <option value="XXL">XXL</option>
-            </select>
-          </div>
+            <label>
+              What is your shirt size?
+              <select
+                onChange={async (e) => {
+                  setShirtSize(e.target.value)
+                  await submitShirtSize(e.target.value)
+                }}
+                value={shirtSize}
+                className="ml-2 text-gray-600 rounded-sm"
+              >
+                <option disabled>Select</option>
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+              </select>
+            </label>
+          </>
         ) : null}
       </div>
     </>
