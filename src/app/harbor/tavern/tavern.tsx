@@ -265,6 +265,15 @@ export default function Tavern() {
           onTavernSelect={handleTavernSelect}
         />
 
+        {selectedTavern?.channel?.url ? (
+          <p className="underline text-center my-2 text-lg">
+            <a href={selectedTavern.channel.url}>
+              {'--> '}Slack channel for {selectedTavern.city}
+              {' <--'}
+            </a>
+          </p>
+        ) : null}
+
         <Map
           tavernEvents={tavernEvents}
           tavernPeople={tavernPeople}
