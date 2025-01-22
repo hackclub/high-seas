@@ -6,6 +6,9 @@ import {
   setTavernRsvpStatus,
   getTavernRsvpStatus,
   submitMyTavernLocation,
+  getMyTavernLocation,
+  submitShirtSize,
+  getShirtSize,
 } from '@/app/utils/tavern'
 import { Card } from '@/components/ui/card'
 import dynamic from 'next/dynamic'
@@ -15,12 +18,14 @@ import {
   TavernEventItem,
   TavernPersonItem,
 } from './tavern-utils'
+import Modal from '@/components/ui/modal'
+import { Button } from '@/components/ui/button'
 
 const Map = dynamic(() => import('./map'), {
   ssr: false,
 })
 
-const RsvpStatusSwitcher = ({ tavernEvents }) => {
+const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
   const [rsvpStatus, setRsvpStatus] = useLocalStorageState(
     'cache.rsvpStatus',
     'none',
@@ -29,74 +34,141 @@ const RsvpStatusSwitcher = ({ tavernEvents }) => {
     'cache.whichTavern',
     'none',
   )
+  const [shirtSize, setShirtSize] = useLocalStorageState(
+    'cache.shirtSize',
+    'none',
+  )
+  const [attendeeNoOrganizerModal, setAttendeeNoOrganizerModal] =
+    useState(false)
 
   useEffect(() => {
     // set rsvp status
     getTavernRsvpStatus().then((status) => setRsvpStatus(status))
+    getShirtSize().then((ss) => setShirtSize(ss))
   }, [])
 
   const onOptionChangeHandler = (e) => {
-    setRsvpStatus(e.target.value)
-    setTavernRsvpStatus(e.target.value)
+    const status = e.target.value
+    setRsvpStatus(status)
+    setTavernRsvpStatus(status)
 
-    if (e.target.value !== 'participant') {
+    if (status !== 'participant' && status !== 'organizer') {
       setWhichTavern('none')
       submitMyTavernLocation(null)
+      onTavernSelect(null)
+    }
+  }
+
+  const onTavernChangeHandler = (event) => {
+    const tavernId = event.target.value
+    setWhichTavern(tavernId)
+    submitMyTavernLocation(tavernId).catch(console.error)
+    onTavernSelect(tavernId)
+
+    if (
+      rsvpStatus === 'participant' &&
+      tavernEvents.find((te) => te.id === tavernId).organizers.length === 0
+    ) {
+      console.log('u shoiuld vhe an organizer')
+      setAttendeeNoOrganizerModal(true)
     }
   }
 
   return (
-    <div className="text-center mb-6 mt-12" id="region-select">
-      <label>Will you join?</label>
-      <select
-        onChange={onOptionChangeHandler}
-        value={rsvpStatus}
-        className="ml-2 text-gray-600 rounded-sm"
+    <>
+      <Modal
+        isOpen={attendeeNoOrganizerModal}
+        close={() => setAttendeeNoOrganizerModal(false)}
       >
-        <option disabled>Select</option>
-        <option value="none">Nope, can't do either</option>
-        <option value="organizer">I can organize a tavern near me</option>
-        <option value="participant">I want to attend a tavern near me</option>
-      </select>
+        ARRRRR! There are enough pirates here to host a tavern, but nobody has
+        volunteered to organize.
+        <br />
+        <br />
+        It's easy, all you would need to do is select a venue, date, distribute
+        shirts, and help peolpe coordianate how they're going to attend.
+        <br />
+        <br />
+        Please consider volunteering to organize this tavern, me hearty!
+      </Modal>
+      <div className="text-center mb-6 mt-12" id="region-select">
+        <label>Will you join?</label>
+        <select
+          onChange={onOptionChangeHandler}
+          value={rsvpStatus}
+          className="ml-2 text-gray-600 rounded-sm"
+        >
+          <option disabled>Select</option>
+          <option value="none">Nope, can't do either</option>
+          <option value="organizer">I can organize a tavern near me</option>
+          <option value="participant">I want to attend a tavern near me</option>
+        </select>
 
-      {tavernEvents && rsvpStatus === 'participant' ? (
-        <div>
-          <label>Which tavern will you attend?</label>
-          <select
-            onChange={async () => {
-              setWhichTavern(event.target.value)
-              await submitMyTavernLocation(event.target.value)
-            }}
-            value={whichTavern}
-            className="ml-2 text-gray-600 rounded-sm"
-          >
-            <option value="">Select</option>
-            {tavernEvents.map((te, idx) => (
-              <option key={idx} value={te.id}>
-                {JSON.parse(atob(te.geocode.substring(3))).i}
+        {tavernEvents &&
+        (rsvpStatus === 'participant' || rsvpStatus === 'organizer') ? (
+          <div>
+            <label>Which tavern will you attend?</label>
+            <select
+              onChange={onTavernChangeHandler}
+              value={whichTavern}
+              className="ml-2 text-gray-600 rounded-sm"
+            >
+              <option value="" disabled>
+                Select
               </option>
-            ))}
-          </select>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
+              {tavernEvents.map((te, idx) => (
+                <option key={idx} value={te.id}>
+                  {te.locality}
+                  {te.organizers.length === 0 ? ' (no organizers yet!)' : ''}
+                </option>
+              ))}
+            </select>
+
+            <label>What is your shirt size?</label>
+            <select
+              onChange={async (e) => {
+                setShirtSize(e.target.value)
+                await submitShirtSize(e.target.value)
+              }}
+              value={shirtSize}
+              className="ml-2 text-gray-600 rounded-sm"
+            >
+              <option disabled>Select</option>
+              <option value="Small">Small</option>
+              <option value="Medium">Medium</option>
+              <option value="Large">Large</option>
+              <option value="XL">XL</option>
+              <option value="XXL">XXL</option>
+            </select>
+          </div>
+        ) : null}
+      </div>
+    </>
   )
 }
 
 export default function Tavern() {
   const [tavernPeople, setTavernPeople] = useState<TavernPersonItem[]>([])
   const [tavernEvents, setTavernEvents] = useState<TavernEventItem[]>([])
+  const [selectedTavern, setSelectedTavern] = useState<TavernEventItem | null>(
+    null,
+  )
 
   useEffect(() => {
-    Promise.all([getTavernPeople(), getTavernEvents()]).then(([tp, te]) => {
+    Promise.all([
+      getTavernPeople(),
+      getTavernEvents(),
+      getMyTavernLocation(),
+    ]).then(([tp, te, myTavernLocation]) => {
       setTavernPeople(tp)
       setTavernEvents(te)
-
-      console.log({ te })
+      setSelectedTavern(myTavernLocation)
     })
   }, [])
+
+  const handleTavernSelect = (tavernId: string | null) => {
+    const tavern = tavernEvents.find((te) => te.id === tavernId) || null
+    setSelectedTavern(tavern)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 text-white relative">
@@ -151,9 +223,16 @@ export default function Tavern() {
             😉
           </p>
         </Card>
-        <RsvpStatusSwitcher tavernEvents={tavernEvents} />
+        <RsvpStatusSwitcher
+          tavernEvents={tavernEvents}
+          onTavernSelect={handleTavernSelect}
+        />
 
-        <Map tavernEvents={tavernEvents} tavernPeople={tavernPeople} />
+        <Map
+          tavernEvents={tavernEvents}
+          tavernPeople={tavernPeople}
+          selectedTavern={selectedTavern}
+        />
       </div>
     </div>
   )
