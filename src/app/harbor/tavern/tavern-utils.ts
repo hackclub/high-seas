@@ -19,6 +19,7 @@ export type TavernEventItem = {
   locality: string
   attendeeCount: number
   organizers: string[]
+  channel: string
 }
 
 let cachedPeople: TavernPersonItem[] | null,
@@ -64,6 +65,7 @@ export const getTavernEvents = async () => {
         'organizers',
         'locality',
         'attendees_count',
+        'channel',
       ],
     })
     .all()
@@ -75,6 +77,7 @@ export const getTavernEvents = async () => {
     locality: r.get('locality'),
     organizers: r.get('organizers') ?? [],
     attendeeCount: r.get('attendees_count'),
+    channel: r.get('channel'),
   })) as TavernEventItem[]
 
   cachedEvents = items

@@ -94,6 +94,7 @@ export const getMyTavernLocation: Promise<
     locality: foundTavern.get('locality'),
     attendeeCount: foundTavern.get('attendees_count'),
     organizers: foundTavern.get('organizers'),
+    channel: foundTavern.get('channel'),
   }
 }
 
