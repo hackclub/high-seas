@@ -7,6 +7,8 @@ import {
   getTavernRsvpStatus,
   submitMyTavernLocation,
   getMyTavernLocation,
+  submitShirtSize,
+  getShirtSize,
 } from '@/app/utils/tavern'
 import { Card } from '@/components/ui/card'
 import dynamic from 'next/dynamic'
@@ -32,12 +34,17 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
     'cache.whichTavern',
     'none',
   )
+  const [shirtSize, setShirtSize] = useLocalStorageState(
+    'cache.shirtSize',
+    'none',
+  )
   const [attendeeNoOrganizerModal, setAttendeeNoOrganizerModal] =
     useState(false)
 
   useEffect(() => {
     // set rsvp status
     getTavernRsvpStatus().then((status) => setRsvpStatus(status))
+    getShirtSize().then((ss) => setShirtSize(ss))
   }, [])
 
   const onOptionChangeHandler = (e) => {
@@ -114,6 +121,22 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
                   {te.organizers.length === 0 ? ' (no organizers yet!)' : ''}
                 </option>
               ))}
+            </select>
+
+            <label>What is your shirt size?</label>
+            <select
+              onChange={(e) => {
+                submitShirtSize(e.target.value)
+              }}
+              value={shirtSize}
+              className="ml-2 text-gray-600 rounded-sm"
+            >
+              <option disabled>Select</option>
+              <option value="Small">Small</option>
+              <option value="Medium">Medium</option>
+              <option value="Large">Large</option>
+              <option value="XL">XL</option>
+              <option value="XXL">XXL</option>
             </select>
           </div>
         ) : null}
