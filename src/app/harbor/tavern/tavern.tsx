@@ -126,8 +126,8 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
             <label>What is your shirt size?</label>
             <select
               onChange={async (e) => {
-                await submitShirtSize(e.target.value)
                 setShirtSize(e.target.value)
+                await submitShirtSize(e.target.value)
               }}
               value={shirtSize}
               className="ml-2 text-gray-600 rounded-sm"
