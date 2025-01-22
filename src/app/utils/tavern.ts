@@ -63,7 +63,9 @@ export const submitMyTavernLocation = async (tavernId: string) => {
   })
 }
 
-export const getMyTavernLocation: Promise<TavernEventItem> = async () => {
+export const getMyTavernLocation: Promise<
+  TavernEventItem | null
+> = async () => {
   // check auth
   const session = await getSession()
   if (!session) {
@@ -82,6 +84,8 @@ export const getMyTavernLocation: Promise<TavernEventItem> = async () => {
     })
     .firstPage()
     .then((r) => r[0])
+
+  if (!foundTavern) return null
 
   return {
     id: foundTavern.id,
