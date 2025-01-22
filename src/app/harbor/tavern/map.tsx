@@ -12,16 +12,26 @@ import { MapContainer, TileLayer, Marker, useMap, Tooltip } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { Card } from '@/components/ui/card'
 
-const MAP_ZOOM = 2,
-  MAP_CENTRE: LatLngExpression = [0, 0]
+export default function Map({ tavernEvents, tavernPeople, selectedTavern }) {
+  const [mapInstance, setMapInstance] = useState(null)
 
-export default function Map({ tavernEvents, tavernPeople }) {
+  useEffect(() => {
+    if (selectedTavern && selectedTavern.geocode && mapInstance) {
+      const geocodeData = JSON.parse(
+        atob(selectedTavern.geocode.slice(2).trim()),
+      )
+      if (geocodeData.o.status === 'OK') {
+        mapInstance.setView([geocodeData.o.lat, geocodeData.o.lng], 11)
+      }
+    }
+  }, [selectedTavern, mapInstance])
+
   return (
     <div>
       <MapContainer
         className="h-96 rounded-lg"
-        center={MAP_CENTRE}
-        zoom={MAP_ZOOM}
+        center={[0, 0]}
+        zoom={2}
         scrollWheelZoom={false}
       >
         <TileLayer
@@ -30,6 +40,7 @@ export default function Map({ tavernEvents, tavernPeople }) {
         />
         <TavernMarkers people={tavernPeople} events={tavernEvents} />
         <UserLocation />
+        <MapUpdater selectedTavern={selectedTavern} />
       </MapContainer>
       <Card className="mt-8 p-3 flex flex-row justify-center items-center gap-5 flex-wrap">
         <p className="w-full text-center">Map Legend</p>
@@ -84,6 +95,27 @@ function UserLocation() {
       })
     }
   }, [map])
+
+  return null
+}
+
+function MapUpdater({
+  selectedTavern,
+}: {
+  selectedTavern: TavernEventItem | null
+}) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (selectedTavern && selectedTavern.geocode && map) {
+      const geocodeData = JSON.parse(
+        atob(selectedTavern.geocode.slice(2).trim()),
+      )
+      if (geocodeData.o.status === 'OK') {
+        map.setView([geocodeData.o.lat, geocodeData.o.lng], 11)
+      }
+    }
+  }, [selectedTavern, map])
 
   return null
 }

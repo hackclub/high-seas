@@ -56,9 +56,8 @@ export const submitMyTavernLocation = async (tavernId: string) => {
 
   // update status
   const base = Airtable.base(process.env.BASE_ID)
-  await base('people').update(session.personId, {
-    taverns: tavernId ? [tavernId] : [],
-  })
 
-  // return result.get('tavern_rsvp_status')
+  await base('people').update(session.personId, {
+    taverns_attendee: tavernId ? [tavernId] : [],
+  })
 }

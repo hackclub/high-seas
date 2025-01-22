@@ -17,6 +17,7 @@ export type TavernEventItem = {
   city: string
   geocode: string
   locality: string
+  attendeeCount: number
   organizers: string[]
 }
 
@@ -57,7 +58,13 @@ export const getTavernEvents = async () => {
   const base = Airtable.base(process.env.BASE_ID!)
   const records = await base('taverns')
     .select({
-      fields: ['city', 'map_geocode', 'organizers'],
+      fields: [
+        'city',
+        'map_geocode',
+        'organizers',
+        'locality',
+        'attendees_count',
+      ],
     })
     .all()
 
@@ -67,6 +74,7 @@ export const getTavernEvents = async () => {
     geocode: r.get('map_geocode'),
     locality: r.get('locality'),
     organizers: r.get('organizers') ?? [],
+    attendeeCount: r.get('attendees_count'),
   })) as TavernEventItem[]
 
   cachedEvents = items
