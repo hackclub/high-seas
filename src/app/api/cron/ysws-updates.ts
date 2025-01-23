@@ -234,12 +234,13 @@ async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
         filterByFormula: and(
           'reshipped_from = BLANK()',
           "OR(last_directed_ysws_gh_link_synced_at = BLANK(), DATETIME_DIFF(TODAY(), last_directed_ysws_gh_link_synced_at, 'days') > 1)",
-          "NOT({for_ysws} = 'high_seas')",
-          "NOT(for_ysws = 'low_skies')",
+          "NOT(for_ysws = 'high-seas')",
+          "NOT(for_ysws = 'low-skies')",
           "NOT(for_ysws = 'pending_fraud_review')",
           "NOT(for_ysws = 'ship_link_broken')",
           "NOT(for_ysws = 'none')",
           "NOT(for_ysws = 'save for later')",
+          'NOT(for_ysws = BLANK())',
         ),
         maxRecords: 1,
       })
@@ -267,7 +268,8 @@ async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
       )
       return
     } else if (yswsRecord.length === 1) {
-      updatePayload['temp_other_ysws_submitted_id'] = yswsRecord[0].id
+      console.log({ yswsRecordZid: yswsRecord[0].id })
+      updatePayload['other_ysws_submitted_id'] = yswsRecord[0].id
     }
 
     // Update last synced at
