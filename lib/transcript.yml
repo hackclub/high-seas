@@ -134,6 +134,8 @@ pirateyThings:
   - scurvy sea scoundrel
   - scurvy rat
   - scurvy scallywag
+juice:
+  - .|pause|.|pause|.|pause|icon:question|speed:2.5|wait,|speed:default| you actually DO have [scurvy]? |icon:freaking|speed:3.8|omg i'm|speed:4| so sorry...|speed:3| uuuuh,|speed:default| here, have some juice!|juiceButton:true|icon:scallywag| on the house!
 music:
   - icon:question|where's that music coming from?
   - icon:question|who's playing that music?
@@ -292,3 +294,53 @@ domains:
   - zombo.com
   - heeeeeeeey.com
   - fallingfalling.com
+
+loading:
+  - chugging the data juice
+  - chugging *Stat-Cola©*, for those who want to know things™
+  - charting the course
+  - figuring out which side of the compass points north
+  - figuring out which way the wind is blowing
+  - figuring out which side of the map is up
+  - that's numberwang!
+  - crunching the numbers
+  - munching the numbers
+  - gurgling the bits
+  - juggling the electrons
+  - chomping the bytes
+  - playing the photons on bass
+  - reticulating the splines
+  - rolling down data hills
+  - frolicking through fields of numbers
+  - skiing the data slopes
+  - shredding the data gnar
+  - walking the data dog
+  - taking the data on a walk
+  - walking the data plank
+  - zooming through the cyber-pipes
+  - grabbing the stats
+  - switching the dependent and independent variables
+  - flipping a coin to choose which axis to use
+  - warming up the powerhouse of the cell
+  - calculating significant figures...
+  - p-hacking the n value
+  - computing P = NP
+  - realizing P ≠ NP
+  - so, uh... come here often?
+  - '*powertool noises*'
+  - spinning violently around the y-axis
+  - serializing first-time coders experiences
+  - tokenizing personal experiences
+  - waking up the bits
+  - petting the bits
+  - testing patience
+  - ${this.t('packageManagers')} installing ${1 + (Math.ceil(Math.random() * 3))} of ${27000 + Math.round(Math.random() * 600)} packages
+  - spinning the rgbs
+  - Installing dependencies
+  - shoveling the overflowed pixels
+
+packageManagers:
+  - npm
+  - pnpm
+  - yarn
+  - bun
