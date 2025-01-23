@@ -29,6 +29,7 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
   const { on, off } = useEventEmitter()
   const [buyButton, setBuyButton] = useState()
   const [bellButton, setBellButton] = useState(false)
+  const [juiceButton, setJuiceButton] = useState(false)
 
   useEffect(() => {
     const handleEvent = (event) => {
@@ -48,7 +49,7 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
     }
   }, [on, off, atCounter])
 
-  let handleInteraction = async (interaction) => {
+  let handleInteraction = async (interaction, clearPrevious = true) => {
     if (interactionBusy) {
       if (process.env.NODE_ENV === 'development') {
         console.log({ interactionBusy })
@@ -56,9 +57,12 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
       return
     }
     setInteractionBusy(true)
-    setShopkeeperMsg('')
-    setBuyButton()
-    setBellButton(false)
+    if (clearPrevious) {
+      setShopkeeperMsg('')
+      setBuyButton()
+      setJuiceButton()
+      setBellButton(false)
+    }
     let speed
     console.log('handling interaction', interaction)
     for (const action of interaction.split('|')) {
@@ -90,6 +94,13 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
             await setBellButton(arg[0])
           } else {
             await setBellButton()
+          }
+          break
+        case 'juiceButton':
+          if (arg[0]) {
+            await setJuiceButton(arg[0])
+          } else {
+            await setJuiceButton()
           }
           break
         case 'pause':
@@ -174,7 +185,11 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
     if (selfClickCount == 2) {
       await handleInteraction(transcript('selfClickBuy'))
     } else {
-      await handleInteraction(transcript('selfClick'))
+      const msg = transcript('selfClick')
+      await handleInteraction(msg)
+      if (msg.includes('scurvy') && selfClickCount % 3 == 0) {
+        await handleInteraction(transcript('juice'), false)
+      }
     }
   }
 
@@ -260,6 +275,7 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
               {shopkeeperMsg}
               {buyButton && <BuyButton itemId={buyButton} />}
               {bellButton && <BellButton />}
+              {juiceButton && <JuiceButton />}
             </div>
           </div>
         </div>
@@ -286,6 +302,16 @@ const BellButton = () => {
     <a href="https://maxwofford.com/clicker">
       <Button className="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 m-2 rounded transition-colors duration-200 text-3xl enchanted">
         Take
+      </Button>
+    </a>
+  )
+}
+
+const JuiceButton = () => {
+  return (
+    <a href="https://juice.hackclub.com">
+      <Button className="bg-black hover:bg-orange-800 text-white font-semibold py-2 px-4 m-2 rounded transition-colors duration-200 text-3xl enchanted">
+        Take (on the house)
       </Button>
     </a>
   )
