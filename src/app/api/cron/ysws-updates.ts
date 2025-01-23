@@ -229,8 +229,9 @@ export default async function yswsUpdates() {
 async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
   await withLock('sync-directed-ysws-github-links', async () => {
     console.log('finding ysws to update')
-    const shipchainsToMake = await base('ships')
+    const fetchedHsRecs = await base('ships')
       .select({
+        fields: ['repo_url'],
         filterByFormula: and(
           'reshipped_from = BLANK()',
           "OR(last_directed_ysws_gh_link_synced_at = BLANK(), DATETIME_DIFF(TODAY(), last_directed_ysws_gh_link_synced_at, 'days') > 1)",
@@ -242,38 +243,45 @@ async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
           "NOT(for_ysws = 'save for later')",
           'NOT(for_ysws = BLANK())',
         ),
-        maxRecords: 1,
+        maxRecords: 10,
       })
       .all()
-    const submission = shipchainsToMake[0]
 
-    if (!submission) {
+    if (!fetchedHsRecs) {
       console.error('No submission found to sync YSWS GH link')
       return
     }
 
-    const updatePayload = {
-      last_directed_ysws_gh_link_synced_at: new Date(),
-    }
-
     const yswsRecord = await yswsBase('Approved Projects')
       .select({
-        filterByFormula: `{Code URL} = '${submission.get('repo_url')}'`,
+        fields: ['Code URL'],
+        filterByFormula:
+          'OR(' +
+          fetchedHsRecs
+            .map((a) => `{Code URL} = '${a.get('repo_url')}'`)
+            .join(',') +
+          ')',
       })
       .firstPage()
 
-    if (yswsRecord.length > 1) {
-      console.error(
-        'WTF man. More than one YSWS record with the same github link',
+    for (const hsRec of fetchedHsRecs) {
+      const yswsDbMatchOnCodeUrl = yswsRecord.find(
+        (yswsRec) => yswsRec.get('Code URL') === hsRec.get('repo_url'),
       )
-      return
-    } else if (yswsRecord.length === 1) {
-      console.log({ yswsRecordZid: yswsRecord[0].id })
-      updatePayload['other_ysws_submitted_id'] = yswsRecord[0].id
-    }
 
-    // Update last synced at
-    await submission.updateFields(updatePayload)
+      const updatePayload = {
+        last_directed_ysws_gh_link_synced_at: new Date(),
+      }
+      if (yswsDbMatchOnCodeUrl) {
+        // Update time and link
+        updatePayload['other_ysws_submitted_id'] = yswsDbMatchOnCodeUrl.id
+      }
+
+      console.log('Updating: ', updatePayload)
+
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await hsRec.updateFields(updatePayload)
+    }
   })
 }
 
