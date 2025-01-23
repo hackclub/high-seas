@@ -165,6 +165,16 @@ export default function NewShipForm({
       return
     }
 
+    if (deploymentUrl.startsWith('file://')) {
+      toast({
+        title: "Local file URLs aren't allowed",
+        description:
+          'You cannot use a local file as a demo. Try using #cdn instead to host a video or vercel for a deployed project!',
+      })
+      setStaging(false)
+      return
+    }
+
     const repoUrl = formData.get('repo_url') as string
     if (usedRepos.includes(repoUrl)) {
       toast({
