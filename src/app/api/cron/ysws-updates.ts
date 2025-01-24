@@ -277,12 +277,10 @@ async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
         updatePayload['other_ysws_submitted_id'] = yswsDbMatchOnCodeUrl.id
       }
 
-      console.log('Updating: ', updatePayload)
+      console.log('Updating ', updatePayload)
 
       await new Promise((resolve) => setTimeout(resolve, 1000))
       await hsRec.updateFields(updatePayload)
     }
   })
 }
-
-await syncDirectedYswsGitHubLinkPresences()
