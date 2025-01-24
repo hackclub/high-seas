@@ -242,45 +242,54 @@ async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
           "NOT(for_ysws = 'none')",
           "NOT(for_ysws = 'save for later')",
           'NOT(for_ysws = BLANK())',
+          'LEN({repo_url}) < 500',
         ),
         maxRecords: 10,
       })
       .all()
 
-    if (!fetchedHsRecs) {
-      console.error('No submission found to sync YSWS GH link')
+    if (fetchedHsRecs.length == 0) {
+      console.error('No records to update!')
       return
     }
 
+    const projectRepoLookup =
+      'OR(' +
+      fetchedHsRecs
+        .map((a) => `{Code URL} = '${a.get('repo_url')?.replace(/'/g, "\\'")}'`)
+        .join(',') +
+      ')'
     const yswsRecord = await yswsBase('Approved Projects')
       .select({
         fields: ['Code URL'],
-        filterByFormula:
-          'OR(' +
-          fetchedHsRecs
-            .map((a) => `{Code URL} = '${a.get('repo_url')}'`)
-            .join(',') +
-          ')',
+        filterByFormula: projectRepoLookup,
+        maxRecords: 10,
       })
-      .firstPage()
+      .all()
 
+    const recordsToUpdate = []
     for (const hsRec of fetchedHsRecs) {
+      const updatedFields = {
+        last_directed_ysws_gh_link_synced_at: new Date(),
+      }
+
       const yswsDbMatchOnCodeUrl = yswsRecord.find(
         (yswsRec) => yswsRec.get('Code URL') === hsRec.get('repo_url'),
       )
 
-      const updatePayload = {
-        last_directed_ysws_gh_link_synced_at: new Date(),
-      }
       if (yswsDbMatchOnCodeUrl) {
         // Update time and link
-        updatePayload['other_ysws_submitted_id'] = yswsDbMatchOnCodeUrl.id
+        updatedFields['other_ysws_submitted_id'] = yswsDbMatchOnCodeUrl.id
       }
 
-      console.log('Updating ', updatePayload)
+      console.log('Updating ', updatedFields)
 
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      await hsRec.updateFields(updatePayload)
+      recordsToUpdate.push({
+        id: hsRec.id,
+        fields: updatedFields,
+      })
     }
+
+    await base('ships').update(recordsToUpdate)
   })
 }
