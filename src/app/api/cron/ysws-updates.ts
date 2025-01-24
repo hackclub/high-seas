@@ -221,4 +221,66 @@ export default async function yswsUpdates() {
   new Promise((resolve) => setTimeout(resolve, 1000))
   // hours might change after we update the shipping chain
   await updateHours()
+
+  new Promise((resolve) => setTimeout(resolve, 1000))
+  await syncDirectedYswsGitHubLinkPresences()
+}
+
+async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
+  await withLock('sync-directed-ysws-github-links', async () => {
+    console.log('finding ysws to update')
+    const fetchedHsRecs = await base('ships')
+      .select({
+        fields: ['repo_url'],
+        filterByFormula: and(
+          'reshipped_from = BLANK()',
+          "OR(last_directed_ysws_gh_link_synced_at = BLANK(), DATETIME_DIFF(TODAY(), last_directed_ysws_gh_link_synced_at, 'days') > 1)",
+          "NOT(for_ysws = 'high-seas')",
+          "NOT(for_ysws = 'low-skies')",
+          "NOT(for_ysws = 'pending_fraud_review')",
+          "NOT(for_ysws = 'ship_link_broken')",
+          "NOT(for_ysws = 'none')",
+          "NOT(for_ysws = 'save for later')",
+          'NOT(for_ysws = BLANK())',
+        ),
+        maxRecords: 10,
+      })
+      .all()
+
+    if (!fetchedHsRecs) {
+      console.error('No submission found to sync YSWS GH link')
+      return
+    }
+
+    const yswsRecord = await yswsBase('Approved Projects')
+      .select({
+        fields: ['Code URL'],
+        filterByFormula:
+          'OR(' +
+          fetchedHsRecs
+            .map((a) => `{Code URL} = '${a.get('repo_url')}'`)
+            .join(',') +
+          ')',
+      })
+      .firstPage()
+
+    for (const hsRec of fetchedHsRecs) {
+      const yswsDbMatchOnCodeUrl = yswsRecord.find(
+        (yswsRec) => yswsRec.get('Code URL') === hsRec.get('repo_url'),
+      )
+
+      const updatePayload = {
+        last_directed_ysws_gh_link_synced_at: new Date(),
+      }
+      if (yswsDbMatchOnCodeUrl) {
+        // Update time and link
+        updatePayload['other_ysws_submitted_id'] = yswsDbMatchOnCodeUrl.id
+      }
+
+      console.log('Updating ', updatePayload)
+
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await hsRec.updateFields(updatePayload)
+    }
+  })
 }
