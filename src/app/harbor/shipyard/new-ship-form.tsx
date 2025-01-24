@@ -94,6 +94,9 @@ export default function NewShipForm({
     { label: 'RaspiAPI', value: 'raspi-api' },
     { label: 'Say Cheese', value: 'say-cheese' },
     { label: 'Minus Twelve', value: 'minus-twelve' },
+    { label: 'Neon', value: 'neon' },
+    { label: 'Fish n Chips', value: 'fish-n-chips' },
+    { label: 'BakeBuild', value: "bakebuild" },
   ]
 
   // Initialize confetti on mount

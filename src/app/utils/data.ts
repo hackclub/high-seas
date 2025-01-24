@@ -35,6 +35,9 @@ export type YswsType =
   | 'raspi-api'
   | 'say-cheese'
   | 'minus-twelve'
+  | 'neon'
+  | 'fish-n-chips'
+  | 'bakebuild'
 
 export interface Ship extends EditableShipFields {
   id: string // The Airtable row's ID.
