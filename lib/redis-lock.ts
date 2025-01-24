@@ -1,4 +1,4 @@
-// import 'server-only'
+import 'server-only'
 
 import { kv } from '@vercel/kv'
 import { v4 as uuidv4 } from 'uuid'
