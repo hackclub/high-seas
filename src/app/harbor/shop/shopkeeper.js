@@ -187,7 +187,7 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
     } else {
       const msg = transcript('selfClick')
       await handleInteraction(msg)
-      if (msg.includes('scurvy') && selfClickCount % 3 == 0) {
+      if (msg.includes('scurvy')) {
         await handleInteraction(transcript('juice'), false)
       }
     }
