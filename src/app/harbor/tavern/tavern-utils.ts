@@ -1,5 +1,6 @@
 'use server'
 
+import { getSession } from '@/app/utils/auth'
 import Airtable from 'airtable'
 
 Airtable.configure({
@@ -29,9 +30,15 @@ let lastPeopleFetch = 0,
 const TTL = 30 * 60 * 1000
 
 export const getTavernPeople = async () => {
+  const session = await getSession()
+  if (!session) {
+    const error = new Error('Tried to get tavern people without a session')
+    console.log(error)
+    throw error
+  }
+
   if (Date.now() - lastPeopleFetch < TTL) return cachedPeople
 
-  console.log('Fetching tavern people')
   const base = Airtable.base(process.env.BASE_ID!)
   const records = await base('people')
     .select({
@@ -53,6 +60,12 @@ export const getTavernPeople = async () => {
 }
 
 export const getTavernEvents = async () => {
+  const session = await getSession()
+  if (!session) {
+    const error = new Error('Tried to get tavern locations without a session')
+    console.log(error)
+    throw error
+  }
   if (Date.now() - lastEventsFetch < TTL) return cachedEvents
 
   console.log('Fetching tavern events')
