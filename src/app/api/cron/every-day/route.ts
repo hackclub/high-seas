@@ -42,7 +42,7 @@ async function triggerShirtJob() {
 
 async function processDailyJobs() {
   console.log('Processing daily jobs')
-  // await triggerShirtJob()
+  await triggerShirtJob()
 }
 
 export async function GET() {

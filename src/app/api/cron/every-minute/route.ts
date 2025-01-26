@@ -10,7 +10,7 @@ export async function GET() {
   await Promise.all([
     processBackgroundJobs(),
     updateProjectCache(),
-    // yswsUpdates(),
+    yswsUpdates(),
   ])
 
   return Response.json({ success: true })
