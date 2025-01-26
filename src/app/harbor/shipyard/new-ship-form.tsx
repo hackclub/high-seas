@@ -96,7 +96,7 @@ export default function NewShipForm({
     { label: 'Minus Twelve', value: 'minus-twelve' },
     { label: 'Neon', value: 'neon' },
     { label: 'Fish n Chips', value: 'fish-n-chips' },
-    { label: 'BakeBuild', value: "bakebuild" },
+    { label: 'BakeBuild', value: 'bakebuild' },
   ]
 
   // Initialize confetti on mount
