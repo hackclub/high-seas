@@ -172,7 +172,9 @@ export default function Ships({
     id: string
     setNewShipVisible: any
   }) => {
-    const latestShip = getChainFromAnyId(s.id)?.at(-1) || s
+    const chain = getChainFromAnyId(s.id)
+    const rootShip = chain?.at(0)
+    const latestShip = chain?.at(-1) || s
 
     return (
       <div
@@ -184,7 +186,7 @@ export default function Ships({
         <Card
           className="flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 hover:bg-gray-100 transition-colors duration-200"
           style={
-            latestShip.isInYswsBase
+            latestShip.isInYswsBase || rootShip?.isInYswsBase
               ? { border: '1.5px solid gold', background: '#FFFCEB' }
               : {}
           }
