@@ -1,4 +1,4 @@
-import { tryUpdateProjectCache} from '../../battles/matchups/get-cached-projects'
+import { tryUpdateProjectCache } from '../../battles/matchups/get-cached-projects'
 import { processBackgroundJobs } from '../process-background-jobs'
 import yswsUpdates from '../ysws-updates'
 
