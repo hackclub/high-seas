@@ -1,9 +1,9 @@
 import { kv } from '@vercel/kv'
 import { getAllProjects } from '../../../../../lib/battles/airtable'
 
-const PROJECT_CHUNK_SIZE = 1400
-const PROJECT_CACHE_TTL = 60 * 2
 // 1mb limit on each redis entry
+const PROJECT_CHUNK_SIZE = 1400
+const PROJECT_CACHE_TTL = 60 * 10
 
 async function pullFromRedis() {
   const chunkCount = await kv.get('projects.size')
@@ -30,6 +30,16 @@ async function setToRedis(projectsArr: Ships[]) {
       projectsArr.slice(i, i + PROJECT_CHUNK_SIZE),
       { ex: PROJECT_CACHE_TTL },
     )
+  }
+}
+
+export async function tryUpdateProjectCache() {
+  const chunkCount = await kv.get('projects.size')
+  const currentlyCached = Boolean(chunkCount)
+  const every2Minutes = new Date().getMinutes() % 2 === 0
+
+  if (!currentlyCached || every2Minutes) {
+    await updateProjectCache()
   }
 }
 

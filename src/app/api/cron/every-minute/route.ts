@@ -1,4 +1,4 @@
-import { updateProjectCache } from '../../battles/matchups/get-cached-projects'
+import { tryUpdateProjectCache} from '../../battles/matchups/get-cached-projects'
 import { processBackgroundJobs } from '../process-background-jobs'
 import yswsUpdates from '../ysws-updates'
 
@@ -9,7 +9,7 @@ export const maxDuration = 59
 export async function GET() {
   await Promise.all([
     processBackgroundJobs(),
-    updateProjectCache(),
+    tryUpdateProjectCache(),
     yswsUpdates(),
   ])
 
