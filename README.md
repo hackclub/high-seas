@@ -1,9 +1,9 @@
 <div align="center">
-  <picture>
+  <!--<picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://highseas.hackclub.com/api/stats?theme=dark">
     <source media="(prefers-color-scheme: light)" srcset="https://highseas.hackclub.com/api/stats?theme=light">
     <img alt="stats display" src="https://highseas.hackclub.com/api/stats">
-  </picture>
+  </picture>-->
   
   <img src="https://github.com/user-attachments/assets/a7da63c4-eb4b-4fe6-b048-e441d1cb86d9" width="400">
   <h1>Build personal projects. Get free stuff.</h1>
