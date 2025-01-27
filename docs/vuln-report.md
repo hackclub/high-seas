@@ -1,6 +1,5 @@
-Jan 1 1442: `@Toshit` informed a member of the High Seas team of the vulnerability privately.
-Jan 1 1631: Locked all Vercel deployments. https://hackclub.slack.com/archives/C07MS92E0J3/p1735767096234219?thread_ts=1735760565.330479&cid=C07MS92E0J3
-Jan 1
+Jan 1 14:42: `@Toshit` informed a member of the High Seas team of a vulnerability privately.
+Jan 1 16:31: Locked all Vercel deployments. https://hackclub.slack.com/archives/C07MS92E0J3/p1735767096234219?thread_ts=1735760565.330479&cid=C07MS92E0J3
 
 *TL;DR: The issue was due to how Next.js's server actions are defined, wherein a privileged server function was able to be arbitrarily invoked, returning a small amount of user data; full name, email, and *
 
