@@ -244,6 +244,8 @@ async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
           'NOT(for_ysws = BLANK())',
           'LEN({repo_url}) < 500',
         ),
+        // ASC will prioritize records will null (never synced), then prioritize oldest records
+        sort: [{ field: 'last_directed_ysws_gh_link_synced_at', direction: 'asc' }],
         maxRecords: 10,
       })
       .all()
