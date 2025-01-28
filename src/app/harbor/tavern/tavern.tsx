@@ -268,7 +268,13 @@ export default function Tavern() {
 
         {selectedTavern?.eventDate ? (
           <p className="text-center">
-            Event date: {new Date(selectedTavern?.eventDate).toString()}
+            Event date:{' '}
+            {new Date(selectedTavern?.eventDate).toLocaleDateString('en-GB', {
+              weekday: 'short',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </p>
         ) : (
           <p className="text-center">Event date: TBD</p>
