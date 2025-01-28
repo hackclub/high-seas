@@ -199,6 +199,7 @@ export default function Tavern() {
       setTavernPeople(tp)
       setTavernEvents(te)
       setSelectedTavern(myTavernLocation)
+      console.log("ARRR TH TAVERN YE BE GOEN T' BE", myTavernLocation)
     })
   }, [])
 
@@ -264,6 +265,14 @@ export default function Tavern() {
           tavernEvents={tavernEvents}
           onTavernSelect={handleTavernSelect}
         />
+
+        {selectedTavern?.eventDate ? (
+          <p className="text-center">
+            Event date: {new Date(selectedTavern?.eventDate).toString()}
+          </p>
+        ) : (
+          <p className="text-center">Event date: TBD</p>
+        )}
 
         {selectedTavern?.channel?.url ? (
           <p className="underline text-center my-2 text-lg">

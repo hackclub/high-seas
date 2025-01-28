@@ -80,10 +80,12 @@ export const getMyTavernLocation: Promise<
 
   const foundTavern = await base('taverns')
     .select({
-      filterByFormula: `FIND('${session.personId}', {attendee_record_ids})`,
+      filterByFormula: `FIND('${session.personId}', {attendee_record_ids} & '')`,
     })
     .firstPage()
     .then((r) => r[0])
+
+  console.log('getMyTavernLocation: ', foundTavern)
 
   if (!foundTavern) return null
 
@@ -95,6 +97,7 @@ export const getMyTavernLocation: Promise<
     attendeeCount: foundTavern.get('attendees_count'),
     organizers: foundTavern.get('organizers'),
     channel: foundTavern.get('channel'),
+    eventDate: foundTavern.get('event_date'),
   }
 }
 
