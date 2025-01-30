@@ -81,7 +81,9 @@ export const getTavernEvents = async () => {
         'attendees_count',
         'channel',
         'event_date',
+        'hide',
       ],
+      filterByFormula: '{hide} = FALSE()',
     })
     .all()
 
