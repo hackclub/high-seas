@@ -237,7 +237,7 @@ export default function Harbor({
       component: process.env.RATE_LIMIT ? (
         <Tavern />
       ) : (
-        <RateLimit name="The shop" />
+        <RateLimit name="The tavern" />
       ),
     },
   ]
