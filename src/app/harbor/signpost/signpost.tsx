@@ -41,7 +41,6 @@ export default function Signpost() {
 
   const [wakaSessions, setWakaSessions] =
     useState<{ key: string; total: number }[]>()
-  const [stickyUrls, setStickyUrls] = useState([])
 
   useEffect(() => {
     getWakaSessions().then((s) => {
