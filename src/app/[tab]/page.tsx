@@ -5,7 +5,7 @@ import Harbor from '../harbor/tabs/tabs'
 import { createMagicSession, getSession } from '../utils/auth'
 import { Card } from '@/components/ui/card'
 import { SoundButton } from '../../components/sound-button.js'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import useLocalStorageState from '../../../lib/useLocalStorageState'
 
 export default function Page({

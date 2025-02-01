@@ -11,6 +11,8 @@ TimeAgo.addDefaultLocale(en)
 const timeAgo = new TimeAgo('en-US')
 
 export default function FeedItems() {
+  if (process.env.NEXT_PUBLIC_LOW_RATE_LIMIT) return null
+
   const cookie = Cookies.get('signpost-feed')
   if (!cookie) return null
 
