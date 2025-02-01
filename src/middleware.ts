@@ -26,7 +26,7 @@ async function loadShipsCookie(
         ),
         path: '/',
         sameSite: 'strict',
-        expires: new Date(Date.now() + 5 * 60 * 1000), // In 5 mins
+        expires: new Date(Date.now() + 15 * 60 * 1000), // In 5 mins
       })
     }
   } catch (e) {
