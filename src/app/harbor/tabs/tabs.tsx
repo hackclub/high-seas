@@ -234,7 +234,11 @@ export default function Harbor({
     {
       name: <>Tavern 🍻</>,
       path: 'tavern',
-      component: <Tavern />,
+      component: process.env.RATE_LIMIT ? (
+        <Tavern />
+      ) : (
+        <RateLimit name="The shop" />
+      ),
     },
   ]
 
