@@ -4,6 +4,7 @@ import Airtable from 'airtable'
 import { getSession } from '@/app/utils/auth'
 import { getSelfPerson } from '@/app/utils/server/airtable'
 import { NextResponse } from 'next/server'
+import { cached } from '../../../../lib/redis-cache'
 
 const base = () => {
   const baseId = process.env.BASE_ID
@@ -50,7 +51,7 @@ export async function getShop(): Promise<ShopItem[]> {
     ? '{enabled_main_game}'
     : '{enabled_high_seas}'
 
-  return new Promise((resolve, reject) => {
+  const lookup = new Promise((resolve, reject) => {
     base()('shop_items')
       .select({
         filterByFormula: `AND(
@@ -136,4 +137,5 @@ export async function getShop(): Promise<ShopItem[]> {
   //   (err) => (err ? reject(err) : resolve(ships)),
   // );
   // });
+  return await cached('shop_items.' + filter, async () => await lookup, 10 * 60)
 }
