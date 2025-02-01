@@ -138,14 +138,18 @@ export default function Signpost() {
         )}
       </JaggedCard>
 
-      <BestShips />
+      {!Boolean(process.env.NEXT_PUBLIC_LOW_RATE_LIMIT) && <BestShips />}
 
-      <LeaderboardOptIn />
+      {!Boolean(process.env.NEXT_PUBLIC_LOW_RATE_LIMIT) && <LeaderboardOptIn />}
 
-      <h2 className="mt-8 font-heading text-2xl font-bold mb-4 text-center">
-        Changelog
-      </h2>
-      <FeedItems />
+      {!Boolean(process.env.NEXT_PUBLIC_LOW_RATE_LIMIT) && (
+        <>
+          <h2 className="mt-8 font-heading text-2xl font-bold mb-4 text-center">
+            Changelog
+          </h2>
+          <FeedItems />
+        </>
+      )}
     </motion.div>
   )
 }

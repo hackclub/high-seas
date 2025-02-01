@@ -65,6 +65,7 @@ async function loadSignpostFeedCookie(
   response: NextResponse,
 ) {
   // Signpost base
+  if (process.env.NEXT_PUBLIC_LOW_RATE_LIMIT) return
   try {
     console.log('Checking for signpost-feed cookie')
     const signpostPage = request.nextUrl.pathname.startsWith('/signpost')

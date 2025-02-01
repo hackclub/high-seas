@@ -134,6 +134,17 @@ const LoadingOverlay = () => {
   )
 }
 
+const RateLimit = ({ name }: { name: string }) => {
+  return (
+    <JaggedCard className="!p-4">
+      <p className="text-center text-white">
+        {name || 'This page'} is currently over capacity! Please try again
+        later.
+      </p>
+    </JaggedCard>
+  )
+}
+
 const fsIdentify = (id: string, email: string, displayName?: string) => {
   if (!!window && !!window?.FS && !!window?.FS?.identify) {
     window?.FS?.identify(id, {
@@ -204,7 +215,11 @@ export default function Harbor({
     {
       name: <>Wonderdome</>,
       path: 'wonderdome',
-      component: <Battles session={session} />,
+      component: process.env.RATE_LIMIT ? (
+        <Battles session={session} />
+      ) : (
+        <RateLimit name="The wonderdome" />
+      ),
       lockOnNoHb: true,
     },
     {
