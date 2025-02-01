@@ -4,6 +4,7 @@ import Airtable from 'airtable'
 import { getSession } from '@/app/utils/auth'
 import { getSelfPerson } from '@/app/utils/server/airtable'
 import { NextResponse } from 'next/server'
+import { cached } from '../../../../lib/redis-cache'
 
 const base = () => {
   const baseId = process.env.BASE_ID
@@ -50,7 +51,7 @@ export async function getShop(): Promise<ShopItem[]> {
     ? '{enabled_main_game}'
     : '{enabled_high_seas}'
 
-  return new Promise((resolve, reject) => {
+  const lookup = new Promise((resolve, reject) => {
     base()('shop_items')
       .select({
         filterByFormula: `AND(
@@ -108,32 +109,5 @@ export async function getShop(): Promise<ShopItem[]> {
       )
   })
 
-  //
-  // return new Promise((resolve, reject) => {
-  //   base()("shop").select({
-  //     // filterByFormula: `SEARCH('${personId}', {entrant})`,
-  //     // view: "Grid view",
-  //   });
-
-  // .eachPage(
-  //   (records, fetchNextPage) => {
-  //     records.forEach((record) => {
-  //       const entrant = record.get("entrant") as string[];
-  //       if (entrant && entrant.includes(personId)) {
-  //         ships.push({
-  //           id: record.get("id") as string,
-  //           title: record.get("title") as string,
-  //           repoUrl: record.get("repo_url") as string,
-  //           readmeUrl: record.get("readme_url") as string,
-  //           screenshotUrl: record.get("screenshot_url") as string,
-  //           rating: record.get("rating") as number,
-  //           hours: record.get("hours") as number,
-  //         });
-  //       }
-  //     });
-  //     fetchNextPage();
-  //   },
-  //   (err) => (err ? reject(err) : resolve(ships)),
-  // );
-  // });
+  return await cached('shop_items.' + filter, async () => await lookup, 10 * 60)
 }
