@@ -109,33 +109,5 @@ export async function getShop(): Promise<ShopItem[]> {
       )
   })
 
-  //
-  // return new Promise((resolve, reject) => {
-  //   base()("shop").select({
-  //     // filterByFormula: `SEARCH('${personId}', {entrant})`,
-  //     // view: "Grid view",
-  //   });
-
-  // .eachPage(
-  //   (records, fetchNextPage) => {
-  //     records.forEach((record) => {
-  //       const entrant = record.get("entrant") as string[];
-  //       if (entrant && entrant.includes(personId)) {
-  //         ships.push({
-  //           id: record.get("id") as string,
-  //           title: record.get("title") as string,
-  //           repoUrl: record.get("repo_url") as string,
-  //           readmeUrl: record.get("readme_url") as string,
-  //           screenshotUrl: record.get("screenshot_url") as string,
-  //           rating: record.get("rating") as number,
-  //           hours: record.get("hours") as number,
-  //         });
-  //       }
-  //     });
-  //     fetchNextPage();
-  //   },
-  //   (err) => (err ? reject(err) : resolve(ships)),
-  // );
-  // });
   return await cached('shop_items.' + filter, async () => await lookup, 10 * 60)
 }
