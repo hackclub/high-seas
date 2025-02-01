@@ -89,7 +89,9 @@ export default function Signpost() {
         !
       </p>
 
-      <Referral />
+      { process.env.NEXT_PUBLIC_LOW_RATE_LIMIT && (
+        <Referral />
+      )}
       <Countdown />
       <Verification />
 
