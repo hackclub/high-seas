@@ -3,7 +3,7 @@ import JaggedCardSmall from '@/components/jagged-card-small'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
-const dateEnd = new Date('2025-02-01T05:00:00Z').getTime()
+const dateEnd = new Date('2025-02-03T05:00:00Z').getTime()
 const formatTime = (distance: number) => {
   const hours = Math.floor(distance / (1000 * 60 * 60))
   const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
@@ -59,6 +59,12 @@ export default function Countdown() {
             <>High Seas is over!</>
           )}
         </h1>
+
+        <h2 className="mt-4 text-2xl">EXTRA TIME :D</h2>
+        <p className="max-w-prose mx-auto">
+          (Hours coded from now on will not count. These extra 2 days are for
+          voting and shipping! Our database was dying, you get a grace period.)
+        </p>
         <div className="mt-4">
           {dateEnd - new Date().getTime() > 0 ? (
             <>
