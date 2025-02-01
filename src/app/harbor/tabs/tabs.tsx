@@ -215,7 +215,7 @@ export default function Harbor({
     {
       name: <>Wonderdome</>,
       path: 'wonderdome',
-      component: process.env.RATE_LIMIT ? (
+      component: process.env.NEXT_PUBLIC_LOW_RATE_LIMIT ? (
         <Battles session={session} />
       ) : (
         <RateLimit name="The wonderdome" />
@@ -230,7 +230,7 @@ export default function Harbor({
     {
       name: <>Tavern 🍻</>,
       path: 'tavern',
-      component: process.env.RATE_LIMIT ? (
+      component: process.env.NEXT_PUBLIC_LOW_RATE_LIMIT ? (
         <Tavern />
       ) : (
         <RateLimit name="The tavern" />

@@ -10,6 +10,12 @@ import { NextRequest } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  if (process.env.NEXT_PUBLIC_LOW_RATE_LIMIT) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded' },
+      { status: 429 },
+    )
+  }
   const isTutorial = request.nextUrl.searchParams.get('tutorial')
 
   const session = await getSession()
