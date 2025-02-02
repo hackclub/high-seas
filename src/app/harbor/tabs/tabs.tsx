@@ -215,11 +215,7 @@ export default function Harbor({
     {
       name: <>Wonderdome</>,
       path: 'wonderdome',
-      component: process.env.NEXT_PUBLIC_LOW_RATE_LIMIT ? (
-        <RateLimit name="The wonderdome" />
-      ) : (
-        <Battles session={session} />
-      ),
+      component: <Battles session={session} />,
       lockOnNoHb: true,
     },
     {
