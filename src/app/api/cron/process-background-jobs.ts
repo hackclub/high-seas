@@ -1,7 +1,6 @@
 'use server'
 
 import { sql } from '@vercel/postgres'
-import Airtable from 'airtable'
 import { withLock } from '../../../../lib/redis-lock'
 
 async function processPendingInviteJobs() {
