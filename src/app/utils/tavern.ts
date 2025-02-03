@@ -54,6 +54,9 @@ export const submitMyTavernLocation = async (tavernId: string) => {
   if (!session.personId) {
     return
   }
+  if (tavernId == '') {
+    return
+  }
 
   // update status
   const base = Airtable.base(process.env.BASE_ID)
