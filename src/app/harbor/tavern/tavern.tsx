@@ -15,6 +15,7 @@ import dynamic from 'next/dynamic'
 import {
   getTavernEvents,
   getTavernPeople,
+  rspvForTavern,
   TavernEventItem,
   TavernPersonItem,
 } from './tavern-utils'
@@ -27,7 +28,20 @@ const Map = dynamic(() => import('./map'), {
   ssr: false,
 })
 
-const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
+type TavernDatafetchCategory =
+  | 'tavernEvents'
+  | 'myTavernLocation'
+  | 'tavernPeople'
+
+const RsvpStatusSwitcher = ({
+  tavernEvents,
+  onTavernSelect,
+  erroredFetches,
+}: {
+  tavernEvents: TavernEventItem[]
+  onTavernSelect: (tavernId: string | null) => void
+  erroredFetches: TavernDatafetchCategory[]
+}) => {
   const [rsvpStatus, setRsvpStatus] = useLocalStorageState(
     'cache.rsvpStatus',
     'none',
@@ -110,7 +124,44 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
         <br />
         Please consider volunteering to organize this tavern, me hearty!
       </Modal>
-      <div
+
+      <form action={rspvForTavern} className="flex flex-col">
+        {tavernEvents &&
+        (rsvpStatus === 'participant' || rsvpStatus === 'organizer') ? (
+          <>
+            <label>
+              Which tavern will you attend?
+              <select
+                onChange={onTavernChangeHandler}
+                value={whichTavern}
+                className="ml-2 text-gray-600 rounded-sm"
+              >
+                <option value="">Select</option>
+                {Object.keys(eventsByCountry)
+                  .sort()
+                  .map((country) => (
+                    <optgroup key={country} label={country}>
+                      {eventsByCountry[country].map((te) => (
+                        <option key={te.id} value={te.id}>
+                          {te.locality}
+                          {te.organizers.length === 0
+                            ? ' (no organizers yet!)'
+                            : ''}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+              </select>
+            </label>
+          </>
+        ) : (
+          <p>Not a participant or organizer</p>
+        )}
+
+        <Button type="submit">Submit</Button>
+      </form>
+
+      {/* <div
         className="text-center mb-6 mt-12 flex flex-col gap-2"
         id="region-select"
       >
@@ -178,7 +229,7 @@ const RsvpStatusSwitcher = ({ tavernEvents, onTavernSelect }) => {
             </label>
           </>
         ) : null}
-      </div>
+      </div> */}
     </>
   )
 }
@@ -189,18 +240,29 @@ export default function Tavern() {
   const [selectedTavern, setSelectedTavern] = useState<TavernEventItem | null>(
     null,
   )
+  const [erroredFetches, setErroredFetches] = useState<
+    TavernDatafetchCategory[]
+  >([])
 
   useEffect(() => {
-    Promise.all([
-      getTavernPeople(),
-      getTavernEvents(),
-      getMyTavernLocation(),
-    ]).then(([tp, te, myTavernLocation]) => {
-      setTavernPeople(tp)
-      setTavernEvents(te)
-      setSelectedTavern(myTavernLocation)
-      console.log("ARRR TH TAVERN YE BE GOEN T' BE", myTavernLocation)
-    })
+    getTavernEvents()
+      .then(setTavernEvents)
+      .catch((err) => {
+        console.error(err)
+        setErroredFetches((p) => [...p, 'tavernEvents'])
+      })
+    getMyTavernLocation()
+      .then(setSelectedTavern)
+      .catch((err) => {
+        console.error(err)
+        setErroredFetches((p) => [...p, 'myTavernLocation'])
+      })
+    getTavernPeople()
+      .then(setTavernPeople)
+      .catch((err) => {
+        console.error(err)
+        setErroredFetches((p) => [...p, 'tavernPeople'])
+      })
   }, [])
 
   const handleTavernSelect = (tavernId: string | null) => {
@@ -264,6 +326,7 @@ export default function Tavern() {
         <RsvpStatusSwitcher
           tavernEvents={tavernEvents}
           onTavernSelect={handleTavernSelect}
+          erroredFetches={erroredFetches}
         />
 
         {selectedTavern?.eventDate ? (

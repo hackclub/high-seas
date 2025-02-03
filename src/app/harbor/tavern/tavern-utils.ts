@@ -102,3 +102,7 @@ export const getTavernEvents = async () => {
   lastEventsFetch = Date.now()
   return items
 }
+
+export async function rspvForTavern(formData: FormData) {
+  console.log(formData)
+}
