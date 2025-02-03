@@ -49,7 +49,7 @@ const RsvpStatusSwitcher = ({
   rsvpStatus: RsvpStatus
   setRsvpStatus: (status: RsvpStatus) => void
   tavernEvents: TavernEventItem[]
-  selectedTavern: TavernEventItem | null
+  selectedTavern: TavernEventItem | null | 'loading'
   setSelectedTavern: (tavernId: string | null) => void
   shirtSize: any
   setShirtSize: (size: string) => void
@@ -187,13 +187,13 @@ const RsvpStatusSwitcher = ({
                     <p className="text-red-500">
                       Failed to fetch your tavern location
                     </p>
-                  ) : !tavernEvents || !selectedTavern ? (
+                  ) : !tavernEvents || selectedTavern === 'loading' ? (
                     <p>Loading tavern events selection...</p>
                   ) : (
                     <label>
                       Which tavern will you attend?
                       <select
-                        value={selectedTavern.id}
+                        value={selectedTavern?.id}
                         onChange={(e) => {
                           const t = tavernEvents.find(
                             (te) => te.id === e.target.value,
@@ -335,9 +335,9 @@ export default function Tavern() {
   )
   const [tavernPeople, setTavernPeople] = useState<TavernPersonItem[]>([])
   const [tavernEvents, setTavernEvents] = useState<TavernEventItem[]>([])
-  const [selectedTavern, setSelectedTavern] = useState<TavernEventItem | null>(
-    null,
-  )
+  const [selectedTavern, setSelectedTavern] = useState<
+    TavernEventItem | null | 'loading'
+  >('loading')
   const [shirtSize, setShirtSize] = useLocalStorageState(
     'cache.shirtSize',
     'none',

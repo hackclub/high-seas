@@ -109,6 +109,7 @@ export const getTavernEvents = async () => {
 }
 
 export async function rspvForTavern(formData: FormData) {
+  console.log('Saving rspv for tavern seliction...')
   let res = { success: true, error: null }
 
   await Promise.all([
