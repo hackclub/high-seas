@@ -1,10 +1,11 @@
 import Airtable from 'airtable'
 import { Ships, Person, Battles } from '../../types/battles/airtable'
-import { getSession } from '@/app/utils/auth'
+import createBackgroundJob from '@/app/api/cron/create-background-job'
 
-const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
-  process.env.BASE_ID!,
-)
+const base = new Airtable({
+  apiKey: process.env.AIRTABLE_API_KEY,
+  endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
+}).base(process.env.BASE_ID!)
 
 export const getProjects = async (userId: string): Promise<Ships[]> => {
   const person = await getPersonBySlackId(userId)
@@ -44,6 +45,7 @@ export const getAllProjects = async (): Promise<Ships[]> => {
         'ship_time',
         'update_description',
       ],
+      // maxRecords: 7000,
     })
     .all()
   return records.map((record) => ({
@@ -85,25 +87,23 @@ export const getMatchups = async (): Promise<Ships[]> => {
   return records.map((record) => record.fields as Ships)
 }
 
-export const submitVote = async (
-  voteData: {
-    slackId: string
-    explanation: string
-    winner: string
-    loser: string
-    winnerRating: number
-    loserRating: number
-    ts: number
-    winner_readme_opened: boolean
-    winner_repo_opened: boolean
-    winner_demo_opened: boolean
-    loser_readme_opened: boolean
-    loser_repo_opened: boolean
-    loser_demo_opened: boolean
-    skips_before_vote: number
-  } /*,
-  bot: boolean,*/,
-): Promise<Battles> => {
+export const submitVote = async (voteData: {
+  slackId: string
+  explanation: string
+  winner: string
+  loser: string
+  winnerRating: number
+  loserRating: number
+  ts: number
+  winner_readme_opened: boolean
+  winner_repo_opened: boolean
+  winner_demo_opened: boolean
+  loser_readme_opened: boolean
+  loser_repo_opened: boolean
+  loser_demo_opened: boolean
+  skips_before_vote: number
+  signature: string
+}): Promise<Battles> => {
   const person = await getPersonBySlackId(voteData.slackId)
   if (!person) {
     throw new Error('User not found')
@@ -126,7 +126,7 @@ export const submitVote = async (
     loser.fields.rating + K * (0 - expectedScoreLoser),
   )
 
-  const record = await base('battles').create({
+  const recordToCreate = {
     voter: [person.id as string],
     explanation: voteData.explanation,
     ships: [voteData.winner, voteData.loser],
@@ -145,11 +145,14 @@ export const submitVote = async (
     loser_repo_opened: voteData.loser_repo_opened,
     loser_demo_opened: voteData.loser_demo_opened,
     skips_before_vote: voteData.skips_before_vote,
-    /*bot,*/
+  }
+  await createBackgroundJob('submit_vote', {
+    recordToCreate,
+    voteSignature: voteData.signature,
   })
 
   return {
-    ...(record.fields as Battles),
+    ...(recordToCreate as Battles),
   }
 }
 

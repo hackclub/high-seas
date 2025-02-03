@@ -128,9 +128,56 @@ async function processPendingPersonInitJobs() {
   )
 }
 
+async function processPendingVotingJobs() {
+  const { rows } = await sql`
+  SELECT * FROM background_job WHERE type = 'submit_vote' AND status = 'pending' LIMIT 10
+  `
+
+  if (rows.length === 0) {
+    return
+  }
+
+  console.log(`Processing ${rows.length} voting jobs`)
+
+  const fields = rows.map((r) => ({
+    fields: {
+      ...r.args.recordToCreate,
+      signature: r.args.voteSignature,
+    },
+  }))
+
+  const result = await fetch(
+    'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/battles',
+    {
+      cache: 'no-cache',
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ records: fields }),
+    },
+  ).then((r) => r.json())
+
+  // update the status of the jobs
+  await Promise.all(
+    result.records.map(async (record) => {
+      console.log('Marking', record.fields['signature'], 'as completed')
+      return await sql`
+    UPDATE background_job
+    SET status='completed',
+      output=${JSON.stringify(record)}
+      WHERE type='submit_vote'
+      AND args->>'voteSignature' = ${record.fields['signature']}
+      AND status='pending'`
+    }),
+  )
+}
+
 export async function processBackgroundJobs() {
   await Promise.all([
     processPendingInviteJobs(),
     processPendingPersonInitJobs(),
+    processPendingVotingJobs(),
   ])
 }
