@@ -2,6 +2,7 @@
 
 import { sql } from '@vercel/postgres'
 import Airtable from 'airtable'
+import { withLock } from '../../../../lib/redis-lock'
 
 async function processPendingInviteJobs() {
   const { rows } =
@@ -129,56 +130,58 @@ async function processPendingPersonInitJobs() {
 }
 
 async function processPendingVotingJobs() {
-  const { rows } = await sql`
+  await withLock('create-vote-records', async () => {
+    const { rows } = await sql`
   SELECT * FROM background_job WHERE type = 'submit_vote' AND status = 'pending' LIMIT 10
   `
 
-  if (rows.length === 0) {
-    return
-  }
+    if (rows.length === 0) {
+      return
+    }
 
-  console.log(`Processing ${rows.length} voting jobs`)
+    console.log(`Processing ${rows.length} voting jobs`)
 
-  const fields = rows.map((r) => ({
-    fields: {
-      ...r.args.recordToCreate,
-      signature: r.args.voteSignature,
-    },
-  }))
-
-  const resultText = await fetch(
-    'https://api.airtable.com/v0/appTeNFYcUiYfGcR6/battles',
-    {
-      method: 'POST',
-      headers: {
-        'User-Agent': 'highseas.hackclub.com (processPendingVotingJobs)',
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        'Content-Type': 'application/json',
+    const fields = rows.map((r) => ({
+      fields: {
+        ...r.args.recordToCreate,
+        signature: r.args.voteSignature,
       },
-      body: JSON.stringify({ records: fields }),
-    },
-  ).then((r) => r.text())
-  console.log('Result:', resultText)
+    }))
 
-  const result = JSON.parse(resultText)
-  if (result.error) {
-    console.error('Error submitting votes:', result.error)
-    return
-  }
+    const resultText = await fetch(
+      'https://api.airtable.com/v0/appTeNFYcUiYfGcR6/battles',
+      {
+        method: 'POST',
+        headers: {
+          'User-Agent': 'highseas.hackclub.com (processPendingVotingJobs)',
+          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ records: fields }),
+      },
+    ).then((r) => r.text())
+    console.log('Result:', resultText)
 
-  // update the status of the jobs
-  await Promise.all(
-    result.records.map(async (record) => {
-      console.log('Marking', record.fields['signature'], 'as completed')
-      return await sql`
+    const result = JSON.parse(resultText)
+    if (result.error) {
+      console.error('Error submitting votes:', result.error)
+      return
+    }
+
+    // update the status of the jobs
+    await Promise.all(
+      result.records.map(async (record) => {
+        console.log('Marking', record.fields['signature'], 'as completed')
+        return await sql`
     UPDATE background_job
     SET status='completed',
       output=${JSON.stringify(record)}
       WHERE type='submit_vote'
       AND args->>'voteSignature' = ${record.fields['signature']}
       AND status='pending'`
-    }),
-  )
+      }),
+    )
+  })
 }
 
 export async function processBackgroundJobs() {
