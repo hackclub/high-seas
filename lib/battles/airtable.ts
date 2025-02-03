@@ -145,13 +145,22 @@ export const submitVote = async (voteData: {
     loser_demo_opened: voteData.loser_demo_opened,
     skips_before_vote: voteData.skips_before_vote,
   }
-  await createBackgroundJob('submit_vote', {
-    recordToCreate,
-    voteSignature: voteData.signature,
+  // async voting job v
+  // await createBackgroundJob('submit_vote', {
+  //   recordToCreate,
+  //   voteSignature: voteData.signature,
+  // })
+
+  // return {
+  //   ...(recordToCreate as Battles),
+  // }
+
+  const record = await base('battles').create({
+    ...recordToCreate,
   })
 
   return {
-    ...(recordToCreate as Battles),
+    ...(record.fields as Battles),
   }
 }
 
