@@ -45,7 +45,6 @@ export const getAllProjects = async (): Promise<Ships[]> => {
         'ship_time',
         'update_description',
       ],
-      // maxRecords: 7000,
     })
     .all()
   return records.map((record) => ({
