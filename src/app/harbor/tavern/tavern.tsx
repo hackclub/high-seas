@@ -150,6 +150,8 @@ const RsvpStatusSwitcher = ({
           <p className="text-red-500">
             Failed to load your current RSVP status.
           </p>
+        ) : !rsvpStatus ? (
+          <p>Loading RSVP status selection...</p>
         ) : (
           <>
             <label>
@@ -347,7 +349,7 @@ export default function Tavern() {
   useEffect(() => {
     getTavernRsvpStatus()
       .then((d) => {
-        console.log({ travernrspv: d })
+        if (!d) d = 'none'
         setRsvpStatus(d)
       })
       .catch((err: Error) => {
