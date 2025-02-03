@@ -186,8 +186,8 @@ async function processPendingVotingJobs() {
 
 export async function processBackgroundJobs() {
   await Promise.all([
-    // processPendingInviteJobs(),
-    // processPendingPersonInitJobs(),
+    processPendingInviteJobs(),
+    processPendingPersonInitJobs(),
     processPendingVotingJobs(),
   ])
 }
