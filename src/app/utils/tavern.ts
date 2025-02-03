@@ -9,7 +9,7 @@ Airtable.configure({
   endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
 })
 
-type RsvpStatus = 'none' | 'organizer' | 'participant'
+export type RsvpStatus = 'none' | 'organizer' | 'participant'
 export const setTavernRsvpStatus = async (rsvpStatus: RsvpStatus) => {
   // check auth
   const session = await getSession()

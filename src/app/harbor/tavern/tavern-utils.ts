@@ -8,7 +8,7 @@ Airtable.configure({
   endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
 })
 
-type RsvpStatus = 'none' | 'organizer' | 'participant'
+export type RsvpStatus = 'none' | 'organizer' | 'participant'
 export type TavernPersonItem = {
   status: RsvpStatus
   coordinates: string

@@ -18,6 +18,7 @@ import {
   rspvForTavern,
   TavernEventItem,
   TavernPersonItem,
+  RsvpStatus,
 } from './tavern-utils'
 import Modal from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
@@ -29,75 +30,75 @@ const Map = dynamic(() => import('./map'), {
 })
 
 type TavernDatafetchCategory =
+  | 'rsvpStatus'
   | 'tavernEvents'
   | 'myTavernLocation'
   | 'tavernPeople'
 
 const RsvpStatusSwitcher = ({
+  rsvpStatus,
   tavernEvents,
   selectedTavern,
+  shirtSize,
   erroredFetches,
 }: {
+  rsvpStatus: RsvpStatus
   tavernEvents: TavernEventItem[]
   selectedTavern: TavernEventItem | null
+  shirtSize // getShirtSize().then((ss) => setShirtSize(ss))
   erroredFetches: TavernDatafetchCategory[]
 }) => {
-  const [rsvpStatus, setRsvpStatus] = useLocalStorageState(
-    'cache.rsvpStatus',
-    'none',
-  )
-  const [whichTavern, setWhichTavern] = useLocalStorageState(
-    'cache.whichTavern',
-    'none',
-  )
-  const [shirtSize, setShirtSize] = useLocalStorageState(
-    'cache.shirtSize',
-    'none',
-  )
+  // const [whichTavern, setWhichTavern] = useLocalStorageState(
+  //   'cache.whichTavern',
+  //   'none',
+  // )
+  // const [shirtSize, setShirtSize] = useLocalStorageState(
+  //   'cache.shirtSize',
+  //   'none',
+  // )
   const [attendeeNoOrganizerModal, setAttendeeNoOrganizerModal] =
     useState(false)
 
-  const { toast } = useToast()
-  useEffect(() => {
-    toast({
-      title: 'Saved',
-      description:
-        editMessages[Math.floor(Math.random() * editMessages.length)],
-    })
-  }, [rsvpStatus, whichTavern, shirtSize])
+  // const { toast } = useToast()
+  // useEffect(() => {
+  //   toast({
+  //     title: 'Saved',
+  //     description:
+  //       editMessages[Math.floor(Math.random() * editMessages.length)],
+  //   })
+  // }, [rsvpStatus, whichTavern, shirtSize])
 
-  useEffect(() => {
-    // set rsvp status
-    getTavernRsvpStatus().then((status) => setRsvpStatus(status))
-    getShirtSize().then((ss) => setShirtSize(ss))
-  }, [])
+  // useEffect(() => {
+  //   // set rsvp status
+  //   getShirtSize().then((ss) => setShirtSize(ss))
+  // }, [])
 
-  const onOptionChangeHandler = (e) => {
-    const status = e.target.value
-    setRsvpStatus(status)
-    setTavernRsvpStatus(status)
+  // const onOptionChangeHandler = (e) => {
+  //   const status = e.target.value
+  //   setRsvpStatus(status)
+  //   setTavernRsvpStatus(status)
 
-    if (status !== 'participant' && status !== 'organizer') {
-      setWhichTavern('none')
-      submitMyTavernLocation(null)
-      onTavernSelect(null)
-    }
-  }
+  //   if (status !== 'participant' && status !== 'organizer') {
+  //     setWhichTavern('none')
+  //     submitMyTavernLocation(null)
+  //     onTavernSelect(null)
+  //   }
+  // }
 
-  const onTavernChangeHandler = (event) => {
-    const tavernId = event.target.value
-    setWhichTavern(tavernId)
-    submitMyTavernLocation(tavernId).catch(console.error)
-    onTavernSelect(tavernId)
+  // const onTavernChangeHandler = (event) => {
+  //   const tavernId = event.target.value
+  //   setWhichTavern(tavernId)
+  //   submitMyTavernLocation(tavernId).catch(console.error)
+  //   onTavernSelect(tavernId)
 
-    if (
-      rsvpStatus === 'participant' &&
-      tavernEvents.find((te) => te.id === tavernId).organizers.length === 0
-    ) {
-      console.log('u shoiuld vhe an organizer')
-      setAttendeeNoOrganizerModal(true)
-    }
-  }
+  //   if (
+  //     rsvpStatus === 'participant' &&
+  //     tavernEvents.find((te) => te.id === tavernId).organizers.length === 0
+  //   ) {
+  //     console.log('u shoiuld vhe an organizer')
+  //     setAttendeeNoOrganizerModal(true)
+  //   }
+  // }
 
   const eventsByCountry = tavernEvents.reduce((acc, event) => {
     const country = event.locality.split(', ').at(-1)
@@ -125,37 +126,64 @@ const RsvpStatusSwitcher = ({
         Please consider volunteering to organize this tavern, me hearty!
       </Modal>
 
-      {erroredFetches.includes('tavernEvents') ? (
-        <p className="text-red-500">Failed to fetch tavern events</p>
-      ) : erroredFetches.includes('myTavernLocation') ? (
-        <p className="text-red-500">Failed to fetch your tavern location</p>
-      ) : !tavernEvents || !selectedTavern ? (
-        <p>Loading...</p>
-      ) : (
-        <label>
-          Which tavern will you attend?
-          <select
-            value={selectedTavern.id}
-            className="ml-2 text-gray-600 rounded-sm"
-          >
-            <option value="">Select</option>
-            {Object.keys(eventsByCountry)
-              .sort()
-              .map((country) => (
-                <optgroup key={country} label={country}>
-                  {eventsByCountry[country].map((te) => (
-                    <option key={te.id} value={te.id}>
-                      {te.locality}
-                      {te.organizers.length === 0
-                        ? ' (no organizers yet!)'
-                        : ''}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-          </select>
-        </label>
-      )}
+      <div>
+        {erroredFetches.includes('rsvpStatus') ? (
+          <p className="text-red-500">
+            Failed to load your current RSVP status.
+          </p>
+        ) : !rsvpStatus ? (
+          <p>Loading RSVP status selection...</p>
+        ) : (
+          <label>
+            Will you join?
+            <select
+              value={rsvpStatus}
+              className="ml-2 text-gray-600 rounded-sm"
+            >
+              <option disabled>Select</option>
+              <option value="none">Nope, can't do either</option>
+              <option value="organizer">I can organize a tavern near me</option>
+              <option value="participant">
+                I want to attend a tavern near me
+              </option>
+            </select>
+          </label>
+        )}
+      </div>
+
+      <div>
+        {erroredFetches.includes('tavernEvents') ? (
+          <p className="text-red-500">Failed to fetch tavern events</p>
+        ) : erroredFetches.includes('myTavernLocation') ? (
+          <p className="text-red-500">Failed to fetch your tavern location</p>
+        ) : !tavernEvents || !selectedTavern ? (
+          <p>Loading tavern events selection...</p>
+        ) : (
+          <label>
+            Which tavern will you attend?
+            <select
+              value={selectedTavern.id}
+              className="ml-2 text-gray-600 rounded-sm"
+            >
+              <option value="">Select</option>
+              {Object.keys(eventsByCountry)
+                .sort()
+                .map((country) => (
+                  <optgroup key={country} label={country}>
+                    {eventsByCountry[country].map((te) => (
+                      <option key={te.id} value={te.id}>
+                        {te.locality}
+                        {te.organizers.length === 0
+                          ? ' (no organizers yet!)'
+                          : ''}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+            </select>
+          </label>
+        )}
+      </div>
 
       <form action={rspvForTavern} className="flex flex-col">
         {tavernEvents &&
@@ -172,21 +200,7 @@ const RsvpStatusSwitcher = ({
         className="text-center mb-6 mt-12 flex flex-col gap-2"
         id="region-select"
       >
-        <label>
-          Will you join?
-          <select
-            onChange={onOptionChangeHandler}
-            value={rsvpStatus}
-            className="ml-2 text-gray-600 rounded-sm"
-          >
-            <option disabled>Select</option>
-            <option value="none">Nope, can't do either</option>
-            <option value="organizer">I can organize a tavern near me</option>
-            <option value="participant">
-              I want to attend a tavern near me
-            </option>
-          </select>
-        </label>
+
 
         {tavernEvents &&
         (rsvpStatus === 'participant' || rsvpStatus === 'organizer') ? (
@@ -242,6 +256,10 @@ const RsvpStatusSwitcher = ({
 }
 
 export default function Tavern() {
+  const [rsvpStatus, setRsvpStatus] = useLocalStorageState(
+    'cache.rsvpStatus',
+    'none',
+  )
   const [tavernPeople, setTavernPeople] = useState<TavernPersonItem[]>([])
   const [tavernEvents, setTavernEvents] = useState<TavernEventItem[]>([])
   const [selectedTavern, setSelectedTavern] = useState<TavernEventItem | null>(
@@ -252,6 +270,13 @@ export default function Tavern() {
   >([])
 
   useEffect(() => {
+    getTavernRsvpStatus()
+      .then(setRsvpStatus)
+      .catch((err) => {
+        console.error(err)
+        setErroredFetches((p) => [...p, 'rsvpStatus'])
+      })
+
     getTavernEvents()
       .then(setTavernEvents)
       .catch((err) => {
@@ -331,6 +356,7 @@ export default function Tavern() {
           </p>
         </Card>
         <RsvpStatusSwitcher
+          rsvpStatus={rsvpStatus}
           tavernEvents={tavernEvents}
           selectedTavern={selectedTavern}
           erroredFetches={erroredFetches}
@@ -359,11 +385,27 @@ export default function Tavern() {
           </p>
         ) : null}
 
-        <Map
-          tavernEvents={tavernEvents}
-          tavernPeople={tavernPeople}
-          selectedTavern={selectedTavern}
-        />
+        {erroredFetches.includes('tavernEvents') ? (
+          <p className="text-red-500">
+            Failed to load tavern events for the tavern map.
+          </p>
+        ) : erroredFetches.includes('myTavernLocation') ? (
+          <p className="text-red-500">
+            Failed to load your chosen tavern location for the tavern map.
+          </p>
+        ) : erroredFetches.includes('tavernPeople') ? (
+          <p className="text-red-500">
+            Failed to load tavern people for the tavern map.
+          </p>
+        ) : !tavernEvents || !tavernPeople ? (
+          <p>Loading tavern map...</p>
+        ) : (
+          <Map
+            tavernEvents={tavernEvents}
+            tavernPeople={tavernPeople}
+            selectedTavern={selectedTavern}
+          />
+        )}
       </div>
     </div>
   )
