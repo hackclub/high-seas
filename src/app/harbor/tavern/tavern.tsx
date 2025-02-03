@@ -249,7 +249,7 @@ const RsvpStatusSwitcher = ({
                     <p className="text-red-500">
                       Failed to fetch your shirt size
                     </p>
-                  ) : !shirtSize ? (
+                  ) : shirtSize === 'loading' ? (
                     <p>Loading shirt size selection...</p>
                   ) : (
                     <label>
@@ -360,10 +360,7 @@ export default function Tavern() {
   const [selectedTavern, setSelectedTavern] = useState<
     TavernEventItem | null | 'loading'
   >('loading')
-  const [shirtSize, setShirtSize] = useLocalStorageState(
-    'cache.shirtSize',
-    'none',
-  )
+  const [shirtSize, setShirtSize] = useState('loading')
   const [erroredFetches, setErroredFetches] = useState<
     TavernDatafetchCategory[]
   >([])
