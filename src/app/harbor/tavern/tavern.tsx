@@ -58,6 +58,7 @@ const RsvpStatusSwitcher = ({
   const [editedFlag, setEditedFlag] = useState(false)
   const [attendeeNoOrganizerModal, setAttendeeNoOrganizerModal] =
     useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const { toast } = useToast()
 
@@ -128,21 +129,40 @@ const RsvpStatusSwitcher = ({
       </Modal>
 
       <form
-        action={async (formData: FormData) => {
-          const rsvpResponse = JSON.parse(await rspvForTavern(formData))
+        onSubmit={(e) => {
+          e.preventDefault() // Prevent default form submission
+          setSubmitting(true)
 
-          if (rsvpResponse.success) {
-            toast({
-              title: 'Saved',
-              description:
-                editMessages[Math.floor(Math.random() * editMessages.length)],
+          rspvForTavern(new FormData(e.currentTarget))
+            .then((res) => {
+              const rsvpResponse = JSON.parse(res)
+
+              if (rsvpResponse.success) {
+                toast({
+                  title: 'Saved',
+                  description:
+                    editMessages[
+                      Math.floor(Math.random() * editMessages.length)
+                    ],
+                })
+              } else {
+                toast({
+                  title: 'Error',
+                  description: `Failed to save your changes:\n${rsvpResponse.error}`,
+                })
+              }
+              setSubmitting(false)
+              setEditedFlag(false)
             })
-          } else {
-            toast({
-              title: 'Error',
-              description: `Failed to save your changes:\n${rsvpResponse.error}`,
+            .catch((error) => {
+              console.error('Submission error:', error)
+              toast({
+                title: 'Error',
+                description: 'An unexpected error occurred',
+              })
+              setSubmitting(false)
+              setEditedFlag(false)
             })
-          }
         }}
         className="flex flex-col justify-items-stretch gap-2"
       >
@@ -263,8 +283,10 @@ const RsvpStatusSwitcher = ({
             <p className="text-orange-500">You have unsaved changes!</p>
           ) : null}
 
-          <Button type="submit" disabled={!editedFlag}>
-            Submit {editedFlag ? ' your changes' : ''}
+          <Button type="submit" disabled={!editedFlag || submitting}>
+            {submitting
+              ? 'Submitting, please be patient!'
+              : `Submit ${editedFlag ? ' your changes' : ''}`}
           </Button>
         </div>
       </form>
