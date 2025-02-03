@@ -450,7 +450,7 @@ export default function Matchups({ session }: { session: HsSession }) {
           {voteBalance > 0 && (
             <div className="flex justify-center items-center space-x-4">
               {voteBalance} more {pluralize(voteBalance, 'vote', false)} until
-              your next ship's payout!
+              your next ship's payout! (this may be up to 5 min out of date)
             </div>
           )}
         </header>

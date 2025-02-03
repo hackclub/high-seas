@@ -1,7 +1,7 @@
 import { sql } from '@vercel/postgres'
 
 export default async function createBackgroundJob(
-  type: 'run_lottery' | 'create_person' | 'invite',
+  type: 'run_lottery' | 'create_person' | 'invite' | 'submit_vote',
   args: {},
   status: 'pending' | 'completed' | 'failed' = 'pending',
 ) {

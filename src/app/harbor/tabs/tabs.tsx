@@ -226,8 +226,8 @@ export default function Harbor({
     {
       name: <>Tavern 🍻</>,
       path: 'tavern',
-      //component: <Tavern />,
-      component: process.env.NEXT_PUBLIC_LOW_RATE_LIMIT ? (
+      component: <RateLimit name="The tavern" />,
+      // component: process.env.NEXT_PUBLIC_LOW_RATE_LIMIT ? (
       //   <RateLimit name="The tavern" />
       // ) : (
       //   <Tavern />
