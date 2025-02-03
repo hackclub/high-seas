@@ -253,7 +253,7 @@ async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
       .all()
 
     if (fetchedHsRecs.length == 0) {
-      console.error('No records to update!')
+      console.log('No records to update!')
       return
     }
 
