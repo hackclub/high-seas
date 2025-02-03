@@ -144,14 +144,12 @@ const RsvpStatusSwitcher = ({
             })
           }
         }}
-        className="flex flex-col justify-items-stretch"
+        className="flex flex-col justify-items-stretch gap-2"
       >
         {erroredFetches.includes('rsvpStatus') ? (
           <p className="text-red-500">
             Failed to load your current RSVP status.
           </p>
-        ) : !rsvpStatus ? (
-          <p>Loading RSVP status selection...</p>
         ) : (
           <>
             <label>
