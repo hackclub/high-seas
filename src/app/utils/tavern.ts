@@ -54,7 +54,7 @@ export const submitMyTavernLocation = async (tavernId: string) => {
   if (!session.personId) {
     return
   }
-  if (tavernId == '') {
+  if (tavernId == '' || !tavernId) {
     return
   }
 
