@@ -34,32 +34,33 @@ type TavernDatafetchCategory =
   | 'tavernEvents'
   | 'myTavernLocation'
   | 'tavernPeople'
+  | 'shirtSize'
 
 const RsvpStatusSwitcher = ({
   rsvpStatus,
+  setRsvpStatus,
   tavernEvents,
   selectedTavern,
+  setSelectedTavern,
   shirtSize,
+  setShirtSize,
   erroredFetches,
 }: {
   rsvpStatus: RsvpStatus
+  setRsvpStatus: (status: RsvpStatus) => void
   tavernEvents: TavernEventItem[]
   selectedTavern: TavernEventItem | null
-  shirtSize // getShirtSize().then((ss) => setShirtSize(ss))
+  setSelectedTavern: (tavernId: string | null) => void
+  shirtSize: any
+  setShirtSize: (size: string) => void
   erroredFetches: TavernDatafetchCategory[]
 }) => {
-  // const [whichTavern, setWhichTavern] = useLocalStorageState(
-  //   'cache.whichTavern',
-  //   'none',
-  // )
-  // const [shirtSize, setShirtSize] = useLocalStorageState(
-  //   'cache.shirtSize',
-  //   'none',
-  // )
+  const [editedFlag, setEditedFlag] = useState(false)
   const [attendeeNoOrganizerModal, setAttendeeNoOrganizerModal] =
     useState(false)
 
-  // const { toast } = useToast()
+  const { toast } = useToast()
+
   // useEffect(() => {
   //   toast({
   //     title: 'Saved',
@@ -126,7 +127,25 @@ const RsvpStatusSwitcher = ({
         Please consider volunteering to organize this tavern, me hearty!
       </Modal>
 
-      <div>
+      <form
+        action={async (formData: FormData) => {
+          const rsvpResponse = JSON.parse(await rspvForTavern(formData))
+
+          if (rsvpResponse.success) {
+            toast({
+              title: 'Saved',
+              description:
+                editMessages[Math.floor(Math.random() * editMessages.length)],
+            })
+          } else {
+            toast({
+              title: 'Error',
+              description: `Failed to save your changes:\n${rsvpResponse.error}`,
+            })
+          }
+        }}
+        className="flex flex-col justify-items-stretch"
+      >
         {erroredFetches.includes('rsvpStatus') ? (
           <p className="text-red-500">
             Failed to load your current RSVP status.
@@ -134,66 +153,120 @@ const RsvpStatusSwitcher = ({
         ) : !rsvpStatus ? (
           <p>Loading RSVP status selection...</p>
         ) : (
-          <label>
-            Will you join?
-            <select
-              value={rsvpStatus}
-              className="ml-2 text-gray-600 rounded-sm"
-            >
-              <option disabled>Select</option>
-              <option value="none">Nope, can't do either</option>
-              <option value="organizer">I can organize a tavern near me</option>
-              <option value="participant">
-                I want to attend a tavern near me
-              </option>
-            </select>
-          </label>
-        )}
-      </div>
+          <>
+            <label>
+              Will you join?
+              <select
+                value={rsvpStatus}
+                onChange={(e) => {
+                  setRsvpStatus(e.target.value as RsvpStatus)
+                  setEditedFlag(true)
+                }}
+                className="ml-2 text-gray-600 rounded-sm"
+                name="rsvp"
+              >
+                <option disabled>Select</option>
+                <option value="none">Nope, can't do either</option>
+                <option value="organizer">
+                  I can organize a tavern near me
+                </option>
+                <option value="participant">
+                  I want to attend a tavern near me
+                </option>
+              </select>
+            </label>
 
-      <div>
-        {erroredFetches.includes('tavernEvents') ? (
-          <p className="text-red-500">Failed to fetch tavern events</p>
-        ) : erroredFetches.includes('myTavernLocation') ? (
-          <p className="text-red-500">Failed to fetch your tavern location</p>
-        ) : !tavernEvents || !selectedTavern ? (
-          <p>Loading tavern events selection...</p>
-        ) : (
-          <label>
-            Which tavern will you attend?
-            <select
-              value={selectedTavern.id}
-              className="ml-2 text-gray-600 rounded-sm"
-            >
-              <option value="">Select</option>
-              {Object.keys(eventsByCountry)
-                .sort()
-                .map((country) => (
-                  <optgroup key={country} label={country}>
-                    {eventsByCountry[country].map((te) => (
-                      <option key={te.id} value={te.id}>
-                        {te.locality}
-                        {te.organizers.length === 0
-                          ? ' (no organizers yet!)'
-                          : ''}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-            </select>
-          </label>
-        )}
-      </div>
+            {rsvpStatus === 'participant' || rsvpStatus === 'organizer' ? (
+              <>
+                <div>
+                  {erroredFetches.includes('tavernEvents') ? (
+                    <p className="text-red-500">
+                      Failed to fetch tavern events
+                    </p>
+                  ) : erroredFetches.includes('myTavernLocation') ? (
+                    <p className="text-red-500">
+                      Failed to fetch your tavern location
+                    </p>
+                  ) : !tavernEvents || !selectedTavern ? (
+                    <p>Loading tavern events selection...</p>
+                  ) : (
+                    <label>
+                      Which tavern will you attend?
+                      <select
+                        value={selectedTavern.id}
+                        onChange={(e) => {
+                          const t = tavernEvents.find(
+                            (te) => te.id === e.target.value,
+                          )?.id
+                          setSelectedTavern(t ? t : null)
+                          setEditedFlag(true)
+                        }}
+                        className="ml-2 text-gray-600 rounded-sm"
+                        name="tavern"
+                      >
+                        <option value="">Select</option>
+                        {Object.keys(eventsByCountry)
+                          .sort()
+                          .map((country) => (
+                            <optgroup key={country} label={country}>
+                              {eventsByCountry[country].map((te) => (
+                                <option key={te.id} value={te.id}>
+                                  {te.locality}
+                                  {te.organizers.length === 0
+                                    ? ' (no organizers yet!)'
+                                    : ''}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ))}
+                      </select>
+                    </label>
+                  )}
+                </div>
 
-      <form action={rspvForTavern} className="flex flex-col">
-        {tavernEvents &&
-        (rsvpStatus === 'participant' || rsvpStatus === 'organizer') ? (
-          <></>
-        ) : (
-          <p>Not a participant or organizer</p>
+                <div>
+                  {erroredFetches.includes('shirtSize') ? (
+                    <p className="text-red-500">
+                      Failed to fetch your shirt size
+                    </p>
+                  ) : !shirtSize ? (
+                    <p>Loading shirt size selection...</p>
+                  ) : (
+                    <label>
+                      What is your shirt size?
+                      <select
+                        value={shirtSize}
+                        onChange={(e) => {
+                          setShirtSize(e.target.value)
+                          setEditedFlag(true)
+                        }}
+                        className="ml-2 text-gray-600 rounded-sm"
+                        name="shirt"
+                      >
+                        <option disabled>Select</option>
+                        <option value="Small">Small</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Large">Large</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                      </select>
+                    </label>
+                  )}
+                </div>
+              </>
+            ) : null}
+          </>
         )}
 
-        <Button type="submit">Submit</Button>
+        <div className="mt-4">
+          {editedFlag ? (
+            <p className="text-orange-500">You have unsaved changes!</p>
+          ) : null}
+
+          <Button type="submit" disabled={!editedFlag}>
+            Submit {editedFlag ? ' your changes' : ''}
+          </Button>
+        </div>
       </form>
 
       {/* <div
@@ -265,35 +338,51 @@ export default function Tavern() {
   const [selectedTavern, setSelectedTavern] = useState<TavernEventItem | null>(
     null,
   )
+  const [shirtSize, setShirtSize] = useLocalStorageState(
+    'cache.shirtSize',
+    'none',
+  )
   const [erroredFetches, setErroredFetches] = useState<
     TavernDatafetchCategory[]
   >([])
 
   useEffect(() => {
     getTavernRsvpStatus()
-      .then(setRsvpStatus)
-      .catch((err) => {
+      .then((d) => {
+        console.log({ travernrspv: d })
+        setRsvpStatus(d)
+      })
+      .catch((err: Error) => {
         console.error(err)
         setErroredFetches((p) => [...p, 'rsvpStatus'])
       })
 
     getTavernEvents()
       .then(setTavernEvents)
-      .catch((err) => {
+      .catch((err: Error) => {
         console.error(err)
         setErroredFetches((p) => [...p, 'tavernEvents'])
       })
+
     getMyTavernLocation()
       .then(setSelectedTavern)
-      .catch((err) => {
+      .catch((err: Error) => {
         console.error(err)
         setErroredFetches((p) => [...p, 'myTavernLocation'])
       })
+
     getTavernPeople()
       .then(setTavernPeople)
-      .catch((err) => {
+      .catch((err: Error) => {
         console.error(err)
         setErroredFetches((p) => [...p, 'tavernPeople'])
+      })
+
+    getShirtSize()
+      .then(setShirtSize)
+      .catch((err: Error) => {
+        console.error(err)
+        setErroredFetches((p) => [...p, 'shirtSize'])
       })
   }, [])
 
@@ -357,8 +446,12 @@ export default function Tavern() {
         </Card>
         <RsvpStatusSwitcher
           rsvpStatus={rsvpStatus}
+          setRsvpStatus={setRsvpStatus}
           tavernEvents={tavernEvents}
           selectedTavern={selectedTavern}
+          setSelectedTavern={setSelectedTavern}
+          shirtSize={shirtSize}
+          setShirtSize={setShirtSize}
           erroredFetches={erroredFetches}
         />
 

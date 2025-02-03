@@ -1,6 +1,11 @@
 'use server'
 
 import { getSession } from '@/app/utils/auth'
+import {
+  setTavernRsvpStatus,
+  submitMyTavernLocation,
+  submitShirtSize,
+} from '@/app/utils/tavern'
 import Airtable from 'airtable'
 
 Airtable.configure({
@@ -104,5 +109,17 @@ export const getTavernEvents = async () => {
 }
 
 export async function rspvForTavern(formData: FormData) {
-  console.log(formData)
+  let res = { success: true, error: null }
+
+  await Promise.all([
+    setTavernRsvpStatus(formData.get('rsvp') as RsvpStatus),
+    submitMyTavernLocation(formData.get('tavern') as string),
+    submitShirtSize(formData.get('shirt') as string),
+  ]).catch((error) => {
+    console.error('Error submitting tavern RSVP', error)
+    res = { success: false, error: error.toString() }
+  })
+
+  console.log('Successfully saved tavern RSVP')
+  return JSON.stringify(res)
 }
