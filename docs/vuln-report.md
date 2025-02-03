@@ -1,7 +1,19 @@
-#DRAFT!
+## Overview
 
-Jan 1 14:42: `@Toshit` informed a member of the High Seas team of a vulnerability privately.
-Jan 1 16:31: Locked all Vercel deployments. https://hackclub.slack.com/archives/C07MS92E0J3/p1735767096234219?thread_ts=1735760565.330479&cid=C07MS92E0J3
+```
+Mon Day CST
+Jan 1   14:42: @Toshit informed a member of the High Seas team of a vulnerability privately.
+Jan 1   16:31: All Vercel deployments are locked.
+Jan 1   17:11: The first vulnerability is patched and the site is reopened.
+Jan 1   20:06: @FoxMoss informed a member of the High Seas team of a new vulnerability, the website is locked immediately.
+Jan 2   17:23: Both @Toshit and @FoxMoss are asked to write a writeup for public release.
+Jan 2   17:33: @Toshit submits their section of the writeup.
+Jan 2   18:01: High Seas comes back online.
+Jan 2   20:10: @FoxMoss submits their section of the writeup.
+Jan 27  16:02: A first draft of the combined writeup is made.
+Jan 31  20:12: Writeup is completed.
+```
+
 
 *TL;DR: The issue was due to how Next.js's server actions are defined, wherein a privileged server function was able to be arbitrarily invoked, returning a small amount of user data; full name, email, and *
 
@@ -64,6 +76,9 @@ So to use our `getUsers` function in a client component, we need to mark the ent
 When another developer comes along and wants to use `rawUsers`, they might prepend the `export` keyword to the `async function rawUsers(offset) {` line, then `import` it into one of their modules to use it elsewhere. Normally, this is the correct thing to do. Here, it's created a vulnerability. Now, anyone can call `rawUsers` via a HTTP request and get read access to *ALL* columns on `user`.
 
 [This is a known footgun.](https://www.youtube.com/watch?v=yUm-ET8w_28)
+
+## @Toshit's Vulnerability
+[@Toshit's website](https://www.r58playz.dev/)
 
 I originally figured out how to call any nextjs server action while working on my [High Seas wonderdome client](https://github.com/r58Playz/highseas-wonderdome).
 I was trying to figure out how to get doubloon stats like cursed/blessed status and remaining votes, which were provided by [the `safePerson` function](https://github.com/hackclub/high-seas/blob/04eb2fad9d22cc04b1606604a637204ab9c5fcef/src/app/utils/airtable.ts#L168) which is only exposed as a server action called in the frontend.
@@ -149,7 +164,10 @@ async function generateToken(id: string) {
 
 I then shared this code with @FoxMoss who continued on and created the lookup injection.
 
-I was made aware that there was issues with the High Seas code in the afternoon of January 1st. Not many replication details, I did however get the code to request arbitrary NextJs actions that @r58 had wrote. So after their vulnerability was patched I started to comb through the code base. First thing I noticed was unescaped requests to this tool called [Airtable](https://github.com/hackclub/high-seas/blob/a73b9a864c36c3831142efa7967e582e3777e5b6/src/app/utils/airtable.ts#L17) for grabing user data. I had never heard of Airtable especially for databases, and thats for good reason. **Airtable is not a database**, it's a fancy spreadsheet for business automation. Airtable did expose an API for requests, but it has [no standard way of sanitizing requests](https://community.airtable.com/t5/development-apis/standard-way-to-prevent-formula-injections-when-using-airtable/td-p/121261/page/2). This is bad because Hack Club passes unchecked user data right into into Airtable formulas multiple times.  
+## FoxMoss's Vulnerability 
+[@FoxMoss's website](https://foxmoss.com/)
+
+I was made aware that there was issues with the High Seas code in the afternoon of January 1st. Not many replication details, I did however get the code to request arbitrary NextJs actions that @Toshit had wrote. So after their vulnerability was patched I started to comb through the code base. First thing I noticed was unescaped requests to this tool called [Airtable](https://github.com/hackclub/high-seas/blob/a73b9a864c36c3831142efa7967e582e3777e5b6/src/app/utils/airtable.ts#L17) for grabbing user data. I had never heard of Airtable especially for databases, and thats for good reason. **Airtable is not a database**, it's a fancy spreadsheet for business automation. Airtable did expose an API for requests, but it has [no standard way of sanitizing requests](https://community.airtable.com/t5/development-apis/standard-way-to-prevent-formula-injections-when-using-airtable/td-p/121261/page/2). This is bad because Hack Club passes unchecked user data right into into Airtable formulas multiple times.  
 
 Lets breakdown how to do Airtable formula injection to give us arbitrary user data. Taking [this function](https://github.com/hackclub/high-seas/blob/a73b9a864c36c3831142efa7967e582e3777e5b6/src/app/utils/airtable.ts#L76) from the first vulnerability patch, the formula template is as follows (If we ignore the `encodeURIComponent`, which won't be relevant.) `https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/ships?filterByFormula={autonumber}='${num}'` and it returns some surface level data from the autonumber, like the corresponding email, slack id, and user id, normal behavior. But we can easily just make Airtable give us a random entry if we give it something like this.
 ```sql
@@ -172,7 +190,7 @@ After that we can apply the same binary search, approach this time with ASCII va
 
 If we want to login to an account, some users have an auto generated magic_auth_token in their row which magically gives any perpetrator with your magic token an easy way to login to your account via `https://highseas.hackclub.com/shipyard/?magic_auth_token=...` . This vulnerability could also be used in the same way @r58 did, by grabbing the email and creating a jwt, but I stopped here. So I wrote that up as a program added some sick ass loading bars and sent that off to the High Sea's team. Here's a recording of this while the bugs were still vulnerable.
 
-![[High Seas Vuln GIF - FoxMoss.webp]]
+![High Seas Vuln GIF](./HighSeasVulnGIF-FoxMoss.webp)
 
 They implemented a preliminary fix, but since the injection was source formula agnostic I was able to expose and help patch a couple other places where Airtable could be used to extract information.
 
@@ -409,7 +427,7 @@ Notably, address data was not available, as it is stored separately. @Toshit sai
 > Address data was not directly exposed through getSelfPerson, I was getting values with random letters and numbers
 
 The only data that was accessed using the methods above was Toshit and FoxMoss accessing their own records, along with some team members' records for testing.
-Although cccount takeovers could have happened, we checked our logs and no accounts were logged in this way.
+Although account takeovers could have happened, we checked our logs and no accounts were logged in this way.
 
 The next event we run will have a much stronger focus on security (and won't use Next.js!) ~
 
