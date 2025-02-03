@@ -60,11 +60,6 @@ export default function Countdown() {
           )}
         </h1>
 
-        <h2 className="mt-4 text-2xl">EXTRA TIME :D</h2>
-        <p className="max-w-prose mx-auto">
-          (Hours coded from now on will not count. These extra 2 days are for
-          voting and shipping! Our database was dying, you get a grace period.)
-        </p>
         <div className="mt-4">
           {dateEnd - new Date().getTime() > 0 ? (
             <>
