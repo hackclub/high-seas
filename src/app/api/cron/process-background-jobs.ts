@@ -146,18 +146,25 @@ async function processPendingVotingJobs() {
     },
   }))
 
-  const result = await fetch(
-    'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/battles',
+  const resultText = await fetch(
+    'https://api.airtable.com/v0/appTeNFYcUiYfGcR6/battles',
     {
-      cache: 'no-cache',
       method: 'POST',
       headers: {
+        'User-Agent': 'highseas.hackclub.com (processPendingVotingJobs)',
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ records: fields }),
     },
-  ).then((r) => r.json())
+  ).then((r) => r.text())
+  console.log('Result:', resultText)
+
+  const result = JSON.parse(resultText)
+  if (result.error) {
+    console.error('Error submitting votes:', result.error)
+    return
+  }
 
   // update the status of the jobs
   await Promise.all(
@@ -176,8 +183,8 @@ async function processPendingVotingJobs() {
 
 export async function processBackgroundJobs() {
   await Promise.all([
-    processPendingInviteJobs(),
-    processPendingPersonInitJobs(),
+    // processPendingInviteJobs(),
+    // processPendingPersonInitJobs(),
     processPendingVotingJobs(),
   ])
 }
