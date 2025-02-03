@@ -35,11 +35,11 @@ type TavernDatafetchCategory =
 
 const RsvpStatusSwitcher = ({
   tavernEvents,
-  onTavernSelect,
+  selectedTavern,
   erroredFetches,
 }: {
   tavernEvents: TavernEventItem[]
-  onTavernSelect: (tavernId: string | null) => void
+  selectedTavern: TavernEventItem | null
   erroredFetches: TavernDatafetchCategory[]
 }) => {
   const [rsvpStatus, setRsvpStatus] = useLocalStorageState(
@@ -125,35 +125,42 @@ const RsvpStatusSwitcher = ({
         Please consider volunteering to organize this tavern, me hearty!
       </Modal>
 
+      {erroredFetches.includes('tavernEvents') ? (
+        <p className="text-red-500">Failed to fetch tavern events</p>
+      ) : erroredFetches.includes('myTavernLocation') ? (
+        <p className="text-red-500">Failed to fetch your tavern location</p>
+      ) : !tavernEvents || !selectedTavern ? (
+        <p>Loading...</p>
+      ) : (
+        <label>
+          Which tavern will you attend?
+          <select
+            value={selectedTavern.id}
+            className="ml-2 text-gray-600 rounded-sm"
+          >
+            <option value="">Select</option>
+            {Object.keys(eventsByCountry)
+              .sort()
+              .map((country) => (
+                <optgroup key={country} label={country}>
+                  {eventsByCountry[country].map((te) => (
+                    <option key={te.id} value={te.id}>
+                      {te.locality}
+                      {te.organizers.length === 0
+                        ? ' (no organizers yet!)'
+                        : ''}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+          </select>
+        </label>
+      )}
+
       <form action={rspvForTavern} className="flex flex-col">
         {tavernEvents &&
         (rsvpStatus === 'participant' || rsvpStatus === 'organizer') ? (
-          <>
-            <label>
-              Which tavern will you attend?
-              <select
-                onChange={onTavernChangeHandler}
-                value={whichTavern}
-                className="ml-2 text-gray-600 rounded-sm"
-              >
-                <option value="">Select</option>
-                {Object.keys(eventsByCountry)
-                  .sort()
-                  .map((country) => (
-                    <optgroup key={country} label={country}>
-                      {eventsByCountry[country].map((te) => (
-                        <option key={te.id} value={te.id}>
-                          {te.locality}
-                          {te.organizers.length === 0
-                            ? ' (no organizers yet!)'
-                            : ''}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
-              </select>
-            </label>
-          </>
+          <></>
         ) : (
           <p>Not a participant or organizer</p>
         )}
@@ -325,7 +332,7 @@ export default function Tavern() {
         </Card>
         <RsvpStatusSwitcher
           tavernEvents={tavernEvents}
-          onTavernSelect={handleTavernSelect}
+          selectedTavern={selectedTavern}
           erroredFetches={erroredFetches}
         />
 
