@@ -12,6 +12,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const personId = session.personId
+
   try {
     const voteData = await request.json()
 
@@ -45,17 +47,6 @@ export async function POST(request: Request) {
         { status: 400 },
       )
     }
-    const isUnique = await ensureUniqueVote(
-      session.slackId,
-      voteData.winner,
-      voteData.loser,
-    )
-    if (!isUnique) {
-      return NextResponse.json(
-        { error: 'Vote already submitted' },
-        { status: 400 },
-      )
-    }
 
     voteData.winner_readme_opened = winnerAnalytics.readmeOpened
     voteData.winner_repo_opened = winnerAnalytics.repoOpened
@@ -65,7 +56,7 @@ export async function POST(request: Request) {
     voteData.loser_demo_opened = loserAnalytics.demoOpened
     voteData.skips_before_vote = voteData.analytics.skipsBeforeVote
 
-    const _result = await submitVote(voteData)
+    const _result = await submitVote(voteData, personId, session.slackId)
 
     return NextResponse.json({ ok: true /*, reload: isBot */ })
   } catch (error) {

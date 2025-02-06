@@ -230,6 +230,7 @@ export async function generateMatchup(
   )
 
   if (!uniqueVote) {
+    console.log("Matchup wasn't unique, trying again")
     return generateMatchup(projects, userSlackId, attempts + 1)
   }
 

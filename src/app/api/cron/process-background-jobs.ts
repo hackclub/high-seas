@@ -147,19 +147,6 @@ async function processPendingVotingJobs() {
       },
     }))
 
-    // if any signature is missing, we can't submit the votes
-    if (fields.some((f) => !f.fields.signature)) {
-      console.error('Missing signature in voting job')
-      return
-    }
-
-    // we can only submit one instance of a vote signature per batch
-    const uniqueSignatures = {}
-    fields.forEach((f) => {
-      uniqueSignatures[f.fields.signature] = f
-    })
-    const recordsToSubmit = Object.values(uniqueSignatures)
-
     const resultText = await fetch(
       'https://api.airtable.com/v0/appTeNFYcUiYfGcR6/battles',
       {
@@ -170,14 +157,13 @@ async function processPendingVotingJobs() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          records: recordsToSubmit,
+          records: fields,
           performUpsert: {
             fieldsToMergeOn: ['signature'],
           },
         }),
       },
     ).then((r) => r.text())
-    console.log('Result:', resultText)
 
     const result = JSON.parse(resultText)
     if (result.error) {

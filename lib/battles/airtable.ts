@@ -1,6 +1,7 @@
 import Airtable from 'airtable'
 import { Ships, Person, Battles } from '../../types/battles/airtable'
 import createBackgroundJob from '@/app/api/cron/create-background-job'
+import { sql } from '@vercel/postgres'
 
 const base = new Airtable({
   apiKey: process.env.AIRTABLE_API_KEY,
@@ -86,28 +87,27 @@ export const getMatchups = async (): Promise<Ships[]> => {
   return records.map((record) => record.fields as Ships)
 }
 
-export const submitVote = async (voteData: {
-  slackId: string
-  explanation: string
-  winner: string
-  loser: string
-  winnerRating: number
-  loserRating: number
-  ts: number
-  winner_readme_opened: boolean
-  winner_repo_opened: boolean
-  winner_demo_opened: boolean
-  loser_readme_opened: boolean
-  loser_repo_opened: boolean
-  loser_demo_opened: boolean
-  skips_before_vote: number
-  signature: string
-}): Promise<Battles> => {
-  const person = await getPersonBySlackId(voteData.slackId)
-  if (!person) {
-    throw new Error('User not found')
-  }
-
+export const submitVote = async (
+  voteData: {
+    slackId: string
+    explanation: string
+    winner: string
+    loser: string
+    winnerRating: number
+    loserRating: number
+    ts: number
+    winner_readme_opened: boolean
+    winner_repo_opened: boolean
+    winner_demo_opened: boolean
+    loser_readme_opened: boolean
+    loser_repo_opened: boolean
+    loser_demo_opened: boolean
+    skips_before_vote: number
+    signature: string
+  },
+  personId: string,
+  slackId: string,
+): Promise<Battles> => {
   const [winner, loser] = await Promise.all([
     base('ships').find(voteData.winner),
     base('ships').find(voteData.loser),
@@ -126,7 +126,7 @@ export const submitVote = async (voteData: {
   )
 
   const recordToCreate = {
-    voter: [person.id as string],
+    voter: [personId as string],
     explanation: voteData.explanation,
     ships: [voteData.winner, voteData.loser],
     winner: [voteData.winner],
@@ -135,7 +135,7 @@ export const submitVote = async (voteData: {
     winner_adjustment: newWinnerRating - winner.fields.rating,
     loser_rating: loser.fields.rating,
     loser_adjustment: newLoserRating - loser.fields.rating,
-    is_tutorial_vote: !person.user_has_graduated,
+    is_tutorial_vote: false,
     generated_at: voteData.ts,
     winner_readme_opened: voteData.winner_readme_opened,
     winner_repo_opened: voteData.winner_repo_opened,
@@ -145,22 +145,21 @@ export const submitVote = async (voteData: {
     loser_demo_opened: voteData.loser_demo_opened,
     skips_before_vote: voteData.skips_before_vote,
   }
-  // async voting job v
-  // await createBackgroundJob('submit_vote', {
-  //   recordToCreate,
-  //   voteSignature: voteData.signature,
-  // })
 
-  // return {
-  //   ...(recordToCreate as Battles),
-  // }
-
-  const record = await base('battles').create({
-    ...recordToCreate,
+  const sqlUniquenessString = [slackId, voteData.winner, voteData.loser]
+    .sort()
+    .join('-')
+  console.log('Creating background job for submit_vote', {
+    sqlUniquenessString,
+  })
+  await createBackgroundJob('submit_vote', {
+    recordToCreate,
+    voteSignature: voteData.signature,
+    sqlUniquenessString,
   })
 
   return {
-    ...(record.fields as Battles),
+    ...(recordToCreate as Battles),
   }
 }
 
@@ -170,21 +169,34 @@ export const ensureUniqueVote = async (
   project2: string,
 ): Promise<boolean> => {
   console.log('ensureUniqueVote', slackId, project1, project2)
-  const records = await base('battles')
-    .select({
-      filterByFormula: `AND(
+
+  const sqlUniquenessString = [slackId, project1, project2].sort().join('-')
+  console.log({ sqlUniquenessString })
+  const [airtableRecords, sqlRecords] = await Promise.all([
+    base('battles')
+      .select({
+        filterByFormula: `AND(
       {voter__slack_id} = '${slackId}',
       OR(
         AND({winner__record_id} = '${project1}', {loser__record_id} = '${project2}'),
         AND({winner__record_id} = '${project2}', {loser__record_id} = '${project1}')
       )
     )`,
-      maxRecords: 1,
-    })
-    .all()
-  console.log('ensureUniqueVote', records)
+        maxRecords: 1,
+      })
+      .all(),
+    sql`
+SELECT *
+FROM background_job
+WHERE args->>'sqlUniquenessString' = ${sqlUniquenessString}
+AND type = 'submit_vote'
+AND status = 'pending'
+`,
+  ])
 
-  return records.length === 0
+  console.log('ensureUniqueVote', airtableRecords, sqlRecords.rows)
+
+  return airtableRecords.length === 0 && sqlRecords.rows.length === 0
 }
 
 export const getPersonBySlackId = async (
