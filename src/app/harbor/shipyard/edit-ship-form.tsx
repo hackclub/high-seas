@@ -10,6 +10,8 @@ import { EditableShipFields } from '../../utils/server/data'
 export const editMessages = [
   'Orpheus hopes you know that she put a lot of effort into recording your changes~',
   'Heidi scribbles down your changes hastily...',
+  "Captn trashbeard writes in chicken scratch. Wasn't she illiterate?",
+  'Arrpheus scribbles on a piece of parchment before putting it in a bottle and throwing it out the porthole',
   "Orpheus put your Ship changes in the logbook. They're going nowhere, rest assured.",
 ]
 

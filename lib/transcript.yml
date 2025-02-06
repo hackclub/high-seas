@@ -146,6 +146,9 @@ doot: # someone clicks a trumpet while music is playing
   - icon:freaking|i swear to the seven seas, stop with the trumpet!
   - icon:freaking|that's enough!
   - icon:freaking|NO MORE TRUMPETS!
+  - icon:freaking|ENOUGH!
+  - icon:freaking|STOP!
+  - icon:freaking|Shove that trumpet up your...|icon:question|errrr... i mean...|icon:threat|stop with the trumpet!
 fav:
   removed:
     - icon:question|ah, not interested in the [${this.name.toUpperCase()}]?
