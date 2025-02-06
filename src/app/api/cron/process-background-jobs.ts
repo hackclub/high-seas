@@ -131,7 +131,11 @@ async function processPendingPersonInitJobs() {
 async function processPendingVotingJobs() {
   await withLock('create-vote-records', async () => {
     const { rows } = await sql`
-  SELECT * FROM background_job WHERE type = 'submit_vote' AND status = 'pending' LIMIT 10
+SELECT DISTINCT ON (args->>'voteSignature') *
+FROM background_job
+WHERE type = 'submit_vote' AND status = 'pending'
+ORDER BY args->>'voteSignature', id DESC
+LIMIT 10;
   `
 
     if (rows.length === 0) {
