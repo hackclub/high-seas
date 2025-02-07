@@ -135,7 +135,7 @@ SELECT DISTINCT ON (args->>'voteSignature') *
 FROM background_job
 WHERE type = 'submit_vote' AND status = 'pending'
 ORDER BY args->>'voteSignature', id DESC
-LIMIT 10;
+LIMIT 3;
   `
 
     if (rows.length === 0) {
