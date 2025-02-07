@@ -130,6 +130,7 @@ async function processPendingPersonInitJobs() {
 
 async function processPendingVotingJobs() {
   await withLock('create-vote-records', async () => {
+    console.log('Searching for pending voting jobs')
     const { rows } = await sql`
 SELECT DISTINCT ON (args->>'voteSignature') *
 FROM background_job
