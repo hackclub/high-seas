@@ -26,6 +26,7 @@ import Modal from '@/components/ui/modal'
 import { sendFraudReport } from './fraud-utils'
 import { Button } from '@/components/ui/button'
 import { Howl } from 'howler'
+import { MultiSelect } from '@/components/ui/multi-select'
 interface Matchup {
   project1: Ships
   project2: Ships
@@ -47,7 +48,7 @@ export default function Matchups({ session }: { session: HsSession }) {
   const [blessed, setBlessed] = useState(false)
 
   const [fraudProject, setFraudProject] = useState<Ship>()
-  const [fraudType, setFraudType] = useState<string>()
+  const [fraudTypes, setFraudTypes] = useState<string[] | null>()
   const [fraudReason, setFraudReason] = useState<string>()
   const debounceTimeoutRef = useRef<number | null>(null)
 
@@ -390,11 +391,11 @@ export default function Matchups({ session }: { session: HsSession }) {
       window.clearTimeout(debounceTimeoutRef.current)
     }
 
-    if (!fraudProject || !fraudReason || !fraudType) return
+    if (!fraudProject || !fraudReason || !fraudTypes) return
 
     debounceTimeoutRef.current = window.setTimeout(async () => {
       try {
-        await sendFraudReport(fraudProject, fraudType, fraudReason)
+        await sendFraudReport(fraudProject, fraudTypes, fraudReason)
       } catch (error) {
         console.error('Failed to flag project:', error)
       }
@@ -407,8 +408,8 @@ export default function Matchups({ session }: { session: HsSession }) {
 
     setFraudProject(undefined)
     setFraudReason('')
-    setFraudType('')
-  }, [fraudProject, fraudType, fraudReason])
+    setFraudTypes(null)
+  }, [fraudProject, fraudTypes, fraudReason])
 
   if (isReadmeView) {
     return (
@@ -508,39 +509,25 @@ export default function Matchups({ session }: { session: HsSession }) {
                 <h3 className="text-2xl font-bold">
                   Why are you flagging {fraudProject?.title}?
                 </h3>
-                <select
-                  value={fraudType}
-                  onChange={(e) => setFraudType(e.target.value)}
-                  className="w-full my-4 p-1 text-black"
-                >
-                  <option value="">Select the reason for flagging</option>
-                  <option value="Incomplete README">Incomplete README</option>
-                  <option value="No screenshot">No screenshot</option>
-                  <option value="No demo link">No demo link</option>
-                  <option value="Suspected fraud">Suspected fraud</option>
-                  <option value="Wrong repo">
-                    Repo not found / not open source
-                  </option>
-                </select>
+
+                <MultiSelect
+                  options={[
+                    { label: 'Incomplete README', value: 'Incomplete README' },
+                    { label: 'No screenshot', value: 'No screenshot' },
+                    { label: 'No demo link', value: 'No demo link' },
+                    { label: 'Suspected fraud', value: 'Suspected fraud' },
+                    {
+                      label: 'Repo not found / not open source',
+                      value: 'Wrong repo',
+                    },
+                  ]}
+                  onValueChange={(val) => setFraudTypes(val)}
+                  hideSelectAll={true}
+                  className="my-4"
+                />
 
                 <AnimatePresence>
-                  {fraudType === 'Incomplete README' ||
-                  fraudType === 'No demo link' ||
-                  fraudType === 'No screenshot' ||
-                  fraudType === 'Wrong repo' ? (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'fit-content', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                    >
-                      <p className="mb-3">
-                        The creator of this project will be notified. Thanks for
-                        making High Seas better! :)
-                      </p>
-                    </motion.div>
-                  ) : null}
-
-                  {fraudType === 'Suspected fraud' ? (
+                  {fraudTypes?.includes('Suspected fraud') ? (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'fit-content', opacity: 1 }}
@@ -548,7 +535,24 @@ export default function Matchups({ session }: { session: HsSession }) {
                     >
                       <p className="mb-3">
                         The creator of this project will not know you reported
-                        them. <b>Only the High Seas team will see this.</b>
+                        them for potential fraud.{' '}
+                        <b>Only the High Seas team will see this.</b>
+                      </p>
+                    </motion.div>
+                  ) : null}
+
+                  {fraudTypes?.includes('Incomplete README') ||
+                  fraudTypes?.includes('No demo link') ||
+                  fraudTypes?.includes('No screenshot') ||
+                  fraudTypes?.includes('Wrong repo') ? (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'fit-content', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                    >
+                      <p className="mb-3">
+                        The creator of this project will be notified about
+                        incorrect links. Thanks for making High Seas better! :)
                       </p>
                     </motion.div>
                   ) : null}
@@ -564,7 +568,7 @@ export default function Matchups({ session }: { session: HsSession }) {
 
                 <Button
                   variant={'destructive'}
-                  disabled={!fraudType || !fraudReason}
+                  disabled={!fraudTypes || !fraudReason}
                   onClick={handleFraudReport}
                   className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
                 >
