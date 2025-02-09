@@ -188,6 +188,7 @@ const SoundButton = () => {
       {soundState ? theFlags() : ''}
       <div
         className="fixed bottom-3 right-3 cursor-pointer"
+        style={{ zIndex:2500, opacity: soundState ? 1 : 0.5 }}
         onClick={handleClick}
       >
         <div className="bg-gray-100 border-indigo-500 size-20 rounded-full border-2 flex items-center justify-center text-xl">
