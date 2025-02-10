@@ -6,21 +6,34 @@ legalThings:
   - ©
   - ${this.t('legalThings')}${this.t('legalThings')}
 banner:
-  - buy something or get out!
-  - spend your doubloons here!
-  - get that booty!
-  - NO REFUNDS
-  - feeling overburdened by money?
-  - plundered from the best dead adventurers in the land
-  - we accept doubloons and PiratePay${this.t('legalThings')}
-  - YARR
-  - 🏴‍☠️
-  - you wouldn't download a ship...
-  - These prices are walkin' the plank!
-  - you break it, you buy it!
-  - pirate-owned and operated!
-  - caveat emptor
-  - all sales are final
+  - everything must go!
+  - going out of business sale!
+  - closing for the second time!
+  - clearance!
+  - while supplies last!
+  - final sale, no refunds!
+  - just buy, no return!
+  - no think, just buy
+  - limited inventory!
+  - blow-me-down, it's a blow-out sale!
+  - world literally ending!
+  - the end is nigh!
+  - buy some ship before we sink!
+  # - buy something or get out!
+  # - spend your doubloons here!
+  # - get that booty!
+  # - NO REFUNDS
+  # - feeling overburdened by money?
+  # - plundered from the best dead adventurers in the land
+  # - we accept doubloons and PiratePay${this.t('legalThings')}
+  # - YARR
+  # - 🏴‍☠️
+  # - you wouldn't download a ship...
+  # - These prices are walkin' the plank!
+  # - you break it, you buy it!
+  # - pirate-owned and operated!
+  # - caveat emptor
+  # - all sales are final
 selfClick:
   - icon:question|w-what? but I'm not for sale
   - icon:info|The only thing for sale here is the merchandise
