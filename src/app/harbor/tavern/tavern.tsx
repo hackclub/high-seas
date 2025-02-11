@@ -122,7 +122,7 @@ const RsvpStatusSwitcher = ({
         <br />
         <br />
         It's easy, all you would need to do is select a venue, date, distribute
-        shirts, and help peolpe coordianate how they're going to attend.
+        shirts, and help people coordianate how they're going to attend.
         <br />
         <br />
         Please consider volunteering to organize this tavern, me hearty!
