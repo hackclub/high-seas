@@ -87,7 +87,7 @@ export async function fetchShips(
     {ship_status} != 'deleted'
   )`
 
-  let url = `https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/ships?filterByFormula=${encodeURIComponent(
+  let url = `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/ships?filterByFormula=${encodeURIComponent(
     filterFormula,
   )}`
   if (maxRecords != null) url += `&maxRecords=${maxRecords}`
@@ -179,7 +179,7 @@ export async function getBestShips(): Promise<BestShip[]> {
   console.log('Best ships MISS')
 
   const recordPromise = await fetch(
-    'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/tblHeGZNG00d4GBBV?limit=3&view=viwHvRRLCwPMOmRhj',
+    `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/tblHeGZNG00d4GBBV?limit=3&view=viwHvRRLCwPMOmRhj`,
     {
       headers: {
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,

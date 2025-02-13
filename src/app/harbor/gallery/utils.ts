@@ -19,7 +19,7 @@ export async function getShips(offset: string | undefined): Promise<{
   offset: string | undefined
 }> {
   const res = await fetch(
-    `https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/ships?view=Grid%20view${offset ? `&offset=${offset}` : ''}`,
+    `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/ships?view=Grid%20view${offset ? `&offset=${offset}` : ''}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,

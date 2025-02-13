@@ -121,7 +121,7 @@ export async function createSlackSession(slackOpenidToken: string) {
 
       // Let's create a Person record
       const result = await fetch(
-        'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/people',
+        `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/people`,
         {
           method: 'POST',
           headers: {
