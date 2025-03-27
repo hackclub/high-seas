@@ -22,7 +22,7 @@ export async function handleEmailSubmission(
   key: string
 } | null> {
   throw new Error('High Seas has ended! Sign-ups are disabled.')
-  
+
   /*
   if (!email) throw new Error('No email supplied to handleEmailSubmission')
   if (!userAgent)

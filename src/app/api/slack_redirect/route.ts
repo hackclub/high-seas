@@ -5,7 +5,9 @@ import { NextRequest } from 'next/server'
 const errRedir = (err: any) => redirect('/slack-error?err=' + err.toString())
 
 export async function GET(request: NextRequest) {
-  return redirect('/slack-error?err=High Seas has ended! Sign-ups are disabled.')
+  return redirect(
+    '/slack-error?err=High Seas has ended! Sign-ups are disabled.',
+  )
   /*
   const code = request.nextUrl.searchParams.get('code')
 
