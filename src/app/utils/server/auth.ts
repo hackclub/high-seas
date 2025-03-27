@@ -102,12 +102,12 @@ export async function createSlackSession(slackOpenidToken: string) {
 
     if (!payload) throw new Error('Failed to decode the Slack OpenId JWT')
 
-    let person = (await getSelfPerson(payload.sub as string)) as any
+    const person = (await getSelfPerson(payload.sub as string)) as any
 
     if (!person) {
       // Sign-ups are disabled
       throw new Error('High Seas has ended! Sign-ups are disabled.')
-      
+
       /*
       const body = JSON.stringify({
         performUpsert: {
@@ -148,7 +148,6 @@ export async function createSlackSession(slackOpenidToken: string) {
       person = result.records[0]
       */
     }
-    
 
     const sessionData: HsSession = {
       personId: person.id,
@@ -166,7 +165,6 @@ export async function createSlackSession(slackOpenidToken: string) {
     throw error
   }
 }
-
 
 export async function getRedirectUri(): Promise<string> {
   const headersList = headers()
