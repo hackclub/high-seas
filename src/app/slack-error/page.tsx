@@ -16,6 +16,8 @@ export default function SlackAuthErrorPage({
     reportError(err)
   }, [])
 
+  const isSignupDisabled = err?.includes("Sign-ups are currently disabled")
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#4A154B]">
       <div className="w-fit bg-white p-8 rounded-lg shadow-lg text-center">
@@ -24,13 +26,13 @@ export default function SlackAuthErrorPage({
           aria-hidden="true"
         />
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Going overboard!
+          {isSignupDisabled ? "Sign-ups are closed!" : "Going overboard!"}
         </h1>
         <p className="text-gray-600 mb-6 text-sm">
-          We Arrrr over capacity right now, but we got your request to join the
-          crew... we'll reach out once we figure out how to keep this ship from
-          capsizing.
-          {err || 'An error occurred during Slack authentication.'}
+          {isSignupDisabled 
+            ? "High Seas has ended! Sign-ups are disabled."
+            : "We Arrrr over capacity right now, but we got your request to join the crew... we'll reach out once we figure out how to keep this ship from capsizing."}
+          {!isSignupDisabled && (err || 'An error occurred during Slack authentication.')}
         </p>
 
         <Link className={buttonVariants({ variant: 'outline' })} href="/">

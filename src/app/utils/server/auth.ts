@@ -105,6 +105,10 @@ export async function createSlackSession(slackOpenidToken: string) {
     let person = (await getSelfPerson(payload.sub as string)) as any
 
     if (!person) {
+      // Sign-ups are disabled
+      throw new Error('High Seas has ended! Sign-ups are disabled.')
+      
+      /*
       const body = JSON.stringify({
         performUpsert: {
           fieldsToMergeOn: ['email'],
@@ -142,12 +146,9 @@ export async function createSlackSession(slackOpenidToken: string) {
       })
 
       person = result.records[0]
+      */
     }
-
-    if (!person)
-      throw new Error(
-        "Couldn't find OR create a person! :(( Sad face. Tell malted that Airtable broke",
-      )
+    
 
     const sessionData: HsSession = {
       personId: person.id,
@@ -165,6 +166,7 @@ export async function createSlackSession(slackOpenidToken: string) {
     throw error
   }
 }
+
 
 export async function getRedirectUri(): Promise<string> {
   const headersList = headers()

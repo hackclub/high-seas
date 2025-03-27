@@ -5,6 +5,8 @@ import { NextRequest } from 'next/server'
 const errRedir = (err: any) => redirect('/slack-error?err=' + err.toString())
 
 export async function GET(request: NextRequest) {
+  return redirect('/slack-error?err=High Seas has ended! Sign-ups are disabled.')
+  /*
   const code = request.nextUrl.searchParams.get('code')
 
   const redirectUri = await getRedirectUri()
@@ -41,4 +43,5 @@ export async function GET(request: NextRequest) {
   // }).then((d) => d.json());
 
   redirect('/signpost')
+  */
 }

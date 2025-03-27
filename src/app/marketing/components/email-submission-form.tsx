@@ -17,6 +17,9 @@ export default function EmailSubmissionForm() {
   const plausible = usePlausible()
 
   const handleForm = async (formData: FormData) => {
+    setErrorText('High Seas has ended! Sign-ups are disabled.')
+    return
+    /*
     const emailStr = (formData.get('email') as string).trim().toLowerCase()
 
     if (t) {
@@ -55,6 +58,7 @@ export default function EmailSubmissionForm() {
     ])
     setEmail(emailStr)
     plausible('sign-up')
+    */
   }
 
   let origin = ''
@@ -66,6 +70,10 @@ export default function EmailSubmissionForm() {
   return (
     <>
       <div className="flex flex-col">
+        <div className="px-6 py-4 rounded-lg text-md border-2 border-[#3852CD] bg-[#FA4C3599] text-white">
+          High Seas has ended! Sign-ups are disabled.
+        </div>
+        {/*
         <form
           ref={formRef}
           action={handleForm}
@@ -94,6 +102,7 @@ export default function EmailSubmissionForm() {
             You need to enter an Email
           </div>
         )}
+        */}
       </div>
 
       <Modal isOpen={!!email} close={() => setEmail(undefined)}>
