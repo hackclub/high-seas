@@ -38,7 +38,7 @@ export async function createMagicSession(magicCode: string) {
   try {
     const partialPersonData = await getPersonByMagicToken(magicCode)
     if (!partialPersonData)
-      throw new Error(`Failed to look up Person by magic code: ${magicCode}`)
+      throw new Error('High Seas has ended! Sign-ups are disabled.')
 
     const { id, email, slackId } = partialPersonData
 
