@@ -39,7 +39,7 @@ export async function person(): Promise<any> {
   console.log('Person cache MISS')
 
   const recordPromise = fetch(
-    `https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/people/${session.personId}`,
+    `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/people/${session.personId}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
@@ -134,7 +134,7 @@ export interface SignpostFeedItem {
 }
 export async function fetchSignpostFeed(): Promise<SignpostFeedItem[]> {
   const result = await fetch(
-    'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/signpost',
+    `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/signpost`,
     {
       headers: {
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
@@ -189,7 +189,7 @@ export interface ShopItem {
 }
 export async function fetchShopItems(): Promise<ShopItem[]> {
   const result = await fetch(
-    'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/shop_items',
+    `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/shop_items`,
     {
       headers: {
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
