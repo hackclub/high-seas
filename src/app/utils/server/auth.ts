@@ -105,7 +105,6 @@ export async function createSlackSession(slackOpenidToken: string) {
     const person = (await getSelfPerson(payload.sub as string)) as any
 
     if (!person) {
-      // Sign-ups are disabled
       throw new Error('High Seas has ended! Sign-ups are disabled.')
 
       /*
