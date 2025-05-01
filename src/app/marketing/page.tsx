@@ -53,19 +53,7 @@ export default async function Marketing() {
                   <EmailSubmissionForm />
                 )}
               </div>
-              <p
-                className="mt-4 text-white bg-opacity-50 px-4 py-2 rounded-lg"
-                style={{
-                  backgroundImage: 'url(/floorboard.svg)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  mixBlendMode: 'hard-light',
-                  transform: 'rotate(-2deg)',
-                }}
-              >
-                Free stickers for all new recruits!
-              </p>
-              <div className="mt-6">
+              <div className="mt-0">
                 <a
                   href="https://hackclub.com/slack"
                   className="inline-flex items-center justify-center px-8 py-3 text-lg font-medium text-white rounded-lg transform hover:scale-105 transition-transform"
