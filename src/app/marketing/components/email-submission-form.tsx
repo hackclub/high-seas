@@ -39,7 +39,7 @@ export default function EmailSubmissionForm() {
 
     if (!validEmail(emailStr)) {
       setErrorText('Please enter a valid email address.')
-       const id = setTimeout(() => setErrorText(undefined), 3000)
+      const id = setTimeout(() => setErrorText(undefined), 3000)
       setTimeoutId(id)
       setIsSubmitting(false)
       return
@@ -61,8 +61,8 @@ export default function EmailSubmissionForm() {
         {/* Updated Message */}
         <div className="px-6 py-4 rounded-lg text-md border-2 border-[#3852CD] bg-[#FA4C3599] text-white text-center">
           High Seas has ended! <br />
-          Put your email below and {"we'll"} email you about future Hack
-          Club events.
+          Put your email below and {"we'll"} email you about future Hack Club
+          events.
         </div>
 
         {/* Email Form */}
