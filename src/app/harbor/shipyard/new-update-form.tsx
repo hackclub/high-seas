@@ -3,9 +3,10 @@ import { createShipUpdate } from './ship-utils'
 import type { Ship } from '@/app/utils/server/data'
 import { Button } from '@/components/ui/button'
 import JSConfetti from 'js-confetti'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { getWakaSessions } from '@/app/utils/waka'
 import Icon from '@hackclub/icons'
+import { MultiSelect } from '@/components/ui/multi-select'
 
 export default function NewUpdateForm({
   shipChain,
@@ -13,17 +14,42 @@ export default function NewUpdateForm({
   closeForm,
   session,
   setShips,
+  ships,
 }: {
   shipChain: Ship[]
   canvasRef: any
   closeForm: any
   session: any
   setShips: any
+  ships: Ship[]
 }) {
   const [staging, setStaging] = useState(false)
   const [loading, setLoading] = useState(true)
   const confettiRef = useRef<JSConfetti | null>(null)
   const [projectHours, setProjectHours] = useState<number>(0)
+  const [projects, setProjects] = useState<
+    { key: string; total: number }[] | null
+  >(null)
+  const [selectedProjects, setSelectedProjects] = useState<
+    | [
+        {
+          key: string
+          total: number
+        },
+      ]
+    | null
+  >(null)
+
+  const newWakatimeProjects = selectedProjects?.join('$$xXseparatorXx$$') ?? ''
+  const prevWakatimeProjects =
+    shipChain[shipChain.length - 1].wakatimeProjectNames?.join(
+      '$$xXseparatorXx$$',
+    ) ?? ''
+  let wakatimeProjectNames = prevWakatimeProjects
+  if (newWakatimeProjects && newWakatimeProjects !== '') {
+    wakatimeProjectNames =
+      prevWakatimeProjects + '$$xXseparatorXx$$' + newWakatimeProjects
+  }
 
   // Initialize confetti on mount
   useEffect(() => {
@@ -40,45 +66,80 @@ export default function NewUpdateForm({
     }
   }, [])
 
+  // Fetch projects from the API using the Slack ID
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        if (sessionStorage.getItem('tutorial') === 'true') {
+          setProjects([{ key: 'hack-club-site', total: 123 * 60 * 60 }])
+        } else {
+          const res = await getWakaSessions()
+          const shippedShips = ships
+            .filter((s) => s.shipStatus !== 'deleted')
+            .flatMap((s) => s.wakatimeProjectNames)
+          setProjects(
+            res.projects.filter(
+              (p: { key: string; total: number }) =>
+                p.key !== '<<LAST_PROJECT>>' && !shippedShips.includes(p.key),
+            ),
+          )
+        }
+      } catch (error) {
+        console.error('Error fetching projects:', error)
+      }
+    }
+    fetchProjects()
+  }, [ships])
+
   const calculateCreditedTime = useCallback(
     (
       projects: {
         key: string
         total: number
       }[],
+      newProjects: string[] | null,
     ): number => {
       const shipChainTotalHours = shipChain.reduce(
         (acc, curr) => (acc += curr.credited_hours ?? 0),
         0,
       )
       console.log({ shipChain, shipChainTotalHours })
+      const newProjectsHours = projects
+        .filter((p) => newProjects?.includes(p.key))
+        .reduce((acc, curr) => (acc += curr.total ?? 0), 0)
 
       const ps = projects.filter((p) =>
-        (shipChain[0].wakatimeProjectNames || []).includes(p.key),
+        (shipChain[shipChain.length - 1].wakatimeProjectNames || []).includes(
+          p.key,
+        ),
       )
 
       if (!ps || ps.length === 0) return 0
 
-      const total = ps.reduce((acc, curr) => (acc += curr.total), 0)
+      const total =
+        ps.reduce((acc, curr) => (acc += curr.total), 0) + newProjectsHours
       const creditedTime = total / 3600 - shipChainTotalHours
       return Math.round(creditedTime * 1000) / 1000
     },
     [shipChain],
   )
 
-  useEffect(() => {
-    async function fetchAndSetProjectHours() {
+  const fetchAndSetProjectHours = useCallback(
+    async (newProjects: string[] | null) => {
       setLoading(true)
       const res = await fetchWakaSessions()
 
       if (res && shipChain[0].total_hours) {
-        let creditedTime = calculateCreditedTime(res.projects)
+        let creditedTime = calculateCreditedTime(res.projects, newProjects)
         console.log('Flow one', { ps: res.projects, creditedTime })
 
         if (creditedTime < 0) {
           const anyScopeRes = await fetchWakaSessions('any')
           if (anyScopeRes) {
-            creditedTime = calculateCreditedTime(anyScopeRes.projects)
+            creditedTime = calculateCreditedTime(
+              anyScopeRes.projects,
+              newProjects,
+            )
             console.error('fetchAndSetProjectHours::Flow two', { creditedTime })
           }
         }
@@ -86,10 +147,14 @@ export default function NewUpdateForm({
         setProjectHours(creditedTime)
       }
       setLoading(false)
-    }
+    },
+    [fetchWakaSessions, calculateCreditedTime, shipChain],
+  )
 
-    fetchAndSetProjectHours()
-  }, [fetchWakaSessions, calculateCreditedTime, shipChain])
+  // Use fetchAndSetProjectHours in useEffect
+  useEffect(() => {
+    fetchAndSetProjectHours(null)
+  }, [fetchAndSetProjectHours])
 
   const handleForm = async (formData: FormData) => {
     setStaging(true)
@@ -122,6 +187,12 @@ export default function NewUpdateForm({
     }
   }
 
+  const projectDropdownList = projects?.map((p: any) => ({
+    label: `${p.key} (${(p.total / 60 / 60).toFixed(2)} hrs)`,
+    value: p.key,
+    icon: () => <Icon glyph="clock" size={24} />,
+  }))
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-2">
@@ -151,6 +222,37 @@ export default function NewUpdateForm({
           required
           className="w-full p-2 rounded bg-white/50"
         />
+
+        {/* Project Dropdown */}
+        <div id="project-field">
+          <label htmlFor="project" className="leading-0">
+            Select Additional Project
+          </label>
+
+          {projects ? (
+            <MultiSelect
+              options={projectDropdownList}
+              onValueChange={async (p) => {
+                setSelectedProjects(p)
+                await fetchAndSetProjectHours(p)
+              }}
+              defaultValue={[]}
+              placeholder="Select projects..."
+              variant="inverted"
+              maxCount={3}
+            />
+          ) : (
+            <p>Loading projects...</p>
+          )}
+
+          {/* Hidden input to include in formData */}
+          <input
+            type="hidden"
+            id="wakatime-project-name"
+            name="wakatime_project_name"
+            value={wakatimeProjectNames ?? ''}
+          />
+        </div>
 
         <Button
           type="submit"
