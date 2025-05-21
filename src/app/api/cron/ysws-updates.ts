@@ -157,13 +157,15 @@ async function updateHours(): Promise<void> {
     }
     console.log('Updating hours for ysws submissions')
 
+    const yswsRecordsToUpdate = []
+    const submissionRecordsToUpdate = []
     for (let i = 0; i < yswsSubmissions.length; i++) {
       const submission = yswsSubmissions[i]
       console.log('submission', submission.id)
       const yswsRecordID = submission?.fields?.ysws_db_record_id
       const submissionHours =
         submission?.fields?.['ship__chain__credited_hours']?.[0]
-      const submissionTime = submission?.fields?.['ship__created_time']?.[0]
+      const submissionTime = submission?.fields?.['approved_at']
       if (
         !yswsRecordID ||
         !(Boolean(submissionHours) || submissionHours === 0) ||
@@ -201,12 +203,22 @@ async function updateHours(): Promise<void> {
         )
         fieldsToUpdate['Override Hours Spent'] = submissionHours
       }
-      await yswsRecord.updateFields(fieldsToUpdate)
-      new Promise((resolve) => setTimeout(resolve, 1000))
 
-      await submission.updateFields({ last_sync_time: new Date() })
-      new Promise((resolve) => setTimeout(resolve, 1000))
+      yswsRecordsToUpdate.push({
+        id: yswsRecordID,
+        fields: fieldsToUpdate,
+      })
+
+      submissionRecordsToUpdate.push({
+        id: submission.id,
+        fields: {
+          last_sync_time: new Date(),
+        },
+      })
     }
+
+    await yswsBase('Approved Projects').update(yswsRecordsToUpdate)
+    await base('ysws_submission').update(submissionRecordsToUpdate)
   })
 }
 
@@ -253,7 +265,7 @@ async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
       .all()
 
     if (fetchedHsRecs.length == 0) {
-      console.error('No records to update!')
+      console.log('No records to update!')
       return
     }
 

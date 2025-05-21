@@ -102,9 +102,12 @@ export async function createSlackSession(slackOpenidToken: string) {
 
     if (!payload) throw new Error('Failed to decode the Slack OpenId JWT')
 
-    let person = (await getSelfPerson(payload.sub as string)) as any
+    const person = (await getSelfPerson(payload.sub as string)) as any
 
     if (!person) {
+      throw new Error('High Seas has ended! Sign-ups are disabled.')
+
+      /*
       const body = JSON.stringify({
         performUpsert: {
           fieldsToMergeOn: ['email'],
@@ -142,12 +145,8 @@ export async function createSlackSession(slackOpenidToken: string) {
       })
 
       person = result.records[0]
+      */
     }
-
-    if (!person)
-      throw new Error(
-        "Couldn't find OR create a person! :(( Sad face. Tell malted that Airtable broke",
-      )
 
     const sessionData: HsSession = {
       personId: person.id,

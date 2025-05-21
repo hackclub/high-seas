@@ -450,7 +450,7 @@ export default function Matchups({ session }: { session: HsSession }) {
           {voteBalance > 0 && (
             <div className="flex justify-center items-center space-x-4">
               {voteBalance} more {pluralize(voteBalance, 'vote', false)} until
-              your next ship's payout!
+              your next ship's payout! (this may be up to 5 min out of date)
             </div>
           )}
         </header>
@@ -469,12 +469,12 @@ export default function Matchups({ session }: { session: HsSession }) {
             <p className="text-2xl text-gray-600 dark:text-gray-300 mb-6">
               No matchup available
             </p>
-            <button
+            {/* <button
               onClick={fetchMatchup}
               className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
             >
               Try Again
-            </button>
+            </button> */}
           </div>
         ) : (
           <>

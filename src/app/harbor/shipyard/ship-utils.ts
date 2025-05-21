@@ -35,6 +35,9 @@ const shipToFields = (ship: Ship, entrantId: string) => ({
 })
 
 export async function createShip(formData: FormData, isTutorial: boolean) {
+  console.error('Someone tried to ship after the event!')
+  throw new Error('High Seas is over!')
+
   const session = await getSession()
   if (!session) {
     const error = new Error(

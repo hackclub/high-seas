@@ -9,7 +9,6 @@ import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import { markdownComponents } from '@/components/markdown'
 import { Button, buttonVariants } from '@/components/ui/button'
-import NewShipForm from './new-ship-form'
 import EditShipForm from './edit-ship-form'
 import { getSession, HsSession } from '@/app/utils/auth'
 import Link from 'next/link'
@@ -222,26 +221,6 @@ export default function Ships({
             <div className="mt-4 sm:mt-0 sm:ml-auto">
               {s.shipStatus === 'staged' ? (
                 <>
-                  <Button
-                    id="ship-ship"
-                    onClick={async (e) => {
-                      e.stopPropagation()
-                      if (sessionStorage.getItem('tutorial') === 'true') {
-                        await tryToShip(s)
-                      } else {
-                        setShipToShip(s)
-                        setShipModal(true)
-                      }
-                    }}
-                    disabled={isShipping}
-                  >
-                    {isShipping
-                      ? 'Shipping...'
-                      : s.shipType === 'project'
-                        ? 'SHIP SHIP!'
-                        : 'SHIP UPDATE!'}
-                  </Button>
-
                   <Modal isOpen={shipModal} close={() => setShipModal(false)}>
                     <div className="p-4 max-h-[70vh] overflow-y-auto">
                       <h2 className="text-3xl font-bold text-center">
@@ -285,17 +264,7 @@ export default function Ships({
                   (stagedShip) =>
                     stagedShip.wakatimeProjectNames.join(',') ===
                     s.wakatimeProjectNames.join(','),
-                ) ? (
-                  <Button
-                    onClick={async (e) => {
-                      e.stopPropagation()
-                      console.log('Shipping an update...', s)
-                      setNewUpdateShip(s)
-                    }}
-                  >
-                    Ship an update!
-                  </Button>
-                ) : (
+                ) ? null : (
                   <p className="opacity-50 text-sm">Pending draft update!</p>
                 )
               ) : (
@@ -316,22 +285,6 @@ export default function Ships({
         ref={canvasRef}
         className="fixed w-screen left-0 top-0 pointer-events-none"
       />
-
-      {bareShips ? null : (
-        <motion.div
-          className="w-fit mx-auto mb-0 mt-3"
-          whileHover={{ rotate: '-5deg', scale: 1.02 }}
-        >
-          <Button
-            className="text-xl text-white"
-            style={{ background: '#D236E2' }}
-            id="start-ship-draft"
-            onClick={() => setNewShipVisible(true)}
-          >
-            Draft a new Ship!
-          </Button>
-        </motion.div>
-      )}
 
       {stagedShips.length === 0 ? null : (
         <div className={`w-full mt-8`}>
@@ -407,18 +360,6 @@ export default function Ships({
           </>
         ) : null}
       </div>
-
-      <Modal
-        isOpen={newShipVisible && session}
-        close={() => setNewShipVisible(false)}
-      >
-        <NewShipForm
-          ships={ships}
-          canvasRef={canvasRef}
-          closeForm={() => setNewShipVisible(false)}
-          session={session}
-        />
-      </Modal>
 
       <Modal
         isOpen={getChainFromAnyId(newUpdateShip?.id) && session}

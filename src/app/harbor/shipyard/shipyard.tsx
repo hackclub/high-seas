@@ -78,7 +78,7 @@ export default function Shipyard({ session }: any) {
           </div>
         )}
         <div className="mt-6">
-          <IdeaGenerator />
+          {/* <IdeaGenerator /> */}
           <Ships
             ships={isTutorial ? tutorialShips : ships}
             setShips={setShips}

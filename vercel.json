@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/every-minute",
-      "schedule": "* * * * *"
+      "schedule": "*/3 * * * *"
     },
     {
       "path": "/api/cron/every-day",

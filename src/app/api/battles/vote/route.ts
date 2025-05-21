@@ -12,8 +12,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const personId = session.personId
+
   try {
-    // let isBot = false;
     const voteData = await request.json()
 
     const winnerAnalytics = voteData.analytics.projectResources[
@@ -32,26 +33,6 @@ export async function POST(request: Request) {
       demoOpened: false,
     }
 
-    // Validate turnstile token
-    // const turnstileResult = await fetch(
-    //   "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-    //   {
-    //     method: "POST",
-    //     body: JSON.stringify({
-    //       secret: process.env.TURNSTILE_SECRET_KEY,
-    //       response: voteData.turnstileToken,
-    //     }),
-    //     headers: { "Content-Type": "application/json" },
-    //   },
-    // ).then((r) => r.json());
-    // if (!turnstileResult.success) {
-    //   isBot = true;
-    //   console.error(
-    //     "I took one look at this request and do you know what I said? I said 'Wow, this looks like voter fraud'. Everyone knows it, folks. And I said, I'll tell you exactly what I said, I said 'I'm not going to let it happen'. I said that. I've never allowed voter fraud, never allowed it. They're saying I wasn't catching voter fraud earlier in the event, and you know what? They're wrong. We all know it, don't we? They're wrong about many things, so many things. Maybe all the things.",
-    //     turnstileResult,
-    //   );
-    // }
-
     const matchup = {
       winner: voteData.winner,
       loser: voteData.loser,
@@ -66,17 +47,6 @@ export async function POST(request: Request) {
         { status: 400 },
       )
     }
-    const isUnique = await ensureUniqueVote(
-      session.slackId,
-      voteData.winner,
-      voteData.loser,
-    )
-    if (!isUnique) {
-      return NextResponse.json(
-        { error: 'Vote already submitted' },
-        { status: 400 },
-      )
-    }
 
     voteData.winner_readme_opened = winnerAnalytics.readmeOpened
     voteData.winner_repo_opened = winnerAnalytics.repoOpened
@@ -86,7 +56,7 @@ export async function POST(request: Request) {
     voteData.loser_demo_opened = loserAnalytics.demoOpened
     voteData.skips_before_vote = voteData.analytics.skipsBeforeVote
 
-    const _result = await submitVote(voteData /*, isBot*/)
+    const _result = await submitVote(voteData, personId, session.slackId)
 
     return NextResponse.json({ ok: true /*, reload: isBot */ })
   } catch (error) {

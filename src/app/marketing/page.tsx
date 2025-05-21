@@ -53,19 +53,45 @@ export default async function Marketing() {
                   <EmailSubmissionForm />
                 )}
               </div>
-              <p
-                className="mt-4 text-white bg-opacity-50 px-4 py-2 rounded-lg"
-                style={{
-                  backgroundImage: 'url(/floorboard.svg)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundColor: 'rgba(0, 0, 0, 1)',
-                  mixBlendMode: 'hard-light',
-                  transform: 'rotate(-2deg)',
-                }}
-              >
-                Free stickers for all new recruits!
-              </p>
+              <div className="mt-0">
+                <a
+                  href="https://hackclub.com/slack"
+                  className="inline-flex items-center justify-center px-8 py-3 text-lg font-medium text-white rounded-lg transform hover:scale-105 transition-transform"
+                  style={{
+                    backgroundImage: 'url(/floorboard.svg)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    transform: 'rotate(1deg)',
+                  }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg
+                    className="w-6 h-6 mr-2"
+                    viewBox="0 0 127 127"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M27.2 80c0 7.3-5.9 13.2-13.2 13.2C6.7 93.2.8 87.3.8 80c0-7.3 5.9-13.2 13.2-13.2h13.2V80zm6.6 0c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2v33c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V80z"
+                      fill="#E01E5A"
+                    />
+                    <path
+                      d="M47 27c-7.3 0-13.2-5.9-13.2-13.2C33.8 6.5 39.7.6 47 .6c7.3 0 13.2 5.9 13.2 13.2V27H47zm0 6.7c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H13.9C6.6 60.1.7 54.2.7 46.9c0-7.3 5.9-13.2 13.2-13.2H47z"
+                      fill="#36C5F0"
+                    />
+                    <path
+                      d="M99.9 46.9c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H99.9V46.9zm-6.6 0c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V13.8C66.9 6.5 72.8.6 80.1.6c7.3 0 13.2 5.9 13.2 13.2v33.1z"
+                      fill="#2EB67D"
+                    />
+                    <path
+                      d="M80.1 99.8c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V99.8h13.2zm0-6.6c-7.3 0-13.2-5.9-13.2-13.2 0-7.3 5.9-13.2 13.2-13.2h33.1c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H80.1z"
+                      fill="#ECB22E"
+                    />
+                  </svg>
+                  Join the Hack Club Slack
+                </a>
+              </div>
             </div>
             <Link href="#howthisworks">
               <img
@@ -714,7 +740,7 @@ export default async function Marketing() {
                     </div>
                     <p className="text-sm mb-4">
                       I finished my saxophone MIDI controller 🎷! It lets you
-                      play any software instrument you’d like using saxophone
+                      play any software instrument you'd like using saxophone
                       fingerings, allowing you to practice without disturbing
                       others, create music in any DAW, and perform with it.
                       Check it out at{' '}
@@ -821,6 +847,45 @@ export default async function Marketing() {
                 Build. Battle. Booty. Repeat.
               </p>
               <EmailSubmissionForm />
+              <div className="mt-6">
+                <a
+                  href="https://hackclub.com/slack"
+                  className="inline-flex items-center justify-center px-8 py-3 text-lg font-medium text-white rounded-lg transform hover:scale-105 transition-transform"
+                  style={{
+                    backgroundImage: 'url(/floorboard.svg)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    transform: 'rotate(1deg)',
+                  }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg
+                    className="w-6 h-6 mr-2"
+                    viewBox="0 0 127 127"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M27.2 80c0 7.3-5.9 13.2-13.2 13.2C6.7 93.2.8 87.3.8 80c0-7.3 5.9-13.2 13.2-13.2h13.2V80zm6.6 0c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2v33c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V80z"
+                      fill="#E01E5A"
+                    />
+                    <path
+                      d="M47 27c-7.3 0-13.2-5.9-13.2-13.2C33.8 6.5 39.7.6 47 .6c7.3 0 13.2 5.9 13.2 13.2V27H47zm0 6.7c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H13.9C6.6 60.1.7 54.2.7 46.9c0-7.3 5.9-13.2 13.2-13.2H47z"
+                      fill="#36C5F0"
+                    />
+                    <path
+                      d="M99.9 46.9c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H99.9V46.9zm-6.6 0c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V13.8C66.9 6.5 72.8.6 80.1.6c7.3 0 13.2 5.9 13.2 13.2v33.1z"
+                      fill="#2EB67D"
+                    />
+                    <path
+                      d="M80.1 99.8c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V99.8h13.2zm0-6.6c-7.3 0-13.2-5.9-13.2-13.2 0-7.3 5.9-13.2 13.2-13.2h33.1c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H80.1z"
+                      fill="#ECB22E"
+                    />
+                  </svg>
+                  Join the Hack Club Slack
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -1037,9 +1102,11 @@ const Prize = () => {
 
 interface PrizeProps {
   name: string
-  doubloons: number
+  doubloons: string | number
   image: string
   sub: string | undefined
+  estMin: number
+  estMax: number
 }
 const nf = new Intl.NumberFormat()
 const PrizeCard: React.FC<PrizeProps> = ({
@@ -1089,7 +1156,9 @@ const PrizeCard: React.FC<PrizeProps> = ({
       >
         <div className="flex flex-row gap-2">
           <img src="/doubloon.svg" className="w-7 h-8" />
-          <p className="text-2xl">{nf.format(doubloons)}</p>
+          <p className="text-2xl">
+            {typeof doubloons === 'number' ? nf.format(doubloons) : doubloons}
+          </p>
         </div>
       </div>
     </div>

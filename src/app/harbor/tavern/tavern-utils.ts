@@ -1,6 +1,11 @@
 'use server'
 
 import { getSession } from '@/app/utils/auth'
+import {
+  setTavernRsvpStatus,
+  submitMyTavernLocation,
+  submitShirtSize,
+} from '@/app/utils/tavern'
 import Airtable from 'airtable'
 
 Airtable.configure({
@@ -8,7 +13,7 @@ Airtable.configure({
   endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
 })
 
-type RsvpStatus = 'none' | 'organizer' | 'participant'
+export type RsvpStatus = 'none' | 'organizer' | 'participant'
 export type TavernPersonItem = {
   status: RsvpStatus
   coordinates: string
@@ -101,4 +106,21 @@ export const getTavernEvents = async () => {
   cachedEvents = items
   lastEventsFetch = Date.now()
   return items
+}
+
+export async function rspvForTavern(formData: FormData) {
+  console.log('Saving rspv for tavern seliction...')
+  let res = { success: true, error: null }
+
+  await Promise.all([
+    setTavernRsvpStatus(formData.get('rsvp') as RsvpStatus),
+    submitMyTavernLocation(formData.get('tavern') as string),
+    submitShirtSize(formData.get('shirt') as string),
+  ]).catch((error) => {
+    console.error('Error submitting tavern RSVP', error)
+    res = { success: false, error: error.toString() }
+  })
+
+  console.log('Successfully saved tavern RSVP')
+  return JSON.stringify(res)
 }

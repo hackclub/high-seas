@@ -21,6 +21,9 @@ export async function handleEmailSubmission(
   username: string
   key: string
 } | null> {
+  throw new Error('High Seas has ended! Sign-ups are disabled.')
+
+  /*
   if (!email) throw new Error('No email supplied to handleEmailSubmission')
   if (!userAgent)
     throw new Error('No user agent supplied to handleEmailSubmission')
@@ -51,4 +54,5 @@ export async function handleEmailSubmission(
     username,
     key,
   }
+  */
 }
