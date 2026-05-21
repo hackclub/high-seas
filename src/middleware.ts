@@ -193,7 +193,6 @@ export const config = {
     '/signpost',
     '/shipyard',
     '/wonderdome',
-    '/shop',
     '/tavern',
     '/api/cron/',
   ],

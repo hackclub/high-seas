@@ -96,6 +96,14 @@ cursed:
   - Hang on, you're cursed? Go take a long walk off a short plank!
   - Hold on... are you cursed? Read the sign– no blessing, no business!
   - wait... are you C-C-CURSED?! I don't want any trouble!
+noMoney:
+  - You ain't got a single doubloon to your name!
+  - Your pockets are emptier than a ghost ship!
+  - Not a coin? Not a single doubloon?
+  - I can hear the wind whistling through your empty coin purse!
+  - You're broker than a shipwreck!
+  - icon:notamused|You expect me to just GIVE you this stuff?
+  - icon:threat|No coin, no wares!
 getout:
   - Getouttahere!
   - out out out!
