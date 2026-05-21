@@ -17,7 +17,7 @@ const bellSoundUrls = [
 ]
 const bellSounds = bellSoundUrls.map((url) => new Howl({ src: [url] }))
 
-export const ShopkeeperComponent = ({ balance, cursed }) => {
+export const ShopkeeperComponent = ({ balance, cursed, blessed, buyHref }) => {
   const [atCounter, setAtCounter] = useState(false)
   const [bellIndex, setBellIndex] = useState(0)
   const [bellClickCount, setBellClickCount] = useState(0)
@@ -152,17 +152,25 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
         .join(' ')
       await handleInteraction(
         greetingSliced +
-          '-- wait... ' +
+          '-- wait... |' +
           transcript('cursed') +
-          ' ' +
+          '|' +
           transcript('getout'),
       )
-    } else if (balance == 0) {
+    } else if (blessed) {
       await handleInteraction(
-        transcript('greetings') +
-          ' ' +
+        transcript('greetings') + '|' + transcript('blessed'),
+      )
+    } else if (balance == 0) {
+      const brokeGreeting = transcript('greetings')
+        .split(' ')
+        .slice(0, bound(Math.random() * 10, 3, 15))
+        .join(' ')
+      await handleInteraction(
+        brokeGreeting +
+          '-- hold on... |' +
           transcript('noMoney') +
-          ' ' +
+          '|' +
           transcript('getout'),
       )
       // setAtCounter(false)
@@ -273,7 +281,7 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
             </div>
             <div id="shopkeeper-msg">
               {shopkeeperMsg}
-              {buyButton && <BuyButton itemId={buyButton} />}
+              {buyButton && <BuyButton itemId={buyButton} buyHref={buyHref} />}
               {bellButton && <BellButton />}
               {juiceButton && <JuiceButton />}
             </div>
@@ -284,10 +292,10 @@ export const ShopkeeperComponent = ({ balance, cursed }) => {
   )
 }
 
-const BuyButton = ({ itemId }) => {
+const BuyButton = ({ itemId, buyHref }) => {
   return (
     <form
-      action={`/api/buy/${itemId}`}
+      action={buyHref || `/api/buy/${itemId}`}
       className="w-full text-center animate-pulse"
     >
       <Button className="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 m-2 rounded transition-colors duration-200 text-3xl enchanted">

@@ -16,7 +16,7 @@ import Icon from '@hackclub/icons'
 import { transcript } from '../../../../lib/transcript'
 import Modal from '@/components/ui/modal'
 import Image from 'next/image'
-const ActionArea = ({ item, filterIndex, affordable }) => {
+const ActionArea = ({ item, filterIndex, affordable, buyHref }) => {
   const buyWord = useMemo(() => sample(purchaseWords), [item.id])
   const getYourRacksUp = useMemo(() => sample(cantAffordWords), [item.id])
 
@@ -33,7 +33,7 @@ const ActionArea = ({ item, filterIndex, affordable }) => {
     return <Button disabled={true}>💸 {getYourRacksUp}</Button>
   }
   return (
-    <form action={`/api/buy/${item.id}`} className="w-full">
+    <form action={buyHref || `/api/buy/${item.id}`} className="w-full">
       <Button className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 text-3xl enchanted">
         {buyWord}
       </Button>
@@ -48,6 +48,7 @@ export const ShopItemComponent = ({
   id,
   setFavouriteItems,
   favouriteItems,
+  buyHref,
 }) => {
   let [detailsModal, setDetailsModal] = useState(false)
 
@@ -245,6 +246,7 @@ export const ShopItemComponent = ({
             item={item}
             filterIndex={filterIndex}
             affordable={affordable}
+            buyHref={buyHref}
           />
           <Button onClick={handleFavouriteToggle}>
             <Icon
