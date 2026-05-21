@@ -159,9 +159,7 @@ export const ShopkeeperComponent = ({ balance, cursed, blessed, buyHref }) => {
       )
     } else if (blessed) {
       await handleInteraction(
-        transcript('greetings') +
-          '|' +
-          transcript('blessed'),
+        transcript('greetings') + '|' + transcript('blessed'),
       )
     } else if (balance == 0) {
       const brokeGreeting = transcript('greetings')

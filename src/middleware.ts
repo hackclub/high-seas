@@ -189,11 +189,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/signpost',
-    '/shipyard',
-    '/wonderdome',
-    '/tavern',
-    '/api/cron/',
-  ],
+  matcher: ['/signpost', '/shipyard', '/wonderdome', '/tavern', '/api/cron/'],
 }

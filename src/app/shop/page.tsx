@@ -80,7 +80,12 @@ export default function PublicShop() {
               </p>
             </div>
 
-            <ShopkeeperComponent balance={balance} cursed={cursed} blessed={blessed} buyHref="/" />
+            <ShopkeeperComponent
+              balance={balance}
+              cursed={cursed}
+              blessed={blessed}
+              buyHref="/"
+            />
 
             <div className="mt-2 mb-4">
               <button
@@ -99,14 +104,18 @@ export default function PublicShop() {
                   }}
                 >
                   <p className="text-xs text-white/40 text-center leading-relaxed">
-                    the event is over, but you can tweak these to see how the shopkeeper would react to different users
+                    the event is over, but you can tweak these to see how the
+                    shopkeeper would react to different users
                   </p>
 
                   <div className="flex items-center justify-between">
                     <label className="text-sm text-white/80">Status</label>
                     <div className="flex gap-1">
                       <button
-                        onClick={() => { setCursed(!cursed); if (!cursed) setBlessed(false) }}
+                        onClick={() => {
+                          setCursed(!cursed)
+                          if (!cursed) setBlessed(false)
+                        }}
                         className={`px-3 py-1 rounded text-sm transition-colors ${
                           cursed
                             ? 'bg-red-600 text-white'
@@ -116,7 +125,10 @@ export default function PublicShop() {
                         {cursed ? '☠️ Cursed' : '☠️'}
                       </button>
                       <button
-                        onClick={() => { setBlessed(!blessed); if (!blessed) setCursed(false) }}
+                        onClick={() => {
+                          setBlessed(!blessed)
+                          if (!blessed) setCursed(false)
+                        }}
                         className={`px-3 py-1 rounded text-sm transition-colors ${
                           blessed
                             ? 'bg-yellow-500 text-black'
