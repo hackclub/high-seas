@@ -62,7 +62,7 @@ export async function reportTourStep(tourStepId: string) {
     throw err
   }
 
-  await fetch('https://api.airtable.com/v0/appTeNFYcUiYfGcR6/people', {
+  await fetch(`https://api.airtable.com/v0/${process.env.BASE_ID}/people`, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
@@ -94,7 +94,7 @@ export async function reportLeaderboardParticipating(participating: boolean) {
 
   try {
     const response = await fetch(
-      'https://api.airtable.com/v0/appTeNFYcUiYfGcR6/people',
+      `https://api.airtable.com/v0/${process.env.BASE_ID}/people`,
       {
         method: 'PATCH',
         headers: {

@@ -78,3 +78,5 @@ export async function impersonate(slackId: string) {
 
   await signAndSet(session)
 }
+
+export type { HsSession }

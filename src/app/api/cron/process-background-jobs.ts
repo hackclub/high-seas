@@ -89,7 +89,7 @@ async function processPendingPersonInitJobs() {
   }
   console.log(JSON.stringify(upsertBody, null, 2))
   const result = await fetch(
-    'https://middleman.hackclub.com/airtable/v0/appTeNFYcUiYfGcR6/tblfTzYVqvDJlIYUB',
+    `https://middleman.hackclub.com/airtable/v0/${process.env.BASE_ID}/tblfTzYVqvDJlIYUB`,
     {
       cache: 'no-cache',
       method: 'PATCH',

@@ -1,3 +1,4 @@
+import { orThrow } from '@/lib/utils'
 import { withLock } from '../../../../lib/redis-lock'
 import Airtable from 'airtable'
 
@@ -7,19 +8,19 @@ function and(...args: string[]) {
   return `AND(${args.join(',')})`
 }
 
-function uniq(arr) {
+function uniq<T>(arr: Array<T>) {
   return Array.from(new Set(arr))
 }
 
 const base = new Airtable({
   apiKey: process.env.AIRTABLE_API_KEY,
   endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
-}).base('appTeNFYcUiYfGcR6')
+}).base(process.env.BASE_ID ?? orThrow("No BASE_ID set in environment"))
 
 const yswsBase = new Airtable({
   apiKey: process.env.AIRTABLE_API_KEY,
   endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
-}).base('app3A5kJwYqxMLOgh')
+}).base(process.env.YSWS_BASE ?? orThrow("No YSWS_BASE set in environment"))
 
 async function createNewShipChains(): Promise<void> {
   await withLock('create-ship-chains', async () => {
