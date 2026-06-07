@@ -371,6 +371,7 @@ export default function Ships({
           closeForm={() => setNewUpdateShip(null)}
           setShips={setShips}
           session={session}
+          ships={ships}
         />
       </Modal>
 
