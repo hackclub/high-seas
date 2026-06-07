@@ -202,7 +202,7 @@ export default function Ships({
               />
             </div>
             <h2 className="text-xl font-semibold text-left mb-2 sm:hidden block">
-              {s.title}
+              {latestShip.title}
             </h2>
           </div>
           <div className="flex-grow">
