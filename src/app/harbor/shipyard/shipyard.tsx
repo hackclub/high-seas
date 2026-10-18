@@ -3,8 +3,6 @@
 import Ships from './ships'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
 import { useEffect } from 'react'
-import { getVotesRemainingForNextPendingShip } from '@/app/utils/airtable'
-import Pill from '@/components/ui/pill'
 import { fetchShips, Ship } from '@/app/utils/data'
 import { IdeaGenerator } from './idea-generator/impl'
 
@@ -34,12 +32,9 @@ const tutorialShips: Ship[] = [
 
 export default function Shipyard({ session }: any) {
   const [ships, setShips] = useLocalStorageState('cache.ships', [])
-  const [voteBalance, setVoteBalance] = useLocalStorageState('cache.voteBalance', 0)
 
   useEffect(() => {
     fetchShips(session.slackId).then((ships) => setShips(ships))
-
-    getVotesRemainingForNextPendingShip(session.slackId).then((balance) => setVoteBalance(balance))
   }, [])
 
   const isTutorial = sessionStorage.getItem('tutorial') === 'true'
@@ -60,16 +55,6 @@ export default function Shipyard({ session }: any) {
             </span>
           </h1>
         </div>
-        {voteBalance > 0 && (
-          <div className="w-fit mx-auto mt-4">
-            <Pill
-              msg={`A project is pending until you vote on ${voteBalance} more matchup(s) in the Wonderdome!`}
-              color="red"
-              glyph="important"
-              id={''}
-            />
-          </div>
-        )}
         <div className="mt-6">
           {/* <IdeaGenerator /> */}
           <Ships ships={isTutorial ? tutorialShips : ships} setShips={setShips} bareShips={false} />

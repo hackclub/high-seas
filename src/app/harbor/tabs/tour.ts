@@ -55,7 +55,8 @@ export function tour() {
     sessionStorage.setItem('tutorial', (!hasCompletedTutorial).toString())
   })
 
-  const currentStepId = getCookie('tour-step')
+  const savedStepId = getCookie('tour-step')
+  const currentStepId = savedStepId?.startsWith('ts-vote-') ? 'ts-vote-left' : savedStepId
   if (currentStepId) {
     const requiredUrl = stepToUrlMapping[currentStepId]
     if (requiredUrl && window.location.pathname !== requiredUrl) {
@@ -420,9 +421,7 @@ function setupSteps(tourManager: Tour) {
     // },
     {
       id: 'ts-staged-ship-edit-finale',
-      text: `when ye ship a project, the next place it goes is the Wonderdome. that's where we'll go next, too.
-            <br /><br />
-            to get yer Doubloons, <strong style="color:#ec3750;">ye must cast yer share of votes</strong> in the Wonderdome for each project ye ship… and yer ship must weather its share of votes from yer peers!`,
+      text: 'High Seas is over. Matchups and voting in the Wonderdome are now closed.',
       buttons: [
         {
           text: 'Wonderdome, ho!!!',
@@ -433,84 +432,10 @@ function setupSteps(tourManager: Tour) {
         },
       ],
     },
-    // {
-    //   id: "ts-vote-intro",
-    //   text: "Welcome to the Wonderdome, where you'll vote on projects!<br /><br />All you need to do is pick which project you think is better, and explain why.<br /><br />Remember to check out the live link to test it out, and the repo to look at the code!<br /><br /><b>[Ominously]</b> I'll know if you don't check the links...",
-    //   buttons: [
-    //     {
-    //       text: "Next",
-    //       action: tourManager.next,
-    //     },
-    //   ],
-    // },
     {
       id: 'ts-vote-left',
-      text: `here we see a battle between ships. each has a readme, a demo, and a repo. consider each ship with care, and make yer selection accordingly!!
-            <br /><br />
-            word to the wise… prosperous pirates take time with their votes, for <strong style="color:#ec3750;">the ocean can tell when ye vote without care. and legends say it will punish ye for it!!!!</strong>
-            <br /><br />
-            click the <strong style="color:#ec3750;">Demo</strong> button to experience this lovely ship!!`,
-      attachTo: {
-        element: '#voting-project-left #live-demo-link',
-        on: 'top',
-      },
-      beforeShowPromise: () => {
-        // return new Promise((r) => setTimeout(r, 3_000));
-
-        return waitForElement('#voting-project-left button#readme-button', () => {
-          document.querySelector!('#voting-project-left button#readme-button')?.setAttribute(
-            'disabled',
-            'true',
-          )
-        })
-      },
-      advanceOn: {
-        selector: '#voting-project-left #live-demo-link',
-        event: 'click',
-      },
-    },
-    {
-      id: 'ts-vote-left',
-      text: `I know ye haven't seen the other ship, but say ye chose this one. click here to vote for it!!`,
-      attachTo: {
-        element: '#voting-project-left button#vote-button',
-        on: 'top',
-      },
-      advanceOn: {
-        selector: '#voting-project-left button#vote-button',
-        event: 'click',
-      },
-    },
-    {
-      id: 'ts-vote-reason-submit',
-      text: `this next part's important: explain yer decision!! write at least ten words about why ye made this choice. i've given ye an example of a good sentence here.
-            <br/><br/>
-            worry not, the other pirates can't see yer votes or what ye write (…but keep in mind, <strong style="color:#ec3750;">the High Seas Team can!!</strong>)`,
-      attachTo: {
-        element: '#voting-reason-container-parent',
-        on: 'top',
-      },
-      beforeShowPromise: () => {
-        return waitForElement('#voting-reason-container')
-      },
-      advanceOn: {
-        selector: 'button#submit-vote',
-        event: 'click',
-      },
-    },
-    {
-      id: 'ts-vote-reason-finale',
-      text: `yer first vote is cast!! <strong style="color:#ec3750;">cast a dozen votes for each of yer ships</strong> and the doubloons will roll in. now let's move on to the best part… the <i>spending.</i>`,
-      focusedElBeforeOpen: false,
-      buttons: [
-        {
-          text: 'to the shop!!!',
-          action: () => {
-            setCookie('tour-step', 'ts-shop-welcome')
-            location.href = '/shop'
-          },
-        },
-      ],
+      text: 'High Seas is over. Matchups and voting are now closed. Thanks for taking part!',
+      buttons: [{ text: 'Close', action: tourManager.complete }],
     },
     {
       id: 'ts-shop-welcome',
@@ -581,7 +506,8 @@ function setupSteps(tourManager: Tour) {
     },
   ]
 
-  const currentStepId = getCookie('tour-step')
+  const savedStepId = getCookie('tour-step')
+  const currentStepId = savedStepId?.startsWith('ts-vote-') ? 'ts-vote-left' : savedStepId
 
   if (currentStepId) {
     const currentStepIndex = steps.findIndex((step) => step.id === currentStepId)

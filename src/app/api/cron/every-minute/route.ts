@@ -1,4 +1,3 @@
-import { tryUpdateProjectCache } from '../../battles/matchups/get-cached-projects'
 import { processBackgroundJobs } from '../process-background-jobs'
 import yswsUpdates from '../ysws-updates'
 
@@ -7,7 +6,7 @@ export const fetchCache = 'force-no-store'
 export const maxDuration = 59
 
 export async function GET() {
-  await Promise.all([processBackgroundJobs(), tryUpdateProjectCache(), yswsUpdates()])
+  await Promise.all([processBackgroundJobs(), yswsUpdates()])
 
   return Response.json({ success: true })
 }

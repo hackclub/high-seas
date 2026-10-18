@@ -194,8 +194,7 @@ export default function Harbor({
     {
       name: <>Wonderdome</>,
       path: 'wonderdome',
-      component: <Battles session={session} />,
-      lockOnNoHb: true,
+      component: <Battles />,
     },
     {
       name: <>Shop</>,
