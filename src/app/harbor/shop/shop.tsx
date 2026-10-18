@@ -12,16 +12,12 @@ import Progress from './progress.tsx'
 import { transcript } from '../../../../lib/transcript.js'
 
 export default function Shop({ session }: { session: HsSession }) {
-  const [filterIndex, setFilterIndex] = useLocalStorageState(
-    'shop.country.filter',
-    0,
+  const [filterIndex, setFilterIndex] = useLocalStorageState('shop.country.filter', 0)
+  const [shopItems, setShopItems] = useLocalStorageState<ShopItem[] | null>('cache.shopItems', null)
+  const [personTicketBalance, setPersonTicketBalance] = useLocalStorageState<string>(
+    'cache.personTicketBalance',
+    '-',
   )
-  const [shopItems, setShopItems] = useLocalStorageState<ShopItem[] | null>(
-    'cache.shopItems',
-    null,
-  )
-  const [personTicketBalance, setPersonTicketBalance] =
-    useLocalStorageState<string>('cache.personTicketBalance', '-')
 
   const [bannerText, setBannerText] = useState('')
   const [cursed, setCursed] = useState(false)
@@ -80,17 +76,13 @@ export default function Shop({ session }: { session: HsSession }) {
         <h1 className="font-heading text-5xl mb-6 text-center relative w-fit mx-auto">
           Pirate Shop
         </h1>
-        <p className="text-xl animate-pulse mb-6 rotate-[-7deg] inline-block">
-          {bannerText}
-        </p>
+        <p className="text-xl animate-pulse mb-6 rotate-[-7deg] inline-block">{bannerText}</p>
 
         <br />
         <Progress val={favouriteItems} items={shopItems} />
         <br />
       </div>
-      {!isTutorial && (
-        <ShopkeeperComponent balance={personTicketBalance} cursed={cursed} />
-      )}
+      {!isTutorial && <ShopkeeperComponent balance={personTicketBalance} cursed={cursed} />}
       <div className="text-center mb-6 mt-12" id="region-select">
         <label>pick a region to buy something!</label>
         <select

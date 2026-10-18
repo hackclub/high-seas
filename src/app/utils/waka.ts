@@ -139,8 +139,7 @@ export async function createWaka(
     password,
     password_repeat: password,
     name: name ?? 'Unkown',
-    username:
-      slackId ?? `$high-seas-provisional-${email.replace('+', '$plus$')}`,
+    username: slackId ?? `$high-seas-provisional-${email.replace('+', '$plus$')}`,
   }
 
   const signup = await fetch('https://waka.hackclub.com/signup', {
@@ -177,9 +176,7 @@ export async function getWakaSessions(interval?: string): Promise<{
   const { username, key } = await fetchWaka(session)
 
   if (!username || !key) {
-    const err = new Error(
-      'While getting sessions, no waka info could be found or created',
-    )
+    const err = new Error('While getting sessions, no waka info could be found or created')
     console.error(err)
     throw err
   }

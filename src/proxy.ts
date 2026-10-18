@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { get } from '@vercel/edge-config'
-import { getSession, HsSession } from './app/utils/auth'
+import { get } from '@vercel/global-config'
+import { getSession } from './app/utils/auth'
+import type { HsSession } from './app/utils/server/auth'
 import { fetchSignpostFeed, fetchWaka, person } from './app/utils/server/data'
 import { fetchShips } from './app/utils/data'
 
-async function loadShipsCookie(
-  request: NextRequest,
-  slackId: string,
-  response: NextResponse,
-) {
+async function loadShipsCookie(request: NextRequest, slackId: string, response: NextResponse) {
   // Ships base
   try {
     const shipyardPage = request.nextUrl.pathname.startsWith('/shipyard')
@@ -34,11 +31,7 @@ async function loadShipsCookie(
   }
 }
 
-async function loadWakaCookie(
-  request: NextRequest,
-  session: HsSession,
-  response: NextResponse,
-) {
+async function loadWakaCookie(request: NextRequest, session: HsSession, response: NextResponse) {
   try {
     console.log('Checking for waka cookie')
     if (!request.cookies.get('waka')) {
@@ -60,10 +53,7 @@ async function loadWakaCookie(
   }
 }
 
-async function loadSignpostFeedCookie(
-  request: NextRequest,
-  response: NextResponse,
-) {
+async function loadSignpostFeedCookie(request: NextRequest, response: NextResponse) {
   // Signpost base
   if (process.env.NEXT_PUBLIC_LOW_RATE_LIMIT) return
   try {
@@ -142,17 +132,15 @@ async function loadPersonCookies(request: NextRequest, response: NextResponse) {
 export async function userPageMiddleware(request: NextRequest) {
   const response = NextResponse.next()
   const session = await getSession()
-  const banlist = (await get('banlist')) as string[]
 
   const email = session?.email
   const slackId = session?.slackId
   if (!slackId || !email) return response
 
+  const banlist = (await get('banlist')) as string[]
   if (banlist.includes(email)) {
     const redir = NextResponse.redirect(new URL('/', request.url))
-    request.cookies
-      .getAll()
-      .forEach((cookie) => redir.cookies.delete(cookie.name))
+    request.cookies.getAll().forEach((cookie) => redir.cookies.delete(cookie.name))
 
     console.log('Banned', email)
     return redir
@@ -172,15 +160,12 @@ const cronjobMiddleware = async (request: NextRequest) => {
   const authHeader = request.headers.get('authorization')
   const isDev = process.env.NODE_ENV === 'development'
   if (!isDev && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json(
-      { success: false, message: 'authentication failed' },
-      { status: 401 },
-    )
+    return Response.json({ success: false, message: 'authentication failed' }, { status: 401 })
   }
   return NextResponse.next()
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/api/cron')) {
     return cronjobMiddleware(request)
   } else {

@@ -1,10 +1,7 @@
 import { Button } from '@/components/ui/button'
 import Icon from '@hackclub/icons'
 import { useEffect, useState } from 'react'
-import {
-  getLeaderboardParticipating,
-  reportLeaderboardParticipating,
-} from '@/app/utils/airtable'
+import { getLeaderboardParticipating, reportLeaderboardParticipating } from '@/app/utils/airtable'
 
 export default function LeaderboardOptIn() {
   const [optedIn, setOptedIn] = useState(false)
@@ -27,14 +24,12 @@ export default function LeaderboardOptIn() {
       </h2>
 
       <p className="pb-4">
-        If you would like to be on the leaderboard then please click the button
-        below to opt in!
+        If you would like to be on the leaderboard then please click the button below to opt in!
       </p>
 
       <p className="pb-4">
-        By opting in you agree to have your name, slackid, and doubloon count
-        displayed on the leaderboard. You can view the leaderboard at any time
-        by going to{' '}
+        By opting in you agree to have your name, slackid, and doubloon count displayed on the
+        leaderboard. You can view the leaderboard at any time by going to{' '}
         <a
           href="https://doubloons.cyteon.hackclub.app/"
           className="text-cyan-300"

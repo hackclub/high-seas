@@ -10,7 +10,7 @@ export default async function SignIn({
   variant: 'small' | 'default'
   session: any
 }) {
-  const headersList = headers()
+  const headersList = await headers()
   const host = headersList.get('host') || ''
   const proto = headersList.get('x-forwarded-proto') || 'http'
   const origin = encodeURIComponent(`${proto}://${host}`)

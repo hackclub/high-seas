@@ -63,12 +63,7 @@ const JaggedCard = ({
 }) => {
   if (small) {
     return (
-      <JaggedCardSmall
-        className={className}
-        bgColor={bgColor}
-        shadow={shadow}
-        {...props}
-      >
+      <JaggedCardSmall className={className} bgColor={bgColor} shadow={shadow} {...props}>
         {children}
       </JaggedCardSmall>
     )
@@ -83,9 +78,7 @@ const JaggedCard = ({
       }}
     >
       <Svg bgColor={bgColor} />
-      <div className={`relative z-10 py-[8%] px-[10%] ${className}`}>
-        {children}
-      </div>
+      <div className={`relative z-10 py-[8%] px-[10%] ${className}`}>{children}</div>
     </div>
   )
 }

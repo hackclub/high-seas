@@ -40,9 +40,7 @@ export async function createShip(formData: FormData, isTutorial: boolean) {
 
   const session = await getSession()
   if (!session) {
-    const error = new Error(
-      'Tried to submit a ship with no Slack OAuth session',
-    )
+    const error = new Error('Tried to submit a ship with no Slack OAuth session')
     console.log(error)
     throw error
   }
@@ -68,9 +66,7 @@ export async function createShip(formData: FormData, isTutorial: boolean) {
             deploy_url: formData.get('deployment_url'),
             screenshot_url: formData.get('screenshot_url'),
             ship_type: isShipUpdate ? 'update' : 'project',
-            update_description: isShipUpdate
-              ? formData.get('updateDescription')
-              : null,
+            update_description: isShipUpdate ? formData.get('updateDescription') : null,
             wakatime_project_name: formData.get('wakatime_project_name'),
             project_source: isTutorial ? 'tutorial' : 'high_seas',
             for_ysws,
@@ -82,7 +78,7 @@ export async function createShip(formData: FormData, isTutorial: boolean) {
       },
     )
 
-    await cookies().delete('ships')
+    await (await cookies()).delete('ships')
   })
 }
 
@@ -94,9 +90,7 @@ export async function createShipUpdate(
 ): Promise<Ship | null> {
   const session = await getSession()
   if (!session) {
-    const error = new Error(
-      'Tried to submit a ship with no Slack OAuth session',
-    )
+    const error = new Error('Tried to submit a ship with no Slack OAuth session')
     console.error(error)
     throw error
   }
@@ -109,9 +103,7 @@ export async function createShipUpdate(
     // This pattern makes sure the ship data is not fraudulent
     const ships = await fetchShips(slackId)
 
-    const reshippedFromShip = ships.find(
-      (ship: Ship) => ship.id === dangerousReshippedFromShipId,
-    )
+    const reshippedFromShip = ships.find((ship: Ship) => ship.id === dangerousReshippedFromShipId)
     if (!reshippedFromShip) {
       const error = new Error('Invalid reshippedFromShipId!')
       console.error(error)
@@ -127,74 +119,66 @@ export async function createShipUpdate(
      */
 
     // Step 1:
-    const res: { id: string; fields: any } = await new Promise(
-      (resolve, reject) => {
-        base()(shipsTableName).create(
-          [
-            {
-              // @ts-expect-error No overload matches this call - but it does
-              fields: {
-                ...shipToFields(reshippedFromShip, entrantId),
-                ship_type: 'update',
-                update_description: formData.get('update_description'),
-                reshipped_from: [reshippedFromShip.id],
-                reshipped_from_all: reshippedFromShip.reshippedFromAll
-                  ? [
-                      ...reshippedFromShip.reshippedFromAll,
-                      reshippedFromShip.id,
-                    ]
-                  : [reshippedFromShip.id],
-                credited_hours,
-                for_ysws: reshippedFromShip.yswsType,
-              },
+    const res: { id: string; fields: any } = await new Promise((resolve, reject) => {
+      base()(shipsTableName).create(
+        [
+          {
+            // @ts-expect-error No overload matches this call - but it does
+            fields: {
+              ...shipToFields(reshippedFromShip, entrantId),
+              ship_type: 'update',
+              update_description: formData.get('update_description'),
+              reshipped_from: [reshippedFromShip.id],
+              reshipped_from_all: reshippedFromShip.reshippedFromAll
+                ? [...reshippedFromShip.reshippedFromAll, reshippedFromShip.id]
+                : [reshippedFromShip.id],
+              credited_hours,
+              for_ysws: reshippedFromShip.yswsType,
             },
-          ],
-          async (err: Error, records: any) => {
-            if (err) {
-              console.error('createShipUpdate step 1:', err)
-              throw err
-            }
-            if (records) {
-              // Step 2
-              if (records.length !== 1) {
-                const error = new Error(
-                  'createShipUpdate: step 1 created records result length is not 1',
-                )
-                console.error(error)
-                reject(error)
-              }
-              const reshippedToShip = records[0]
-
-              // Update previous ship to point reshipped_to to the newly created update record
-              await base()(shipsTableName).update([
-                {
-                  id: reshippedFromShip.id,
-                  fields: {
-                    reshipped_to: [reshippedToShip.id],
-                    reshipped_all: reshippedFromShip.reshippedFromAll
-                      ? [
-                          ...reshippedFromShip.reshippedFromAll,
-                          reshippedFromShip.id,
-                        ]
-                      : [reshippedFromShip.id],
-                  },
-                },
-              ])
-
-              resolve(reshippedToShip)
-            } else {
-              console.error('AAAFAUKCSCSAEVTNOESIFNVFEINTTET🤬🤬🤬')
-              reject(new Error('createShipUpdate: step 1 created no records'))
-            }
           },
-        )
-      },
-    )
+        ],
+        async (err: Error, records: any) => {
+          if (err) {
+            console.error('createShipUpdate step 1:', err)
+            throw err
+          }
+          if (records) {
+            // Step 2
+            if (records.length !== 1) {
+              const error = new Error(
+                'createShipUpdate: step 1 created records result length is not 1',
+              )
+              console.error(error)
+              reject(error)
+            }
+            const reshippedToShip = records[0]
+
+            // Update previous ship to point reshipped_to to the newly created update record
+            await base()(shipsTableName).update([
+              {
+                id: reshippedFromShip.id,
+                fields: {
+                  reshipped_to: [reshippedToShip.id],
+                  reshipped_all: reshippedFromShip.reshippedFromAll
+                    ? [...reshippedFromShip.reshippedFromAll, reshippedFromShip.id]
+                    : [reshippedFromShip.id],
+                },
+              },
+            ])
+
+            resolve(reshippedToShip)
+          } else {
+            console.error('AAAFAUKCSCSAEVTNOESIFNVFEINTTET🤬🤬🤬')
+            reject(new Error('createShipUpdate: step 1 created no records'))
+          }
+        },
+      )
+    })
 
     let for_ysws: FormDataEntryValue | null = formData.get('yswsType')
     if (for_ysws == 'none') for_ysws = null
 
-    await cookies().delete('ships')
+    await (await cookies()).delete('ships')
 
     return {
       ...reshippedFromShip,
@@ -232,9 +216,7 @@ export async function updateShip(ship: Ship) {
       .all()
   ).filter((s) => s.id === ship.id)
   if (!existingShips || existingShips.length === 0) {
-    const err = new Error(
-      `Tried to update a ghost ship: ${JSON.stringify(ship)}`,
-    )
+    const err = new Error(`Tried to update a ghost ship: ${JSON.stringify(ship)}`)
     console.error(err)
     throw err
   }
@@ -268,7 +250,7 @@ export async function updateShip(ship: Ship) {
       },
     )
   })
-  await cookies().delete('ships')
+  await (await cookies()).delete('ships')
 }
 
 // Good function. I like. Wawaweewah very nice.
@@ -288,9 +270,7 @@ export async function stagedToShipped(
       .all()
   ).filter((s) => s.id === ship.id)
   if (!existingShips || existingShips.length === 0) {
-    const err = new Error(
-      `Tried to promote a ghost ship: ${JSON.stringify(ship)}`,
-    )
+    const err = new Error(`Tried to promote a ghost ship: ${JSON.stringify(ship)}`)
     console.error(err)
     throw err
   }
@@ -298,8 +278,7 @@ export async function stagedToShipped(
   const p = await person()
 
   if (!p.fields.academy_completed) {
-    const error =
-      "You can't ship a Ship if you haven't completed Pirate Academy!"
+    const error = "You can't ship a Ship if you haven't completed Pirate Academy!"
     return { error, ok: false }
   }
   if (!p.fields.verified_eligible) {
@@ -307,8 +286,7 @@ export async function stagedToShipped(
     return { error, ok: false }
   }
   if (!ship.wakatimeProjectNames) {
-    const error =
-      "You can't ship a Ship that has no Hackatime projects associated with it!"
+    const error = "You can't ship a Ship that has no Hackatime projects associated with it!"
     return { error, ok: false }
   }
 
@@ -323,8 +301,7 @@ export async function stagedToShipped(
   const totalHours = sum(projectHours) - (previousShip?.total_hours ?? 0)
 
   if (totalHours < 1) {
-    const error =
-      'Projects must be at least one hour. Spend a little more time on this one!'
+    const error = 'Projects must be at least one hour. Spend a little more time on this one!'
     return { error, ok: false }
   }
 
@@ -350,16 +327,14 @@ export async function stagedToShipped(
       },
     )
   })
-  await cookies().delete('ships')
+  await (await cookies()).delete('ships')
   return { ok: true }
 }
 
 export async function deleteShip(shipId: string) {
   const session = await getSession()
   if (!session) {
-    const error = new Error(
-      'Tried to delete a ship with no Slack OAuth session',
-    )
+    const error = new Error('Tried to delete a ship with no Slack OAuth session')
     console.log(error)
     throw error
   }
@@ -393,5 +368,5 @@ export async function deleteShip(shipId: string) {
       },
     )
   })
-  await cookies().delete('ships')
+  await (await cookies()).delete('ships')
 }

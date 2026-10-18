@@ -33,20 +33,12 @@ export default async function Marketing() {
                 className="xl:max-w-xl md:max-w-lg sm:max-w-sm max-w-xs"
               />
               <p className="text-3xl sm:text-3xl md:text-4xl text-white mx-2 drop-shadow-lg">
-                Build personal projects.<br className="inline sm:hidden"></br>{' '}
-                Get free stuff.
+                Build personal projects.<br className="inline sm:hidden"></br> Get free stuff.
               </p>
               <div className="flex flex-wrap text-xl md:text-xl mt-6 justify-center items-center mx-4 rounded-xl ">
                 {session ? (
-                  <a
-                    href="/signpost"
-                    className="p-4 rounded-lg text-md text-white bg-[#3852CD]"
-                  >
-                    <img
-                      src="/signpost.png"
-                      width={32}
-                      className="inline-block mr-4"
-                    />
+                  <a href="/signpost" className="p-4 rounded-lg text-md text-white bg-[#3852CD]">
+                    <img src="/signpost.png" width={32} className="inline-block mr-4" />
                     Enter the harbor
                   </a>
                 ) : (
@@ -94,10 +86,7 @@ export default async function Marketing() {
               </div>
             </div>
             <Link href="#howthisworks">
-              <img
-                src="/arrows.svg"
-                className="w-16 h-14 mb-6 opacity-60 bobble"
-              />
+              <img src="/arrows.svg" className="w-16 h-14 mb-6 opacity-60 bobble" />
             </Link>
 
             <div className="text-[#214495]">
@@ -120,9 +109,8 @@ export default async function Marketing() {
                 >
                   GitHub
                 </Link>
-                .<br className="inline lg:hidden"></br> For teenagers 18 and
-                under.<br className="inline lg:hidden"></br> October 30th to
-                January 31st.
+                .<br className="inline lg:hidden"></br> For teenagers 18 and under.
+                <br className="inline lg:hidden"></br> October 30th to January 31st.
               </p>
             </div>
 
@@ -157,19 +145,14 @@ export default async function Marketing() {
                     />
                   </div>
                   <p className="text-xl max-w-[600px]">
-                    Download the High Seas extension for your code editor, and
-                    hack on something cool! Examples: building a personal
-                    website, making an app, or creating a video game.
+                    Download the High Seas extension for your code editor, and hack on something
+                    cool! Examples: building a personal website, making an app, or creating a video
+                    game.
                   </p>
                 </div>
               </div>
               <div className="hidden xl:flex justify-center items-center w-full xl:w-auto bobble opacity-90">
-                <Image
-                  src="/ship.svg"
-                  alt="dragons battling"
-                  width={400}
-                  height={400}
-                />
+                <Image src="/ship.svg" alt="dragons battling" width={400} height={400} />
               </div>
             </div>
 
@@ -212,9 +195,8 @@ export default async function Marketing() {
                     />
                   </div>
                   <p className="text-xl max-w-[600px]">
-                    Share your projects with our community of teen makers. Sign
-                    in with Hack Club Slack and ship them in the Harbor! For
-                    each hour coded, earn{' '}
+                    Share your projects with our community of teen makers. Sign in with Hack Club
+                    Slack and ship them in the Harbor! For each hour coded, earn{' '}
                     <span className="inline-flex items-center align-middle">
                       <img src="/doubloon.svg" className="w-6 h-6 mx-1" />
                     </span>
@@ -251,19 +233,14 @@ export default async function Marketing() {
                     <span className="inline-flex items-center align-middle">
                       <img src="/doubloon.svg" className="w-6 h-6 mx-1" />
                     </span>
-                    Doubloons to purchase loot for your next project! Items
-                    range from soldering irons to 3D printers. In just 5 hours,
-                    you could earn a Raspberry Pi Zero! Full prize list below.
+                    Doubloons to purchase loot for your next project! Items range from soldering
+                    irons to 3D printers. In just 5 hours, you could earn a Raspberry Pi Zero! Full
+                    prize list below.
                   </p>
                 </div>
               </div>
               <div className="flex justify-center items-center w-full xl:w-auto bobble">
-                <Image
-                  src="/chest.png"
-                  alt="treasure chest"
-                  width={400}
-                  height={400}
-                />
+                <Image src="/chest.png" alt="treasure chest" width={400} height={400} />
               </div>
             </div>
           </div>
@@ -274,9 +251,7 @@ export default async function Marketing() {
 
           <div className="mb-24">
             <div className="flex justify-center items-center mb-5">
-              <p className="text-5xl text-center mt-12">
-                Last time we did this...
-              </p>
+              <p className="text-5xl text-center mt-12">Last time we did this...</p>
             </div>
             <div className="mx-5 md:mx-44">
               <div className="flex flex-wrap justify-center items-stretch">
@@ -317,9 +292,7 @@ export default async function Marketing() {
                   />
                   <div className="relative text-center">
                     <p className="text-7xl mb-2">11,112</p>
-                    <p className="text-xl">
-                      total prizes shipped to 119 countries
-                    </p>
+                    <p className="text-xl">total prizes shipped to 119 countries</p>
                   </div>
                 </div>
               </div>
@@ -422,13 +395,11 @@ export default async function Marketing() {
               <Prizes />
             </div>
             <div className="flex flex-col justify-center items-center mt-0 md:mt-8 mx-4">
-              <h3 className="text-3xl md:text-4xl mb-2">
-                ✨ Special Prizes ✨
-              </h3>
+              <h3 className="text-3xl md:text-4xl mb-2">✨ Special Prizes ✨</h3>
               <p className="text-sm md:text-lg text-center">
                 We'll pick a winner for each of these at the end,
-                <br className="inline lg:hidden"></br> so get cracking now on
-                something extra-awesome!
+                <br className="inline lg:hidden"></br> so get cracking now on something
+                extra-awesome!
               </p>
             </div>
             <div className="flex flex-wrap justify-center items-center mt-4 m-10">
@@ -442,9 +413,7 @@ export default async function Marketing() {
                   <p className="flex justify-center text-center text-3xl px-4">
                     1 on 1 call with Guido van Rossum
                   </p>
-                  <p className="flex justify-center text-center">
-                    This is the creator of Python!
-                  </p>
+                  <p className="flex justify-center text-center">This is the creator of Python!</p>
                   <img
                     src="/divider.svg"
                     className="w-full object-cover absolute mt-2 opacity-60"
@@ -522,9 +491,7 @@ export default async function Marketing() {
                 />
                 <div className="relative mx-5 md:my-5 md:mx-0">
                   <p className="text-2xl">Don't know where to start?</p>
-                  <p className="text-lg mt-2">
-                    Try out one of these Hack Club programs!
-                  </p>
+                  <p className="text-lg mt-2">Try out one of these Hack Club programs!</p>
                   <ul className="mt-4 mb-2 text-lg list-disc ml-8">
                     <li>
                       <Link
@@ -557,8 +524,7 @@ export default async function Marketing() {
                       >
                         Cider
                       </Link>
-                      : Develop an iOS app, we&apos;ll cover the $100 AppStore
-                      fee.
+                      : Develop an iOS app, we&apos;ll cover the $100 AppStore fee.
                     </li>
                     <li>
                       <Link
@@ -569,8 +535,8 @@ export default async function Marketing() {
                       >
                         BrowserBuddy
                       </Link>
-                      : Develop a browser extension, we&apos;ll cover the Chrome
-                      Developer Account fee + choose from 5 awesome prizes.
+                      : Develop a browser extension, we&apos;ll cover the Chrome Developer Account
+                      fee + choose from 5 awesome prizes.
                     </li>
                     <li>
                       <Link
@@ -592,8 +558,7 @@ export default async function Marketing() {
                       >
                         Nest
                       </Link>
-                      : Host your project's backend on Hack Club's free
-                      open-source server!
+                      : Host your project's backend on Hack Club's free open-source server!
                     </li>
                   </ul>
                   <p className="text-xl">
@@ -619,8 +584,7 @@ export default async function Marketing() {
                 <div className="relative mx-5 md:my-5 md:mx-0">
                   <p className="text-2xl">Or click the dino for ideas!</p>
                   <p className="text-lg mt-2">
-                    She's not super smart, but she'll try her best—pirates'
-                    honor!
+                    She's not super smart, but she'll try her best—pirates' honor!
                   </p>
                   <IdeaGenerator />
                 </div>
@@ -671,9 +635,7 @@ export default async function Marketing() {
                   <p className="flex flex-col justify-center items-center text-center mt-2">
                     <span>
                       Hack Clubbers at{' '}
-                      <Link href="https://www.youtube.com/user/linustechtips">
-                        Linus Tech Tips
-                      </Link>
+                      <Link href="https://www.youtube.com/user/linustechtips">Linus Tech Tips</Link>
                       !
                     </span>
                   </p>
@@ -686,7 +648,7 @@ export default async function Marketing() {
               </div>
 
               <div className="flex flex-wrap justify-center items-center mb-12 gap-6 mx-5 my-12">
-                <div className="relative overflow-hidden rounded-md p-6 max-w-[22rem]">
+                <div className="relative overflow-hidden rounded-md p-6 max-w-88">
                   <img
                     src="/comback.svg"
                     alt="image backing"
@@ -698,23 +660,20 @@ export default async function Marketing() {
                         src="https://ca.slack-edge.com/T0266FRGM-U06EMBJH71S-bea01757cf26-512"
                         className="w-10 h-10 rounded-full mr-2"
                       />
-                      <p className="text-lg mb-2 flex flex-col justify-center">
-                        @lou
-                      </p>
+                      <p className="text-lg mb-2 flex flex-col justify-center">@lou</p>
                     </div>
                     <div>
                       <p className="text-sm ">today i worked on:</p>
                       <ul className="list-disc ml-5 text-sm mb-4">
                         <li>an assignment on DDE for my robotics class</li>
                         <li>
-                          started working on my chip-8 emulator but i switched
-                          tutorials since i wasn't rlly sure where to start. i
-                          think im getting the idea so i might go back to the
-                          one i was using to see if it makes more sense :)
+                          started working on my chip-8 emulator but i switched tutorials since i
+                          wasn't rlly sure where to start. i think im getting the idea so i might go
+                          back to the one i was using to see if it makes more sense :)
                         </li>
                         <li>
-                          contacting a boba shop for discounted boba for
-                          counterspell since we're getting like 100
+                          contacting a boba shop for discounted boba for counterspell since we're
+                          getting like 100
                         </li>
                       </ul>
                     </div>
@@ -722,7 +681,7 @@ export default async function Marketing() {
                   </div>
                 </div>
 
-                <div className="relative overflow-hidden rounded-md p-6 max-w-[22rem]">
+                <div className="relative overflow-hidden rounded-md p-6 max-w-88">
                   <img
                     src="/comback.svg"
                     alt="image backing"
@@ -734,16 +693,13 @@ export default async function Marketing() {
                         src="https://ca.slack-edge.com/T0266FRGM-U03PSH1MRAA-74b6914da04c-512"
                         className="w-10 h-10 rounded-full mr-2"
                       />
-                      <p className="text-lg mb-2 flex flex-col justify-center">
-                        @whackalenso
-                      </p>
+                      <p className="text-lg mb-2 flex flex-col justify-center">@whackalenso</p>
                     </div>
                     <p className="text-sm mb-4">
-                      I finished my saxophone MIDI controller 🎷! It lets you
-                      play any software instrument you'd like using saxophone
-                      fingerings, allowing you to practice without disturbing
-                      others, create music in any DAW, and perform with it.
-                      Check it out at{' '}
+                      I finished my saxophone MIDI controller 🎷! It lets you play any software
+                      instrument you'd like using saxophone fingerings, allowing you to practice
+                      without disturbing others, create music in any DAW, and perform with it. Check
+                      it out at{' '}
                       <Link href="https://github.com/Whackalenso/CircuitSax">
                         https://github.com/Whackalenso/CircuitSax
                       </Link>
@@ -751,7 +707,7 @@ export default async function Marketing() {
                     <img src="https://cloud-7kbp6qhfd-hack-club-bot.vercel.app/0image.png" />
                   </div>
                 </div>
-                <div className="relative overflow-hidden rounded-md p-6 max-w-[22rem]">
+                <div className="relative overflow-hidden rounded-md p-6 max-w-88">
                   <img
                     src="/comback.svg"
                     alt="image backing"
@@ -763,24 +719,19 @@ export default async function Marketing() {
                         src="https://ca.slack-edge.com/T0266FRGM-U04G40QKAAD-c1f0fac3b324-512"
                         className="w-10 h-10 rounded-full mr-2"
                       />
-                      <p className="text-lg mb-2 flex flex-col justify-center">
-                        @samuel
-                      </p>
+                      <p className="text-lg mb-2 flex flex-col justify-center">@samuel</p>
                     </div>
                     <p className="text-sm mb-4">
-                      Just fixed some final bugs to ship the mobile app for Back
-                      on Track America, a nonprofit organization dedicated to
-                      serving the homeless and those suffering from food
-                      insecurity by coordinating student volunteers in several
-                      communities. The app allows volunteers to sign up for
-                      their location, receive announcements from location
-                      leaders, and discuss upcoming events! ⚒️ It's built with
-                      React Native & NativeWind on the frontend, and using
-                      Pocketbase on the backend. It's also now being submitted
-                      for <Link href="https://cider.hackclub.com">#cider</Link>,
-                      so that it can get published on the app store! An android
-                      build on the play store is also coming soon. Check out the
-                      code at https://github.com/backontrackus/app and
+                      Just fixed some final bugs to ship the mobile app for Back on Track America, a
+                      nonprofit organization dedicated to serving the homeless and those suffering
+                      from food insecurity by coordinating student volunteers in several
+                      communities. The app allows volunteers to sign up for their location, receive
+                      announcements from location leaders, and discuss upcoming events! ⚒️ It's
+                      built with React Native & NativeWind on the frontend, and using Pocketbase on
+                      the backend. It's also now being submitted for{' '}
+                      <Link href="https://cider.hackclub.com">#cider</Link>, so that it can get
+                      published on the app store! An android build on the play store is also coming
+                      soon. Check out the code at https://github.com/backontrackus/app and
                       https://github.com/backontrackus/backend
                     </p>
                     {/* <img
@@ -843,9 +794,7 @@ export default async function Marketing() {
         <div className="relative h-screen flex items-center justify-center">
           <div className="flex flex-col justify-center items-center text-center">
             <div className=" flex flex-col justify-center items-center">
-              <p className="text-4xl text-white mb-4">
-                Build. Battle. Booty. Repeat.
-              </p>
+              <p className="text-4xl text-white mb-4">Build. Battle. Booty. Repeat.</p>
               <EmailSubmissionForm />
               <div className="mt-6">
                 <a
@@ -891,7 +840,7 @@ export default async function Marketing() {
         </div>
       </div>
 
-      <div className="bg-[#F567D7] p-8">
+      <div className="bg-pink p-8">
         <div className="xl:mx-44 md:mx-22 mt-4">
           <p className="mb-4 text-lg text-pink-950">
             A project by{' '}
@@ -905,10 +854,9 @@ export default async function Marketing() {
             </Link>
           </p>
           <p className="max-w-2xl text-pink-800 text-sm">
-            Hack Club is a 501(c)(3) nonprofit and network of 30k+ technical
-            high schoolers. We believe you learn best by building so we{"'"}re
-            creating community and providing grants so you can make awesome
-            projects. In the past few years, we{"'"}ve{' '}
+            Hack Club is a 501(c)(3) nonprofit and network of 30k+ technical high schoolers. We
+            believe you learn best by building so we{"'"}re creating community and providing grants
+            so you can make awesome projects. In the past few years, we{"'"}ve{' '}
             <Link
               href="https://hackclub.com/arcade/"
               target="_blank"
@@ -970,9 +918,7 @@ export default async function Marketing() {
             <div className="flex flex-col">
               <p className="mb-2 text-pink-800 text-xl">Resources</p>
               <div className="text-pink-700">
-                <Link href="https://events.hackclub.com/">
-                  Community Events
-                </Link>
+                <Link href="https://events.hackclub.com/">Community Events</Link>
                 <br />
                 <Link href="https://jams.hackclub.com/">Jams</Link>
                 <br />
@@ -980,13 +926,9 @@ export default async function Marketing() {
                 <br />
                 <Link href="https://toolbox.hackclub.com/">Toolbox</Link>
                 <br />
-                <Link href="https://directory.hackclub.com/">
-                  Clubs Directory
-                </Link>
+                <Link href="https://directory.hackclub.com/">Clubs Directory</Link>
                 <br />
-                <Link href="https://hackclub.com/conduct/">
-                  Code of Conduct
-                </Link>
+                <Link href="https://hackclub.com/conduct/">Code of Conduct</Link>
                 <br />
               </div>
             </div>
@@ -994,11 +936,7 @@ export default async function Marketing() {
         </div>
       </div>
 
-      <img
-        src="/footerbelow.svg"
-        alt="under footer image"
-        className="w-full h-full object-cover"
-      />
+      <img src="/footerbelow.svg" alt="under footer image" className="w-full h-full object-cover" />
     </div>
   )
 }
@@ -1012,10 +950,7 @@ const FaqCard: React.FC<FaqCardProps> = ({ question, answer }) => {
   return (
     <div>
       <div className="relative p-8 rounded-lg my-2 max-w-xl pop">
-        <img
-          src="/faqbkgr.svg"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <img src="/faqbkgr.svg" className="absolute inset-0 w-full h-full object-cover" />
         <div className="relative">
           <p className="mb-2 text-2xl">{question}</p>
           <p className="" dangerouslySetInnerHTML={{ __html: answer }}></p>
@@ -1080,18 +1015,10 @@ const Prize = () => {
         className="absolute w-full h-full inset-0 object-cover opacity-80"
       />
       <div className="relative my-2">
-        <p className="flex justify-center text-center text-3xl">
-          Pile of Stickers
-        </p>
-        <img
-          src="/divider.svg"
-          className="w-full object-cover absolute mt-2 opacity-60"
-        />
+        <p className="flex justify-center text-center text-3xl">Pile of Stickers</p>
+        <img src="/divider.svg" className="w-full object-cover absolute mt-2 opacity-60" />
         <p className="mt-4 text-xl text-center">510 Doubloons</p>
-        <img
-          src="/divider.svg"
-          className="w-full object-cover absolute opacity-60"
-        />
+        <img src="/divider.svg" className="w-full object-cover absolute opacity-60" />
         <div className="w-64 h-64 my-4 rounded-sm flex flex-col justify-center items-center">
           <Image src={shop1} alt="Shop item" className="w-full h-auto" />
         </div>
@@ -1109,14 +1036,7 @@ interface PrizeProps {
   estMax: number
 }
 const nf = new Intl.NumberFormat()
-const PrizeCard: React.FC<PrizeProps> = ({
-  name,
-  doubloons,
-  image,
-  sub,
-  estMin,
-  estMax,
-}) => {
+const PrizeCard: React.FC<PrizeProps> = ({ name, doubloons, image, sub, estMin, estMax }) => {
   return (
     <div className="relative p-6 px-4 rounded-lg m-4 pop">
       <img
@@ -1130,19 +1050,10 @@ const PrizeCard: React.FC<PrizeProps> = ({
       <div className="relative my-2">
         <p className="flex justify-center text-center text-3xl">{name}</p>
         {sub && <p className="flex justify-center text-center">{sub}</p>}
-        <img
-          src="/divider.svg"
-          className="w-full object-cover absolute mt-2 opacity-60"
-        />
+        <img src="/divider.svg" className="w-full object-cover absolute mt-2 opacity-60" />
         <div className="relative">
           <div className="w-72 h-72 my-4 rounded-sm flex flex-col justify-center items-center">
-            <Image
-              src={image}
-              alt="Shop item"
-              className="w-full h-auto"
-              width="300"
-              height="300"
-            />
+            <Image src={image} alt="Shop item" className="w-full h-auto" width="300" height="300" />
           </div>
         </div>
       </div>

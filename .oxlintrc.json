@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "nextjs"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "nextjs/no-img-element": "warn",
+    "nextjs/no-html-link-for-pages": "warn",
+    "react/exhaustive-deps": "warn",
+    "react/set-state-in-effect": "warn",
+    "react/purity": "warn",
+    "react/immutability": "warn",
+    "react/refs": "warn",
+    "react/void-use-memo": "warn",
+    "no-unreachable": "warn",
+    "no-dupe-keys": "warn",
+    "no-extra-boolean-cast": "warn",
+    "no-eval": "warn",
+    "no-empty-pattern": "warn",
+    "no-self-assign": "warn",
+    "no-duplicate-case": "warn",
+    "no-unassigned-vars": "warn"
+  },
+  "ignorePatterns": [".next/**", "out/**", "build/**", "next-env.d.ts"]
+}

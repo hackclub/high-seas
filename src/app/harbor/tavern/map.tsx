@@ -17,9 +17,7 @@ export default function Map({ tavernEvents, tavernPeople, selectedTavern }) {
 
   useEffect(() => {
     if (selectedTavern && selectedTavern.geocode && mapInstance) {
-      const geocodeData = JSON.parse(
-        atob(selectedTavern.geocode.slice(2).trim()),
-      )
+      const geocodeData = JSON.parse(atob(selectedTavern.geocode.slice(2).trim()))
       if (geocodeData.o.status === 'OK') {
         mapInstance.setView([geocodeData.o.lat, geocodeData.o.lng], 11)
       }
@@ -28,12 +26,7 @@ export default function Map({ tavernEvents, tavernPeople, selectedTavern }) {
 
   return (
     <div>
-      <MapContainer
-        className="h-96 rounded-lg"
-        center={[0, 0]}
-        zoom={2}
-        scrollWheelZoom={true}
-      >
+      <MapContainer className="h-96 rounded-lg" center={[0, 0]} zoom={2} scrollWheelZoom={true}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
@@ -82,20 +75,14 @@ export default function Map({ tavernEvents, tavernPeople, selectedTavern }) {
   )
 }
 
-function MapUpdater({
-  selectedTavern,
-}: {
-  selectedTavern: TavernEventItem | null
-}) {
+function MapUpdater({ selectedTavern }: { selectedTavern: TavernEventItem | null }) {
   const map = useMap()
 
   useEffect(() => {
     if (!map) return
 
     if (selectedTavern && selectedTavern.geocode) {
-      const geocodeData = JSON.parse(
-        atob(selectedTavern.geocode.slice(2).trim()),
-      )
+      const geocodeData = JSON.parse(atob(selectedTavern.geocode.slice(2).trim()))
       if (geocodeData.o.status === 'OK') {
         map.setView([geocodeData.o.lat, geocodeData.o.lng], 11)
       }
@@ -149,9 +136,7 @@ function TavernMarkers(props: MapProps) {
       return (
         <Marker
           key={t.coordinates}
-          position={
-            t.coordinates.split(', ').map((c) => Number(c)) as LatLngExpression
-          }
+          position={t.coordinates.split(', ').map((c) => Number(c)) as LatLngExpression}
           icon={icon}
         />
       )

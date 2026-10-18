@@ -59,12 +59,7 @@ export default function ProjectCard({
           {project.ship_type === 'update' ? (
             <p className="text-gray-600 dark:text-gray-300 mb-4 inline">
               {' '}
-              <Pill
-                msg="This is a project update"
-                color="green"
-                glyph="rep"
-                classes="text-lg"
-              />
+              <Pill msg="This is a project update" color="green" glyph="rep" classes="text-lg" />
             </p>
           ) : null}
         </h2>
@@ -122,12 +117,7 @@ export default function ProjectCard({
                 }))
               }}
             >
-              <Pill
-                msg="Repository"
-                color="blue"
-                glyph="code"
-                classes="text-lg"
-              />
+              <Pill msg="Repository" color="blue" glyph="code" classes="text-lg" />
             </a>
           )}
           {project.deploy_url && (
@@ -213,13 +203,9 @@ export default function ProjectCard({
           <p className="mt-4">
             {showFullText
               ? project.update_description
-              : truncatedText +
-                (project.update_description.length > 50 ? '...' : '')}
+              : truncatedText + (project.update_description.length > 50 ? '...' : '')}
             {project.update_description.length > 50 && (
-              <button
-                className="text-blue-500 ml-2 underline"
-                onClick={toggleReadMore}
-              >
+              <button className="text-blue-500 ml-2 underline" onClick={toggleReadMore}>
                 {showFullText ? 'Read Less' : 'Read More'}
               </button>
             )}

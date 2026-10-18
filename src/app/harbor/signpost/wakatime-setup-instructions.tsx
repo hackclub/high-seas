@@ -30,18 +30,10 @@ export default function WakatimeSetupInstructions({
     <JaggedCard>
       <div className="flex gap-2 items-center">
         <motion.div animate={{ rotate: open ? 0 : -90 }}>
-          <Icon
-            glyph="down-caret"
-            color="white"
-            size={42}
-            onClick={() => setOpen((p) => !p)}
-          />
+          <Icon glyph="down-caret" color="white" size={42} onClick={() => setOpen((p) => !p)} />
         </motion.div>
         <div>
-          <div
-            className="text-white"
-            style={{ '-webkit-user-select': 'none', userSelect: 'none' }}
-          >
+          <div className="text-white" style={{ '-webkit-user-select': 'none', userSelect: 'none' }}>
             <p className="m-0 opacity-80">Step 1</p>
             <p className="m-0 text-xl">{"Let's set up Hackatime!"}</p>
           </div>
@@ -58,14 +50,11 @@ export default function WakatimeSetupInstructions({
           >
             <Card className="mt-3 p-2">
               <p>
-                High Seas tracks your time spent coding, which factors into how
-                many
+                High Seas tracks your time spent coding, which factors into how many
                 <Pill
                   msg="Doubloons"
                   color="green"
-                  glyphImage={
-                    <Image src={DoubloonsImage} alt="Doubloons" height={20} />
-                  }
+                  glyphImage={<Image src={DoubloonsImage} alt="Doubloons" height={20} />}
                 />{' '}
                 you get when your projects are voted on in the{' '}
                 <Link href="/wonderdome" className="text-blue-500">
@@ -75,9 +64,7 @@ export default function WakatimeSetupInstructions({
                 <Pill
                   msg="Doubloons"
                   color="green"
-                  glyphImage={
-                    <Image src={DoubloonsImage} alt="Doubloons" height={20} />
-                  }
+                  glyphImage={<Image src={DoubloonsImage} alt="Doubloons" height={20} />}
                 />{' '}
                 can be exchnged for items in the{' '}
                 <Link href="/shop" className="text-blue-500">
@@ -87,13 +74,9 @@ export default function WakatimeSetupInstructions({
               </p>
               <br />
               <p>
-                High Seas uses the WakaTime VSCode extension to track how much
-                time you spend on your projects. Specifically,
-                <Link
-                  target="_blank"
-                  className="text-blue-500"
-                  href="https://waka.hackclub.com"
-                >
+                High Seas uses the WakaTime VSCode extension to track how much time you spend on
+                your projects. Specifically,
+                <Link target="_blank" className="text-blue-500" href="https://waka.hackclub.com">
                   {' '}
                   a Hack Clubber-forked open source version
                 </Link>
@@ -102,21 +85,18 @@ export default function WakatimeSetupInstructions({
               <br />
               <p>
                 {"Let's set up WakaTime! First, install the "}
-                <Link
-                  href="https://wakatime.com/vs-code"
-                  className="text-blue-500"
-                >
+                <Link href="https://wakatime.com/vs-code" className="text-blue-500">
                   VS Code extension
                 </Link>
-                . Next, we need to edit the configuration file to put in our
-                WakaTime token (to identify you), and a custom URL (to tell the
-                extension to send the data it collects to High Seas).
+                . Next, we need to edit the configuration file to put in our WakaTime token (to
+                identify you), and a custom URL (to tell the extension to send the data it collects
+                to High Seas).
               </p>
               <br />
 
               <p>
-                Your WakaTime config (located at <code>~/.wakatime.cfg</code>)
-                needs to be exactly this;
+                Your WakaTime config (located at <code>~/.wakatime.cfg</code>) needs to be exactly
+                this;
               </p>
               <Card className="p-2">
                 <pre className="text-left">
@@ -144,10 +124,9 @@ export default function WakatimeSetupInstructions({
               <br />
               <p>
                 To log in to the dashboard, your username is your Slack ID (
-                <code>{session ? session?.slackId : '???'}</code>), and your
-                email is <code>{email ? email : '???'}</code>. {"You'll"} need
-                to request a password reset link (unless {"you've"} already
-                signed up for Hackatime!)
+                <code>{session ? session?.slackId : '???'}</code>), and your email is{' '}
+                <code>{email ? email : '???'}</code>. {"You'll"} need to request a password reset
+                link (unless {"you've"} already signed up for Hackatime!)
               </p>
             </Card>
           </motion.div>

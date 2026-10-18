@@ -12,11 +12,7 @@ import { tour } from './tour'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
 import { useRouter } from 'next/navigation'
 import { getSession, type HsSession } from '@/app/utils/auth'
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from '@/components/ui/popover'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { sample, zeroMessage } from '../../../../lib/flavor'
 import Cookies from 'js-cookie'
 import JaggedCard from '@/components/jagged-card'
@@ -28,8 +24,7 @@ const doubloonTips = [
     icon: 'door-enter',
     msg: (
       <p>
-        You earn doubloons through{' '}
-        <span className="text-[#AD28C6]">shipping projects</span>.
+        You earn doubloons through <span className="text-[#AD28C6]">shipping projects</span>.
       </p>
     ),
   },
@@ -37,16 +32,13 @@ const doubloonTips = [
     icon: 'door-leave',
     msg: (
       <p>
-        You spend them on <span className="text-[#AD28C6]">prizes</span> in the
-        shop.
+        You spend them on <span className="text-[#AD28C6]">prizes</span> in the shop.
       </p>
     ),
   },
   {
     icon: 'list',
-    msg: (
-      <p>How many you earn is affected by how others vote on your projects.</p>
-    ),
+    msg: <p>How many you earn is affected by how others vote on your projects.</p>,
   },
   {
     icon: 'bolt',
@@ -78,11 +70,7 @@ const Balance = () => {
         onMouseLeave={() => setOpen(false)}
       >
         <div className="flex items-center gap-1">
-          <img
-            src="doubloon.svg"
-            alt="doubloons"
-            className="w-4 sm:w-5 h-4 sm:h-5"
-          />
+          <img src="doubloon.svg" alt="doubloons" className="w-4 sm:w-5 h-4 sm:h-5" />
           <span className="mr-2">
             {balance || balance === 0 ? Math.floor(balance) : '...'}
             <span className="sm:inline hidden"> Doubloons</span>
@@ -101,19 +89,14 @@ const Balance = () => {
           <p className="inline-flex text-base">
             What are&nbsp;
             <span className="inline-flex items-center gap-1">
-              <img
-                src="doubloon.svg"
-                alt="doubloons"
-                className="w-4 sm:w-5 h-4 sm:h-5"
-              />
+              <img src="doubloon.svg" alt="doubloons" className="w-4 sm:w-5 h-4 sm:h-5" />
               doubloons?
             </span>
           </p>
           <ul className="flex flex-col gap-1 mt-2">
             {doubloonTips.map(({ icon, msg }, idx) => (
               <li key={idx} className="flex gap-1">
-                <Icon glyph={icon} size={20} className="inline flex-shrink-0" />{' '}
-                {msg}
+                <Icon glyph={icon} size={20} className="inline shrink-0" /> {msg}
               </li>
             ))}
           </ul>
@@ -136,10 +119,9 @@ const LoadingOverlay = () => {
 
 const RateLimit = ({ name }: { name: string }) => {
   return (
-    <JaggedCard className="!p-4">
+    <JaggedCard className="p-4!">
       <p className="text-center text-white">
-        {name || 'This page'} is currently over capacity! Please try again
-        later.
+        {name || 'This page'} is currently over capacity! Please try again later.
       </p>
     </JaggedCard>
   )
@@ -162,10 +144,7 @@ export default function Harbor({
   currentTab: string
   session: HsSession
 }) {
-  const [shopItems, setShopItems] = useLocalStorageState<ShopItem[] | null>(
-    'cache.shopItems',
-    null,
-  )
+  const [shopItems, setShopItems] = useLocalStorageState<ShopItem[] | null>('cache.shopItems', null)
 
   // default to true so we don't flash a warning at the user
   const [hasHb, setHasHb] = useLocalStorageState<boolean>('cache.hasHb', true)
@@ -237,15 +216,12 @@ export default function Harbor({
 
   let usPrices = false
   try {
-    usPrices =
-      JSON.parse(localStorage.getItem('shop.country.filter')!)?.value === '1'
+    usPrices = JSON.parse(localStorage.getItem('shop.country.filter')!)?.value === '1'
   } catch (e) {}
   const currentTix = Number(Cookies.get('tickets') ?? 0)
   const nextPrize: ShopItem = shopItems
     ? shopItems
-        .filter(
-          (a: ShopItem) => (usPrices ? a.priceUs : a.priceGlobal) >= currentTix,
-        )
+        .filter((a: ShopItem) => (usPrices ? a.priceUs : a.priceGlobal) >= currentTix)
         .sort((a: ShopItem, b: ShopItem) =>
           usPrices ? a.priceUs - b.priceUs : a.priceGlobal - b.priceGlobal,
         )[0]
@@ -256,7 +232,7 @@ export default function Harbor({
       {isLoading && <LoadingOverlay />}
       <div className="mt-4">
         {!hasHb ? (
-          <JaggedCard className="!p-4">
+          <JaggedCard className="p-4!">
             <p className="text-center text-white">
               No Hackatime install detected. Have you run the script?{' '}
               <a className="underline" href="/signpost">
@@ -265,11 +241,7 @@ export default function Harbor({
             </p>
           </JaggedCard>
         ) : null}
-        <Tabs
-          value={currentTab}
-          className="flex-1 flex flex-col"
-          onValueChange={handleTabChange}
-        >
+        <Tabs value={currentTab} className="flex-1 flex flex-col" onValueChange={handleTabChange}>
           <TabsList className="mx-2 my-2 relative h-16">
             <div className="flex flex-col items-center">
               <div>
@@ -291,10 +263,7 @@ export default function Harbor({
                       alt="doubloons"
                       className="inline w-4 sm:w-5 h-4 sm:h-5 mr-1"
                     />
-                    {Math.ceil(
-                      (usPrices ? nextPrize.priceUs : nextPrize.priceGlobal) -
-                        currentTix,
-                    )}{' '}
+                    {Math.ceil((usPrices ? nextPrize.priceUs : nextPrize.priceGlobal) - currentTix)}{' '}
                     doubloons until {nextPrize.name}!
                   </p>
                 </div>

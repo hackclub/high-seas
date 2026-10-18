@@ -108,9 +108,7 @@ export async function fetchShips(
     const reshippedAll = r.fields.reshipped_all as [string] | null
     const reshippedFromAll = r.fields.reshipped_from_all as [string] | null
 
-    const wakatimeProjectNameRaw = r.fields.wakatime_project_name as
-      | string
-      | null
+    const wakatimeProjectNameRaw = r.fields.wakatime_project_name as string | null
     const wakatimeProjectNames = wakatimeProjectNameRaw
       ? wakatimeProjectNameRaw.split('$$xXseparatorXx$$')
       : []
@@ -124,9 +122,7 @@ export async function fetchShips(
       readmeUrl: r.fields.readme_url,
       screenshotUrl: r.fields.screenshot_url,
       voteRequirementMet: Boolean(r.fields.vote_requirement_met),
-      voteBalanceExceedsRequirement: Boolean(
-        r.fields.vote_balance_exceeds_requirement,
-      ),
+      voteBalanceExceedsRequirement: Boolean(r.fields.vote_balance_exceeds_requirement),
       matchups_count: r.fields.matchups_count,
       doubloonPayout: r.fields.doubloon_payout_adjusted,
       shipType: r.fields.ship_type,
@@ -189,16 +185,14 @@ export async function getBestShips(): Promise<BestShip[]> {
     },
   ).then((r) => r.json())
 
-  const sanitised = recordPromise.records.map(
-    ({ fields }: { fields: any }) => ({
-      title: fields.title,
-      repoUrl: fields.repo_url,
-      deployUrl: fields.deploy_url,
-      screenshotUrl: fields.screenshot_url,
-      payout: fields.doubloon_payout,
-      entrantSlackId: fields.entrant__slack_id[0],
-    }),
-  )
+  const sanitised = recordPromise.records.map(({ fields }: { fields: any }) => ({
+    title: fields.title,
+    repoUrl: fields.repo_url,
+    deployUrl: fields.deploy_url,
+    screenshotUrl: fields.screenshot_url,
+    payout: fields.doubloon_payout,
+    entrantSlackId: fields.entrant__slack_id[0],
+  }))
 
   bestShipsCache = sanitised
   bestShipsTs = Date.now()

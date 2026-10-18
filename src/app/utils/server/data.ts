@@ -17,10 +17,7 @@ import { createWaka } from '../waka'
 
 //#region Person
 const personCacheTtl = 60_000
-const personCache = new Map<
-  string,
-  { recordPromise: Promise<any>; timestamp: number }
->()
+const personCache = new Map<string, { recordPromise: Promise<any>; timestamp: number }>()
 
 export async function person(): Promise<any> {
   const session = await getSession()
@@ -59,9 +56,7 @@ export async function person(): Promise<any> {
   return recordPromise
 }
 
-export async function updateShowInLeaderboard(
-  showInLeaderboard: boolean,
-): Promise<void> {
+export async function updateShowInLeaderboard(showInLeaderboard: boolean): Promise<void> {
   const session = await getSession()
   if (!session) throw new Error('No session present')
 
@@ -82,9 +77,7 @@ export async function updateShowInLeaderboard(
 //#region Wakatime
 export async function hasHbData(username: string): Promise<boolean> {
   const res = await fetch(
-    `https://waka.hackclub.com/api/special/hasData/?user=${encodeURIComponent(
-      username,
-    )}`,
+    `https://waka.hackclub.com/api/special/hasData/?user=${encodeURIComponent(username)}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.WAKA_API_KEY}`,
@@ -106,16 +99,8 @@ export async function fetchWaka(session: HsSession): Promise<{
 
   const { username, key } = await createWaka(
     email,
-    preexisting_user
-      ? full_name
-      : (session.name?.length ?? 0) > 0
-        ? session.name
-        : null,
-    preexisting_user
-      ? slack_id
-      : session.slackId.length > 0
-        ? session.slackId
-        : null,
+    preexisting_user ? full_name : (session.name?.length ?? 0) > 0 ? session.name : null,
+    preexisting_user ? slack_id : session.slackId.length > 0 ? session.slackId : null,
   )
 
   const hasHb = await hasHbData(username)

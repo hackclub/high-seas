@@ -4,11 +4,7 @@ import { useState, useEffect } from 'react'
 
 import { getSession } from '@/app/utils/auth'
 import Pill from '@/components/ui/pill'
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from '@/components/ui/popover'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import Icon from '@hackclub/icons'
 import { safePerson } from '@/app/utils/airtable'
 
@@ -59,12 +55,8 @@ export default function Referral() {
             <p className="inline-flex text-base">Your referral link!</p>
             <ul className="flex flex-col gap-1 mt-2">
               <li className="flex gap-1">
-                <Icon
-                  glyph="friend"
-                  size={20}
-                  className="inline flex-shrink-0"
-                />{' '}
-                Get your friends to sign up at this link!
+                <Icon glyph="friend" size={20} className="inline shrink-0" /> Get your friends to
+                sign up at this link!
               </li>
               <li className="flex gap-1">
                 <img

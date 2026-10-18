@@ -56,8 +56,7 @@ const RsvpStatusSwitcher = ({
   erroredFetches: TavernDatafetchCategory[]
 }) => {
   const [editedFlag, setEditedFlag] = useState(false)
-  const [attendeeNoOrganizerModal, setAttendeeNoOrganizerModal] =
-    useState(false)
+  const [attendeeNoOrganizerModal, setAttendeeNoOrganizerModal] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   const { toast } = useToast()
@@ -113,16 +112,13 @@ const RsvpStatusSwitcher = ({
 
   return (
     <>
-      <Modal
-        isOpen={attendeeNoOrganizerModal}
-        close={() => setAttendeeNoOrganizerModal(false)}
-      >
-        ARRRRR! There are enough pirates here to host a tavern, but nobody has
-        volunteered to organize.
+      <Modal isOpen={attendeeNoOrganizerModal} close={() => setAttendeeNoOrganizerModal(false)}>
+        ARRRRR! There are enough pirates here to host a tavern, but nobody has volunteered to
+        organize.
         <br />
         <br />
-        It's easy, all you would need to do is select a venue, date, distribute
-        shirts, and help peolpe coordianate how they're going to attend.
+        It's easy, all you would need to do is select a venue, date, distribute shirts, and help
+        peolpe coordianate how they're going to attend.
         <br />
         <br />
         Please consider volunteering to organize this tavern, me hearty!
@@ -140,10 +136,7 @@ const RsvpStatusSwitcher = ({
               if (rsvpResponse.success) {
                 toast({
                   title: 'Saved',
-                  description:
-                    editMessages[
-                      Math.floor(Math.random() * editMessages.length)
-                    ],
+                  description: editMessages[Math.floor(Math.random() * editMessages.length)],
                 })
               } else {
                 toast({
@@ -167,9 +160,7 @@ const RsvpStatusSwitcher = ({
         className="flex flex-col justify-items-stretch gap-2"
       >
         {erroredFetches.includes('rsvpStatus') ? (
-          <p className="text-red-500">
-            Failed to load your current RSVP status.
-          </p>
+          <p className="text-red-500">Failed to load your current RSVP status.</p>
         ) : !rsvpStatus ? (
           <p>Loading RSVP status selection...</p>
         ) : (
@@ -187,12 +178,8 @@ const RsvpStatusSwitcher = ({
               >
                 <option disabled>Select</option>
                 <option value="none">Nope, can't do either</option>
-                <option value="organizer">
-                  I can organize a tavern near me
-                </option>
-                <option value="participant">
-                  I want to attend a tavern near me
-                </option>
+                <option value="organizer">I can organize a tavern near me</option>
+                <option value="participant">I want to attend a tavern near me</option>
               </select>
             </label>
 
@@ -200,13 +187,9 @@ const RsvpStatusSwitcher = ({
               <>
                 <div>
                   {erroredFetches.includes('tavernEvents') ? (
-                    <p className="text-red-500">
-                      Failed to fetch tavern events
-                    </p>
+                    <p className="text-red-500">Failed to fetch tavern events</p>
                   ) : erroredFetches.includes('myTavernLocation') ? (
-                    <p className="text-red-500">
-                      Failed to fetch your tavern location
-                    </p>
+                    <p className="text-red-500">Failed to fetch your tavern location</p>
                   ) : !tavernEvents || selectedTavern === 'loading' ? (
                     <p>Loading tavern events selection...</p>
                   ) : (
@@ -215,9 +198,7 @@ const RsvpStatusSwitcher = ({
                       <select
                         value={selectedTavern?.id}
                         onChange={(e) => {
-                          const t = tavernEvents.find(
-                            (te) => te.id === e.target.value,
-                          )?.id
+                          const t = tavernEvents.find((te) => te.id === e.target.value)?.id
                           setSelectedTavern(t ? t : null)
                           setEditedFlag(true)
                         }}
@@ -232,9 +213,7 @@ const RsvpStatusSwitcher = ({
                               {eventsByCountry[country].map((te) => (
                                 <option key={te.id} value={te.id}>
                                   {te.locality}
-                                  {te.organizers.length === 0
-                                    ? ' (no organizers yet!)'
-                                    : ''}
+                                  {te.organizers.length === 0 ? ' (no organizers yet!)' : ''}
                                 </option>
                               ))}
                             </optgroup>
@@ -246,9 +225,7 @@ const RsvpStatusSwitcher = ({
 
                 <div>
                   {erroredFetches.includes('shirtSize') ? (
-                    <p className="text-red-500">
-                      Failed to fetch your shirt size
-                    </p>
+                    <p className="text-red-500">Failed to fetch your shirt size</p>
                   ) : shirtSize === 'loading' ? (
                     <p>Loading shirt size selection...</p>
                   ) : (
@@ -279,9 +256,7 @@ const RsvpStatusSwitcher = ({
         )}
 
         <div className="mt-4">
-          {editedFlag ? (
-            <p className="text-orange-500">You have unsaved changes!</p>
-          ) : null}
+          {editedFlag ? <p className="text-orange-500">You have unsaved changes!</p> : null}
 
           <Button type="submit" disabled={!editedFlag || submitting}>
             {submitting
@@ -351,19 +326,14 @@ const RsvpStatusSwitcher = ({
 }
 
 export default function Tavern() {
-  const [rsvpStatus, setRsvpStatus] = useLocalStorageState(
-    'cache.rsvpStatus',
-    'none',
-  )
+  const [rsvpStatus, setRsvpStatus] = useLocalStorageState('cache.rsvpStatus', 'none')
   const [tavernPeople, setTavernPeople] = useState<TavernPersonItem[]>([])
   const [tavernEvents, setTavernEvents] = useState<TavernEventItem[]>([])
-  const [selectedTavern, setSelectedTavern] = useState<
-    TavernEventItem | null | 'loading'
-  >('loading')
+  const [selectedTavern, setSelectedTavern] = useState<TavernEventItem | null | 'loading'>(
+    'loading',
+  )
   const [shirtSize, setShirtSize] = useState('loading')
-  const [erroredFetches, setErroredFetches] = useState<
-    TavernDatafetchCategory[]
-  >([])
+  const [erroredFetches, setErroredFetches] = useState<TavernDatafetchCategory[]>([])
 
   useEffect(() => {
     getTavernRsvpStatus()
@@ -418,49 +388,42 @@ export default function Tavern() {
         </h1>
         <Card className="my-8 p-6">
           <p className="mb-4">
-            On January 31st, thousands of ships will sail back to port,
-            weathered and weary from their months-long voyage upon the High
-            Seas. And yet, their journey—your journey—ends not at the dock… but
-            in the firelit alcoves of the ✨Mystic Tavern✨.
+            On January 31st, thousands of ships will sail back to port, weathered and weary from
+            their months-long voyage upon the High Seas. And yet, their journey—your journey—ends
+            not at the dock… but in the firelit alcoves of the ✨Mystic Tavern✨.
           </p>
           <p className="mb-4">
-            Join your fellow sailors to share tales and make merry over flagons
-            of milk, to boast of your booty and exclaim the exploits of your
-            greatest ships! Oh, and since most pirates don’t own cars, Hack
-            Club’s{' '}
+            Join your fellow sailors to share tales and make merry over flagons of milk, to boast of
+            your booty and exclaim the exploits of your greatest ships! Oh, and since most pirates
+            don’t own cars, Hack Club’s{' '}
             <a href="#" target="_blank">
               gas fund
             </a>{' '}
             will cover your transportation.
           </p>
           <p className="mb-4">
-            The tavern is not a single location, but a manifestation of pirate
-            camaraderie known to appear wherever an intrepid sailor focuses
-            their spirit.{' '}
+            The tavern is not a single location, but a manifestation of pirate camaraderie known to
+            appear wherever an intrepid sailor focuses their spirit.{' '}
             <strong>
-              We need captains in every city to step up and make their local
-              Mystic Tavern their final and most selfless ship.
+              We need captains in every city to step up and make their local Mystic Tavern their
+              final and most selfless ship.
             </strong>
           </p>
           <p className="mb-4">
-            Should you wish to organize such a gathering of shipmates, here are
-            some things that will be asked of you:
+            Should you wish to organize such a gathering of shipmates, here are some things that
+            will be asked of you:
           </p>
           <ul className="list-disc ml-6 mb-4">
             <li>Pick a date during the third week of February</li>
-            <li>
-              Find a local venue (coffee shop, restaurant, library, park,
-              whatever)
-            </li>
+            <li>Find a local venue (coffee shop, restaurant, library, park, whatever)</li>
             <li>Manage signups and communications for pirates in your area</li>
             <li>Receive and distribute special shirts at the event</li>
             <li>Make it memorable for people!</li>
           </ul>
           <p className="mb-4">
-            So RSVP today to meet your local hearties at a tavern near you.
-            Better yet, volunteer to make one happen! Because like, Hack Club is
-            made of real people. You should meet each other, you’re pretty cool
-            😉
+            So RSVP today to meet your local hearties at a tavern near you. Better yet, volunteer to
+            make one happen! Because like, Hack Club is made of real people. You should meet each
+            other, you’re pretty cool 😉
           </p>
         </Card>
         <RsvpStatusSwitcher
@@ -498,17 +461,13 @@ export default function Tavern() {
         ) : null}
 
         {erroredFetches.includes('tavernEvents') ? (
-          <p className="text-red-500">
-            Failed to load tavern events for the tavern map.
-          </p>
+          <p className="text-red-500">Failed to load tavern events for the tavern map.</p>
         ) : erroredFetches.includes('myTavernLocation') ? (
           <p className="text-red-500">
             Failed to load your chosen tavern location for the tavern map.
           </p>
         ) : erroredFetches.includes('tavernPeople') ? (
-          <p className="text-red-500">
-            Failed to load tavern people for the tavern map.
-          </p>
+          <p className="text-red-500">Failed to load tavern people for the tavern map.</p>
         ) : !tavernEvents || !tavernPeople ? (
           <p>Loading tavern map...</p>
         ) : (

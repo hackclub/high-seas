@@ -3,11 +3,7 @@
 import { getSession } from '@/app/utils/auth'
 import { Ship } from '@/app/utils/server/data'
 
-export async function sendFraudReport(
-  project: Ship,
-  type: string,
-  reason: string,
-) {
+export async function sendFraudReport(project: Ship, type: string, reason: string) {
   const session = await getSession()
 
   const res = await fetch(

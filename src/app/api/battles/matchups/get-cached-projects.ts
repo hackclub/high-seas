@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv'
+import { kv } from '@/lib/redis'
 import { getAllProjects } from '../../../../../lib/battles/airtable'
 
 // 1mb limit on each redis entry

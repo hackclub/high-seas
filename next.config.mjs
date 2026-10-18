@@ -1,24 +1,38 @@
 /** @type {import('next').NextConfig} */
 
-import { withPlausibleProxy } from 'next-plausible'
-import withYaml from 'next-plugin-yaml'
-import { execSync } from 'child_process'
-const commitHash = execSync('git log --pretty=format:"%h" -n1')
-  .toString()
-  .trim()
-import { withSentryConfig } from '@sentry/nextjs'
+import { execSync } from 'node:child_process'
+
+function getCommitHash() {
+  if (process.env.VERCEL_GIT_COMMIT_SHA) return process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7)
+  try {
+    return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString()
+      .trim()
+  } catch {
+    return 'unknown'
+  }
+}
+import { withSentryConfig } from '@sentry/nextjs/config'
 
 const nextConfig = {
-  typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
-    ignoreBuildErrors: true,
-  },
+  // Existing application type errors are tracked by `bun run typecheck`.
+  typescript: { ignoreBuildErrors: true },
   reactStrictMode: false,
+  async rewrites() {
+    return [
+      { source: '/proxy/js/script.js', destination: 'https://plausible.io/js/script.js' },
+      { source: '/proxy/api/event', destination: 'https://plausible.io/api/event' },
+    ]
+  },
+  turbopack: {
+    root: import.meta.dirname,
+    rules: {
+      '*.yml': { loaders: ['yaml-loader'], as: '*.js' },
+      '*.yaml': { loaders: ['yaml-loader'], as: '*.js' },
+    },
+  },
   env: {
-    COMMIT_HASH: commitHash,
+    COMMIT_HASH: getCommitHash(),
   },
   images: {
     remotePatterns: [
@@ -37,13 +51,10 @@ const sentryContext = {
     enabled: true,
   },
   tunnelRoute: '/monitoring',
-  hideSourceMaps: true,
-  disableLogger: true,
-  automaticVercelMonitors: true,
+  webpack: {
+    treeshake: { removeDebugLogging: true },
+    automaticVercelMonitors: true,
+  },
 }
 
-const plausibleConfig = withPlausibleProxy()(nextConfig)
-
-const yamlConfig = withYaml(plausibleConfig)
-
-export default withSentryConfig(yamlConfig, sentryContext)
+export default withSentryConfig(nextConfig, sentryContext)

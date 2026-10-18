@@ -23,13 +23,10 @@ export default function Gallery({ ships, setShips }: any) {
       setHasMore(!!newShipInfo.offset)
 
       setShips((prev: any) => {
-        const newShips = newShipInfo.ships.reduce(
-          (acc: ShipsObject, ship: Ship) => {
-            acc[ship.id] = ship
-            return acc
-          },
-          {},
-        )
+        const newShips = newShipInfo.ships.reduce((acc: ShipsObject, ship: Ship) => {
+          acc[ship.id] = ship
+          return acc
+        }, {})
         return { ...prev, ...newShips }
       })
     } catch (error) {
@@ -51,8 +48,7 @@ export default function Gallery({ ships, setShips }: any) {
 
   const shipsArray: Ship[] = Object.values(ships)
 
-  if (shipsArray.length === 0)
-    return <p className="text-center">Loading all ships...</p>
+  if (shipsArray.length === 0) return <p className="text-center">Loading all ships...</p>
 
   return (
     <InfiniteScroll

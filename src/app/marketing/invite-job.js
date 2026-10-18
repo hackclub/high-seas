@@ -1,10 +1,10 @@
 'use server'
 
-import { sql } from '@vercel/postgres'
+import { sql } from '@/lib/postgres'
 import { headers } from 'next/headers'
 
 async function sendInviteJob({ email, userAgent }) {
-  const headersList = headers()
+  const headersList = await headers()
   const ipAddress = headersList.get('x-forwarded-for')
 
   const result =

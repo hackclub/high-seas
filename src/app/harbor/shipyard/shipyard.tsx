@@ -14,10 +14,8 @@ const tutorialShips: Ship[] = [
     title: 'Hack Club Site',
     repoUrl: 'https://github.com/hackclub/site',
     deploymentUrl: 'https://hackclub.com',
-    screenshotUrl:
-      'https://cloud-lezyvcdxr-hack-club-bot.vercel.app/0image.png',
-    readmeUrl:
-      'https://raw.githubusercontent.com/hackclub/site/refs/heads/main/README.md',
+    screenshotUrl: 'https://cloud-lezyvcdxr-hack-club-bot.vercel.app/0image.png',
+    readmeUrl: 'https://raw.githubusercontent.com/hackclub/site/refs/heads/main/README.md',
     credited_hours: 123,
     voteRequirementMet: false,
     doubloonPayout: 421,
@@ -36,17 +34,12 @@ const tutorialShips: Ship[] = [
 
 export default function Shipyard({ session }: any) {
   const [ships, setShips] = useLocalStorageState('cache.ships', [])
-  const [voteBalance, setVoteBalance] = useLocalStorageState(
-    'cache.voteBalance',
-    0,
-  )
+  const [voteBalance, setVoteBalance] = useLocalStorageState('cache.voteBalance', 0)
 
   useEffect(() => {
     fetchShips(session.slackId).then((ships) => setShips(ships))
 
-    getVotesRemainingForNextPendingShip(session.slackId).then((balance) =>
-      setVoteBalance(balance),
-    )
+    getVotesRemainingForNextPendingShip(session.slackId).then((balance) => setVoteBalance(balance))
   }, [])
 
   const isTutorial = sessionStorage.getItem('tutorial') === 'true'
@@ -79,11 +72,7 @@ export default function Shipyard({ session }: any) {
         )}
         <div className="mt-6">
           {/* <IdeaGenerator /> */}
-          <Ships
-            ships={isTutorial ? tutorialShips : ships}
-            setShips={setShips}
-            bareShips={false}
-          />
+          <Ships ships={isTutorial ? tutorialShips : ships} setShips={setShips} bareShips={false} />
         </div>
       </div>
     </>

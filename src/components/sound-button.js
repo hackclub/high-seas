@@ -12,8 +12,7 @@ const musicSamples = [
   'https://cloud-7hoafdd1y-hack-club-bot.vercel.app/0two_hornpipes__tortuga___unwk1x_tgsc__audio.mp4',
 ]
 
-const trumpetUrl =
-  'https://cloud-74zjdhued-hack-club-bot.vercel.app/1frame_12.png'
+const trumpetUrl = 'https://cloud-74zjdhued-hack-club-bot.vercel.app/1frame_12.png'
 const flagUrl = 'https://cloud-pfu2uqcdh-hack-club-bot.vercel.app/0frame_6.png'
 
 const Trumpet = ({ bot, rot, flip = false }) => {
@@ -25,17 +24,12 @@ const Trumpet = ({ bot, rot, flip = false }) => {
   }
   const slide_in = flip ? 'animate-slide_in_left' : 'animate-slide_in_right'
   // We need to define this because tailwind's JIT doesn't recognize them unless they're defined here
-  const animations = [
-    'animate-trumpet2',
-    'animate-trumpet3',
-    'animate-trumpet4',
-  ]
+  const animations = ['animate-trumpet2', 'animate-trumpet3', 'animate-trumpet4']
 
   const { emitYap } = useEventEmitter()
 
   const handleClick = () => {
-    const dootUrl =
-      'https://cloud-npii7gys3-hack-club-bot.vercel.app/0skullsound2_1__audio.mp4'
+    const dootUrl = 'https://cloud-npii7gys3-hack-club-bot.vercel.app/0skullsound2_1__audio.mp4'
 
     const audio = new Audio(dootUrl)
     audio.play()
@@ -55,10 +49,7 @@ const Trumpet = ({ bot, rot, flip = false }) => {
       }}
     >
       <div style={{ transform: `rotate(${rot}deg)` }}>
-        <div
-          className={sample(animations)}
-          style={{ animationDuration: '2000ms' }}
-        >
+        <div className={sample(animations)} style={{ animationDuration: '2000ms' }}>
           <div className="animate-quick_yapping">
             <img
               src={trumpetUrl}
@@ -92,15 +83,9 @@ const Flag = ({ bot, rot, ani, dur, flip = false }) => {
       }}
     >
       <div style={{ transform: `rotate(${rot}deg)` }}>
-        <div
-          className={`inline-block animate-[${ani}_750ms_ease-out_0ms_alternate_infinite]`}
-        >
+        <div className={`inline-block animate-[${ani}_750ms_ease-out_0ms_alternate_infinite]`}>
           <div className="animate-quick_yapping">
-            <img
-              src={flagUrl}
-              className={`w-24 ${flip ? 'scale-x-[-1]' : ''}`}
-              alt="trumpet"
-            />
+            <img src={flagUrl} className={`w-24 ${flip ? 'scale-x-[-1]' : ''}`} alt="trumpet" />
           </div>
         </div>
       </div>
@@ -113,13 +98,11 @@ const theTrumpets = () => {
     <>
       {/* first trumpet always starts from the right and bobs up and down  */}
       <div className="fixed bottom-20 -right-4 animate-slide_in_right">
-        <div className="rotate-[17deg]">
+        <div className="rotate-17">
           <div className="inline-block animate-trumpet1 repeat-infinite">
             <div className="animate-quick_yapping">
               <img
-                src={
-                  'https://cloud-mixfq3elm-hack-club-bot.vercel.app/0____.png'
-                }
+                src={'https://cloud-mixfq3elm-hack-club-bot.vercel.app/0____.png'}
                 className="w-32"
                 alt="trumpet"
               />
@@ -186,10 +169,7 @@ const SoundButton = () => {
       <audio src={musicUrl} loop ref={audioRef} />
       {soundState ? theTrumpets() : ''}
       {soundState ? theFlags() : ''}
-      <div
-        className="fixed bottom-3 right-3 cursor-pointer"
-        onClick={handleClick}
-      >
+      <div className="fixed bottom-3 right-3 cursor-pointer" onClick={handleClick}>
         <div className="bg-gray-100 border-indigo-500 size-20 rounded-full border-2 flex items-center justify-center text-xl">
           {soundState ? '🔊' : '🔇'}
         </div>

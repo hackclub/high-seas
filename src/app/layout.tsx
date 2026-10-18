@@ -5,7 +5,7 @@ import './globals.css'
 import Nav from '@/components/nav'
 import { Toaster } from '@/components/ui/toaster'
 
-import PlausibleProvider from 'next-plausible'
+import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
 import Fullstory from '@/components/fullstory'
 
@@ -37,30 +37,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script
-          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-          defer
-        ></script>
-        <link
-          rel="icon"
-          type="image/png"
-          href="/favicons/favicon-96x96.png"
-          sizes="96x96"
-        />
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+        <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96" />
         <link rel="icon" href="/favicons/favicon.ico" />
         <link rel="shortcut icon" href="/favicons/favicon.ico" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/favicons/apple-touch-icon.png"
-        />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-title" content="High Seas" />
         <link rel="manifest" href="/favicons/site.webmanifest" />
       </head>
       <body className={`${mainFont.variable} antialiased overflow-x-hidden`}>
         <Nav />
         <main>{children}</main>
-        <PlausibleProvider domain="highseas.hackclub.com" />
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            src="/proxy/js/script.js"
+            data-domain="highseas.hackclub.com"
+            data-api="/proxy/api/event"
+            strategy="afterInteractive"
+          />
+        )}
         <Analytics />
         <Fullstory />
         <SpeedInsights />

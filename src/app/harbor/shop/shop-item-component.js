@@ -2,13 +2,7 @@ import { motion } from 'framer-motion'
 
 import { useEventEmitter } from '../../../../lib/useEventEmitter'
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useMemo, useState } from 'react'
 import { cantAffordWords, purchaseWords, sample } from '../../../../lib/flavor'
@@ -101,35 +95,17 @@ export const ShopItemComponent = ({
       <Modal isOpen={detailsModal} close={() => setDetailsModal(false)}>
         <div className="flex flex-col max-h-[60vh] overflow-y-auto px-2 mb-5">
           <h2 className="text-3xl">{item.name}</h2>
-          <h3
-            className="text-xl"
-            dangerouslySetInnerHTML={{ __html: item.subtitle }}
-          ></h3>
-          <img
-            src={item.imageUrl}
-            alt={item.name}
-            className="max-w-sm mx-auto my-3"
-          />
+          <h3 className="text-xl" dangerouslySetInnerHTML={{ __html: item.subtitle }}></h3>
+          <img src={item.imageUrl} alt={item.name} className="max-w-sm mx-auto my-3" />
 
           {item.description && (
-            <p
-              className="my-5"
-              dangerouslySetInnerHTML={{ __html: item.description }}
-            ></p>
+            <p className="my-5" dangerouslySetInnerHTML={{ __html: item.description }}></p>
           )}
 
-          <Image
-            src="/hr.svg"
-            className="w-2/3 mx-auto my-3"
-            alt=""
-            width={461}
-            height={11}
-          />
+          <Image src="/hr.svg" className="w-2/3 mx-auto my-3" alt="" width={461} height={11} />
 
           {item.limited_qty && (
-            <i className="mt-3 text-amber-100">
-              This item is limited, buy it while you can!
-            </i>
+            <i className="mt-3 text-amber-100">This item is limited, buy it while you can!</i>
           )}
 
           {item.fulfillment_description && (
@@ -142,27 +118,18 @@ export const ShopItemComponent = ({
           {item.links && linkIndex >= 0 && item.links[linkIndex] && (
             <p>
               We will most likely order it from{' '}
-              <a
-                className="underline"
-                target="_blank"
-                href={item.links[Number(filterIndex) - 1]}
-              >
+              <a className="underline" target="_blank" href={item.links[Number(filterIndex) - 1]}>
                 this link
               </a>
             </p>
           )}
 
           {item.customs_likely && linkIndex !== 0 && (
-            <p className="font-bold italic text-xl">
-              Customs may apply outside of US!
-            </p>
+            <p className="font-bold italic text-xl">Customs may apply outside of US!</p>
           )}
         </div>
 
-        <Button
-          className="float-right mr-10"
-          onClick={() => setDetailsModal(false)}
-        >
+        <Button className="float-right mr-10" onClick={() => setDetailsModal(false)}>
           Close
         </Button>
       </Modal>
@@ -178,9 +145,7 @@ export const ShopItemComponent = ({
       >
         <CardHeader className="pb-2">
           <div className="justify-between inline-block items-start">
-            <CardTitle className="text-xl font-bold text-center">
-              {item.name}
-            </CardTitle>
+            <CardTitle className="text-xl font-bold text-center">{item.name}</CardTitle>
           </div>
           <hr />
           <p
@@ -190,26 +155,20 @@ export const ShopItemComponent = ({
 
           <p className="inline-flex gap-3 items-center">
             <span className="text-green-500 font-semibold flex items-center">
-              <img
-                src="doubloon.svg"
-                alt="doubloons"
-                width={20}
-                height={20}
-                className="mr-1"
-              />
+              <img src="doubloon.svg" alt="doubloons" width={20} height={20} className="mr-1" />
               {localPrice}
             </span>
 
             {item.minimumHoursEstimated && item.maximumHoursEstimated ? (
               <span className="text-xs text-gray-600">
-                ({Math.round(item.minimumHoursEstimated)} -{' '}
-                {Math.round(item.maximumHoursEstimated)} hours)
+                ({Math.round(item.minimumHoursEstimated)} - {Math.round(item.maximumHoursEstimated)}{' '}
+                hours)
               </span>
             ) : null}
           </p>
         </CardHeader>
         {item.imageUrl && (
-          <CardContent className="p-0 flex-grow">
+          <CardContent className="p-0 grow">
             <div className="h-48 overflow-hidden">
               <img
                 src={item.imageUrl}
@@ -249,9 +208,7 @@ export const ShopItemComponent = ({
             buyHref={buyHref}
           />
           <Button onClick={handleFavouriteToggle}>
-            <Icon
-              glyph={favouriteItems.includes(item.id) ? 'like-fill' : 'like'}
-            />
+            <Icon glyph={favouriteItems.includes(item.id) ? 'like-fill' : 'like'} />
           </Button>
         </CardFooter>
       </Card>

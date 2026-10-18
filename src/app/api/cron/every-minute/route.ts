@@ -7,11 +7,7 @@ export const fetchCache = 'force-no-store'
 export const maxDuration = 59
 
 export async function GET() {
-  await Promise.all([
-    processBackgroundJobs(),
-    tryUpdateProjectCache(),
-    yswsUpdates(),
-  ])
+  await Promise.all([processBackgroundJobs(), tryUpdateProjectCache(), yswsUpdates()])
 
   return Response.json({ success: true })
 }

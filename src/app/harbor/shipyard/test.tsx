@@ -23,8 +23,7 @@ const FullScreenOverlay = () => {
           <div className="bg-white p-8 rounded-lg max-w-md w-full mx-4">
             <h2 className="text-2xl font-bold mb-4">Overlay Content</h2>
             <p className="mb-4">
-              This is a full-screen overlay that prevents scrolling of the main
-              content.
+              This is a full-screen overlay that prevents scrolling of the main content.
             </p>
             <button
               onClick={toggleOverlay}

@@ -33,10 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!matchup) {
-      return NextResponse.json(
-        { error: 'No valid matchup found' },
-        { status: 404 },
-      )
+      return NextResponse.json({ error: 'No valid matchup found' }, { status: 404 })
     }
 
     const rMatchup = {
@@ -71,9 +68,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(rMatchup)
   } catch (error) {
     console.error('Error generating matchup:', error)
-    return NextResponse.json(
-      { error: 'Failed to generate matchup' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to generate matchup' }, { status: 500 })
   }
 }

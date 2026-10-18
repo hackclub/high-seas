@@ -105,9 +105,7 @@ export const ShopkeeperComponent = ({ balance, cursed, blessed, buyHref }) => {
           break
         case 'pause':
           if (arg[0]) {
-            await new Promise((resolve) =>
-              setTimeout(resolve, parseFloat(arg[0])),
-            )
+            await new Promise((resolve) => setTimeout(resolve, parseFloat(arg[0])))
           } else {
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
@@ -115,8 +113,7 @@ export const ShopkeeperComponent = ({ balance, cursed, blessed, buyHref }) => {
         default:
           await new Promise((resolve) => {
             const yapOptions = {
-              letterCallback: ({ letter }) =>
-                setShopkeeperMsg((s) => s + letter),
+              letterCallback: ({ letter }) => setShopkeeperMsg((s) => s + letter),
               endCallback: resolve,
             }
             if (speed) {
@@ -151,27 +148,17 @@ export const ShopkeeperComponent = ({ balance, cursed, blessed, buyHref }) => {
         .slice(0, bound(Math.random() * 10, 3, 15))
         .join(' ')
       await handleInteraction(
-        greetingSliced +
-          '-- wait... |' +
-          transcript('cursed') +
-          '|' +
-          transcript('getout'),
+        greetingSliced + '-- wait... |' + transcript('cursed') + '|' + transcript('getout'),
       )
     } else if (blessed) {
-      await handleInteraction(
-        transcript('greetings') + '|' + transcript('blessed'),
-      )
+      await handleInteraction(transcript('greetings') + '|' + transcript('blessed'))
     } else if (balance == 0) {
       const brokeGreeting = transcript('greetings')
         .split(' ')
         .slice(0, bound(Math.random() * 10, 3, 15))
         .join(' ')
       await handleInteraction(
-        brokeGreeting +
-          '-- hold on... |' +
-          transcript('noMoney') +
-          '|' +
-          transcript('getout'),
+        brokeGreeting + '-- hold on... |' + transcript('noMoney') + '|' + transcript('getout'),
       )
       // setAtCounter(false)
     } else if (continuousBellClicks > 1) {
@@ -179,8 +166,7 @@ export const ShopkeeperComponent = ({ balance, cursed, blessed, buyHref }) => {
     } else {
       if (bellClickCount == 0) {
         await handleInteraction(
-          transcript('greetings') +
-            " just click on anything you're interested in!",
+          transcript('greetings') + " just click on anything you're interested in!",
         )
       } else {
         await handleInteraction(transcript('greetings'))
@@ -226,10 +212,7 @@ export const ShopkeeperComponent = ({ balance, cursed, blessed, buyHref }) => {
 
   return (
     <>
-      <div
-        className="cursor-pointer text-center mt-5"
-        onClick={handleServiceBellClick}
-      >
+      <div className="cursor-pointer text-center mt-5" onClick={handleServiceBellClick}>
         🛎️
       </div>
       <div className="text-center">(ring for service)</div>
@@ -274,9 +257,7 @@ export const ShopkeeperComponent = ({ balance, cursed, blessed, buyHref }) => {
                 src={shopkeeperImg}
                 style={imgStyles}
                 onClick={handleSelfClick}
-                className={
-                  interactionBusy ? 'shopkeeper-talking' : 'shopkeeper-idling'
-                }
+                className={interactionBusy ? 'shopkeeper-talking' : 'shopkeeper-idling'}
               />
             </div>
             <div id="shopkeeper-msg">
@@ -294,10 +275,7 @@ export const ShopkeeperComponent = ({ balance, cursed, blessed, buyHref }) => {
 
 const BuyButton = ({ itemId, buyHref }) => {
   return (
-    <form
-      action={buyHref || `/api/buy/${itemId}`}
-      className="w-full text-center animate-pulse"
-    >
+    <form action={buyHref || `/api/buy/${itemId}`} className="w-full text-center animate-pulse">
       <Button className="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 m-2 rounded transition-colors duration-200 text-3xl enchanted">
         Buy
       </Button>

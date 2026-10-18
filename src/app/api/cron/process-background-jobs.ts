@@ -1,6 +1,6 @@
 'use server'
 
-import { sql } from '@vercel/postgres'
+import { sql } from '@/lib/postgres'
 import { withLock } from '../../../../lib/redis-lock'
 
 async function processPendingInviteJobs() {
@@ -64,9 +64,7 @@ async function processPendingPersonInitJobs() {
   `
 
   if (rows.length === 0) {
-    await fetch(
-      'https://kuma-hackclub.fly.dev/api/push/HAPogoJ2s1?status=up&msg=OK&ping=',
-    )
+    await fetch('https://kuma-hackclub.fly.dev/api/push/HAPogoJ2s1?status=up&msg=OK&ping=')
     return
   }
 
@@ -123,9 +121,7 @@ async function processPendingPersonInitJobs() {
     }),
   )
 
-  await fetch(
-    'https://kuma-hackclub.fly.dev/api/push/HAPogoJ2s1?status=up&msg=OK&ping=',
-  )
+  await fetch('https://kuma-hackclub.fly.dev/api/push/HAPogoJ2s1?status=up&msg=OK&ping=')
 }
 
 async function processPendingVotingJobs() {
@@ -152,23 +148,20 @@ LIMIT 10;
       },
     }))
 
-    const resultText = await fetch(
-      'https://api.airtable.com/v0/appTeNFYcUiYfGcR6/battles',
-      {
-        method: 'PATCH',
-        headers: {
-          'User-Agent': 'highseas.hackclub.com (processPendingVotingJobs)',
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          records: fields,
-          performUpsert: {
-            fieldsToMergeOn: ['signature'],
-          },
-        }),
+    const resultText = await fetch('https://api.airtable.com/v0/appTeNFYcUiYfGcR6/battles', {
+      method: 'PATCH',
+      headers: {
+        'User-Agent': 'highseas.hackclub.com (processPendingVotingJobs)',
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json',
       },
-    ).then((r) => r.text())
+      body: JSON.stringify({
+        records: fields,
+        performUpsert: {
+          fieldsToMergeOn: ['signature'],
+        },
+      }),
+    }).then((r) => r.text())
 
     const result = JSON.parse(resultText)
     if (result.error) {

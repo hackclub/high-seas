@@ -3,7 +3,6 @@
 import React, { useState, useRef } from 'react'
 import { Button } from '../../../components/ui/button'
 import Icon from '@hackclub/icons'
-import { usePlausible } from 'next-plausible'
 
 // Basic email validation utility
 export const validEmail = (email: string): boolean =>
@@ -17,7 +16,6 @@ export default function EmailSubmissionForm() {
   const [errorText, setErrorText] = useState<string>()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
-  const plausible = usePlausible()
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -50,7 +48,9 @@ export default function EmailSubmissionForm() {
     const redirectUrl = `${baseUrl}?e=${encodeURIComponent(emailStr)}`
 
     // Redirect the user
-    plausible('submit-future-events-email')
+    ;(window as Window & { plausible?: (event: string) => void }).plausible?.(
+      'submit-future-events-email',
+    )
     window.location.href = redirectUrl
     // No need to setIsSubmitting(false) here as the page will navigate away
   }
@@ -61,8 +61,7 @@ export default function EmailSubmissionForm() {
         {/* Updated Message */}
         <div className="px-6 py-4 rounded-lg text-md border-2 border-[#3852CD] bg-[#FA4C3599] text-white text-center">
           High Seas has ended! <br />
-          Put your email below and {"we'll"} email you about future Hack Club
-          events.
+          Put your email below and {"we'll"} email you about future Hack Club events.
         </div>
 
         {/* Email Form */}

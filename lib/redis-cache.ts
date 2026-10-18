@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { kv } from '@vercel/kv'
+import { kv } from '@/lib/redis'
 
 const DEFAULT_TIMEOUT = 30 * 1000 // 30 seconds
 
