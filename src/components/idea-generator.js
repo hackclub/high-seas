@@ -56,12 +56,7 @@ function loadYapSounds() {
 
 async function yap(
   text,
-  {
-    letterCallback = () => {},
-    endCallback = () => {},
-    baseRate = 3.2,
-    rateVariance = 1,
-  } = {},
+  { letterCallback = () => {}, endCallback = () => {}, baseRate = 3.2, rateVariance = 1 } = {},
 ) {
   const yap_queue = []
   for (let i = 0; i < text.length; i++) {
@@ -80,10 +75,7 @@ async function yap(
       // test for 'th' sound
       yap_queue.push({ letter: char, sound: yap_sounds['th'] })
       continue
-    } else if (
-      lowerChar === 'h' &&
-      (prevLowerChar === 's' || prevLowerChar === 't')
-    ) {
+    } else if (lowerChar === 'h' && (prevLowerChar === 's' || prevLowerChar === 't')) {
       // test if previous letter was 's' or 't' and current letter is 'h'
       yap_queue.push({ letter: char, sound: yap_sounds['_'] })
       continue
@@ -186,11 +178,7 @@ const IdeaGenerator = () => {
   }
 
   const activeClass = loading ? 'thinking' : typing ? 'typing' : 'idle'
-  const imgSrc = loading
-    ? '/thinking.png'
-    : typing
-      ? '/talking.png'
-      : '/idle.png'
+  const imgSrc = loading ? '/thinking.png' : typing ? '/talking.png' : '/idle.png'
 
   return (
     <div className="idea-generator flex flex-col justify-center items-center mb-24">

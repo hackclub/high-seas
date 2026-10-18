@@ -7,10 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 
 import { LoadingSpinner } from '../../../components/ui/loading_spinner.js'
-import {
-  getVotesRemainingForNextPendingShip,
-  safePerson,
-} from '@/app/utils/airtable'
+import { getVotesRemainingForNextPendingShip, safePerson } from '@/app/utils/airtable'
 import useLocalStorageState from '../../../../lib/useLocalStorageState'
 import { useToast } from '@/hooks/use-toast'
 import { HsSession } from '@/app/utils/auth'
@@ -53,20 +50,11 @@ export default function Matchups({ session }: { session: HsSession }) {
 
   const { toast } = useToast()
 
-  const [voteBalance, setVoteBalance] = useLocalStorageState(
-    'cache.voteBalance',
-    0,
-  )
+  const [voteBalance, setVoteBalance] = useLocalStorageState('cache.voteBalance', 0)
 
-  const [skipsBeforeVote, setSkipsBeforeVote] = useLocalStorageState(
-    'battles.skipsBeforeVote',
-    0,
-  )
+  const [skipsBeforeVote, setSkipsBeforeVote] = useLocalStorageState('battles.skipsBeforeVote', 0)
 
-  const [isFirstLoad, setIsFirstLoad] = useLocalStorageState(
-    'battles.isFirstLoad',
-    true,
-  )
+  const [isFirstLoad, setIsFirstLoad] = useLocalStorageState('battles.isFirstLoad', true)
 
   const [analyticsState, setAnalyticsState] = useState({
     projectResources: {} as Record<
@@ -124,9 +112,7 @@ export default function Matchups({ session }: { session: HsSession }) {
     'https://cloud-1v9k8a4x7-hack-club-bot.vercel.app/0yr_sweep_up_01_audio.mp4',
   ].map((path) => new Howl({ src: path }))
 
-  const reducedMotion = window.matchMedia(
-    '(prefers-reduced-motion: reduce)',
-  ).matches
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let shuffling = false
   function shuffle() {
     shuffling = true
@@ -212,9 +198,7 @@ export default function Matchups({ session }: { session: HsSession }) {
       const [response, _] = await Promise.all([
         fetch(
           '/api/battles/matchups' +
-            (sessionStorage.getItem('tutorial') === 'true'
-              ? '?tutorial=true'
-              : ''),
+            (sessionStorage.getItem('tutorial') === 'true' ? '?tutorial=true' : ''),
         ),
         new Promise((r) => setTimeout(r, 1250)),
       ])
@@ -235,9 +219,7 @@ export default function Matchups({ session }: { session: HsSession }) {
             },
           },
         })
-        const firstLoad = JSON.parse(
-          localStorage.getItem('battles.isFirstLoad') || 'true',
-        ).value
+        const firstLoad = JSON.parse(localStorage.getItem('battles.isFirstLoad') || 'true').value
 
         if (!firstLoad) {
           setSkipsBeforeVote((prev) => prev + 1)
@@ -315,9 +297,7 @@ export default function Matchups({ session }: { session: HsSession }) {
         const slackId = session.slackId
         const winner = selectedProject
         const loser =
-          selectedProject.id === matchup.project1.id
-            ? matchup.project2
-            : matchup.project1
+          selectedProject.id === matchup.project1.id ? matchup.project2 : matchup.project1
 
         const response = await fetch('/api/battles/vote', {
           method: 'POST',
@@ -365,9 +345,7 @@ export default function Matchups({ session }: { session: HsSession }) {
         }
       } catch (error) {
         console.error('Error submitting vote:', error)
-        setError(
-          'An error occurred while submitting your vote. Please try again.',
-        )
+        setError('An error occurred while submitting your vote. Please try again.')
       } finally {
         setIsSubmitting(false)
       }
@@ -412,7 +390,7 @@ export default function Matchups({ session }: { session: HsSession }) {
 
   if (isReadmeView) {
     return (
-      <div className="min-h-[75vh] bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-900 p-4 sm:p-6 md:p-8">
+      <div className="min-h-[75vh] bg-linear-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-900 p-4 sm:p-6 md:p-8">
         <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-black dark:text-white">
           <button
             onClick={() => setIsReadmeView(false)}
@@ -421,9 +399,7 @@ export default function Matchups({ session }: { session: HsSession }) {
             <Icon glyph="view-back" size={24} /> Back to Matchup
           </button>
           <div className="prose dark:prose-invert max-w-none">
-            <ReactMarkdown components={markdownComponents}>
-              {readmeContent}
-            </ReactMarkdown>
+            <ReactMarkdown components={markdownComponents}>{readmeContent}</ReactMarkdown>
           </div>
         </div>
       </div>
@@ -434,14 +410,11 @@ export default function Matchups({ session }: { session: HsSession }) {
     <div className="min-h-[75vh] p-4 sm:p-6 md:p-8">
       <div className="max-w-6xl mx-auto">
         <header className="text-center text-white mb-12">
-          <h1 className="font-heading text-5xl mb-6 text-center relative w-fit mx-auto">
-            Battle!
-          </h1>
+          <h1 className="font-heading text-5xl mb-6 text-center relative w-fit mx-auto">Battle!</h1>
           <p className="text-xl text-gray-300 dark:text-gray-300 mb-4 max-w-3xl mx-auto">
-            A good ship is technical, creative, and presented well so that
-            others can understand and experience it. By that definition, which
-            of these two projects is better? (If you are not sure, just hit
-            shuffle to skip!)
+            A good ship is technical, creative, and presented well so that others can understand and
+            experience it. By that definition, which of these two projects is better? (If you are
+            not sure, just hit shuffle to skip!)
           </p>
 
           {blessed && <Blessed />}
@@ -449,8 +422,8 @@ export default function Matchups({ session }: { session: HsSession }) {
 
           {voteBalance > 0 && (
             <div className="flex justify-center items-center space-x-4">
-              {voteBalance} more {pluralize(voteBalance, 'vote', false)} until
-              your next ship's payout! (this may be up to 5 min out of date)
+              {voteBalance} more {pluralize(voteBalance, 'vote', false)} until your next ship's
+              payout! (this may be up to 5 min out of date)
             </div>
           )}
         </header>
@@ -466,9 +439,7 @@ export default function Matchups({ session }: { session: HsSession }) {
           </div>
         ) : !matchup ? (
           <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-            <p className="text-2xl text-gray-600 dark:text-gray-300 mb-6">
-              No matchup available
-            </p>
+            <p className="text-2xl text-gray-600 dark:text-gray-300 mb-6">No matchup available</p>
             {/* <button
               onClick={fetchMatchup}
               className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
@@ -501,13 +472,8 @@ export default function Matchups({ session }: { session: HsSession }) {
                 />
               </div>
 
-              <Modal
-                isOpen={!!fraudProject}
-                close={() => setFraudProject(undefined)}
-              >
-                <h3 className="text-2xl font-bold">
-                  Why are you flagging {fraudProject?.title}?
-                </h3>
+              <Modal isOpen={!!fraudProject} close={() => setFraudProject(undefined)}>
+                <h3 className="text-2xl font-bold">Why are you flagging {fraudProject?.title}?</h3>
                 <select
                   value={fraudType}
                   onChange={(e) => setFraudType(e.target.value)}
@@ -518,9 +484,7 @@ export default function Matchups({ session }: { session: HsSession }) {
                   <option value="No screenshot">No screenshot</option>
                   <option value="No demo link">No demo link</option>
                   <option value="Suspected fraud">Suspected fraud</option>
-                  <option value="Wrong repo">
-                    Repo not found / not open source
-                  </option>
+                  <option value="Wrong repo">Repo not found / not open source</option>
                 </select>
 
                 <AnimatePresence>
@@ -534,8 +498,8 @@ export default function Matchups({ session }: { session: HsSession }) {
                       exit={{ height: 0, opacity: 0 }}
                     >
                       <p className="mb-3">
-                        The creator of this project will be notified. Thanks for
-                        making High Seas better! :)
+                        The creator of this project will be notified. Thanks for making High Seas
+                        better! :)
                       </p>
                     </motion.div>
                   ) : null}
@@ -547,8 +511,8 @@ export default function Matchups({ session }: { session: HsSession }) {
                       exit={{ height: 0, opacity: 0 }}
                     >
                       <p className="mb-3">
-                        The creator of this project will not know you reported
-                        them. <b>Only the High Seas team will see this.</b>
+                        The creator of this project will not know you reported them.{' '}
+                        <b>Only the High Seas team will see this.</b>
                       </p>
                     </motion.div>
                   ) : null}
@@ -580,8 +544,7 @@ export default function Matchups({ session }: { session: HsSession }) {
               >
                 <div id="voting-reason-container">
                   <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-300 mb-4">
-                    Why are you voting for {selectedProject.title} over the
-                    other?
+                    Why are you voting for {selectedProject.title} over the other?
                   </h3>
                   <textarea
                     value={reason}
@@ -591,9 +554,7 @@ export default function Matchups({ session }: { session: HsSession }) {
                     rows={6}
                   />
 
-                  {error && (
-                    <p className="text-red-500 text-sm mb-4">{error}</p>
-                  )}
+                  {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
                 </div>
 
                 <button

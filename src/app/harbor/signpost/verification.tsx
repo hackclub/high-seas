@@ -28,10 +28,7 @@ const getVerificationMessage = (status: string, reason: string | undefined) => {
             <br />
             Don't feed the fish though!{' '}
             <strong>
-              <Link
-                href="https://forms.hackclub.com/eligibility"
-                className="underline"
-              >
+              <Link href="https://forms.hackclub.com/eligibility" className="underline">
                 Try again here
               </Link>
             </strong>
@@ -48,8 +45,8 @@ const getVerificationMessage = (status: string, reason: string | undefined) => {
         color: '#ff0000',
         message: (
           <>
-            Uh-oh, seems like you're an adult… unfortunately, High Seas is only
-            for teenagers 18 and under. Email{' '}
+            Uh-oh, seems like you're an adult… unfortunately, High Seas is only for teenagers 18 and
+            under. Email{' '}
             <a href="mailto:verifications@hackclub.com" className="underline">
               verifications@hackclub.com
             </a>{' '}
@@ -90,10 +87,7 @@ export default function Verification() {
     <JaggedCardSmall bgColor={'#EF4444'} className="text-white">
       <p style={{ textWrap: 'pretty' }}>{message}</p>
       {redirect ? (
-        <Link
-          href="https://forms.hackclub.com/eligibility"
-          className="underline"
-        >
+        <Link href="https://forms.hackclub.com/eligibility" className="underline">
           Verify Yourself!
         </Link>
       ) : null}

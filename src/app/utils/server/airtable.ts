@@ -2,9 +2,7 @@ import 'server-only'
 
 export const getSelfPerson = async (slackId: string) => {
   if (!/^[UW][A-Z0-9]{8,11}$/.test(slackId)) {
-    const err = new Error(
-      `Invalid Slack ID passed to getSelfPerson: ${slackId}`,
-    )
+    const err = new Error(`Invalid Slack ID passed to getSelfPerson: ${slackId}`)
     console.error(err)
     throw err
   }
@@ -42,9 +40,7 @@ export async function getPersonByAuto(num: string): Promise<{
   const table = 'people'
 
   if (!Number(num)) {
-    const err = new Error(
-      `Non-numeric getPersonByAuto parameter passed: ${num}`,
-    )
+    const err = new Error(`Non-numeric getPersonByAuto parameter passed: ${num}`)
     console.error(err)
     throw err
   }
@@ -82,12 +78,9 @@ export async function getPersonByMagicToken(token: string): Promise<{
   email: string
   slackId: string
 } | null> {
-  const uuidRegex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
   if (!uuidRegex.test(token)) {
-    const err = new Error(
-      `Invalid magic token passed to getPersonByMagicToken: ${token}`,
-    )
+    const err = new Error(`Invalid magic token passed to getPersonByMagicToken: ${token}`)
     console.error(err)
     throw err
   }

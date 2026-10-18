@@ -1,11 +1,7 @@
 'use server'
 
 import { getSession } from '@/app/utils/auth'
-import {
-  setTavernRsvpStatus,
-  submitMyTavernLocation,
-  submitShirtSize,
-} from '@/app/utils/tavern'
+import { setTavernRsvpStatus, submitMyTavernLocation, submitShirtSize } from '@/app/utils/tavern'
 import Airtable from 'airtable'
 
 Airtable.configure({
@@ -29,8 +25,7 @@ export type TavernEventItem = {
   eventDate?: string
 }
 
-let cachedPeople: TavernPersonItem[] | null,
-  cachedEvents: TavernEventItem[] | null
+let cachedPeople: TavernPersonItem[] | null, cachedEvents: TavernEventItem[] | null
 let lastPeopleFetch = 0,
   lastEventsFetch = 0
 const TTL = 30 * 60 * 1000

@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres'
+import { sql } from '@/lib/postgres'
 
 export default async function createBackgroundJob(
   type: 'run_lottery' | 'create_person' | 'invite' | 'submit_vote',

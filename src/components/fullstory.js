@@ -1,7 +1,11 @@
 'use client'
 
-import FullStory from 'react-fullstory'
+import { useEffect } from 'react'
+import { init, isInitialized } from '@fullstory/browser'
 
 export default function Fullstory() {
-  return <FullStory org="ARN0J" />
+  useEffect(() => {
+    if (!isInitialized()) init({ orgId: 'ARN0J' })
+  }, [])
+  return null
 }

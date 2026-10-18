@@ -53,9 +53,7 @@ export default function NewUpdateForm({
       )
       console.log({ shipChain, shipChainTotalHours })
 
-      const ps = projects.filter((p) =>
-        (shipChain[0].wakatimeProjectNames || []).includes(p.key),
-      )
+      const ps = projects.filter((p) => (shipChain[0].wakatimeProjectNames || []).includes(p.key))
 
       if (!ps || ps.length === 0) return 0
 
@@ -104,11 +102,7 @@ export default function NewUpdateForm({
       return
     }
 
-    const updatedShip = await createShipUpdate(
-      shipChain.at(-1)!.id,
-      projectHours,
-      formData,
-    )
+    const updatedShip = await createShipUpdate(shipChain.at(-1)!.id, projectHours, formData)
     confettiRef.current?.addConfetti()
     closeForm()
     setStaging(false)
@@ -124,13 +118,10 @@ export default function NewUpdateForm({
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-2">
-        Ship an update to {shipChain[0].title}
-      </h1>
+      <h1 className="text-2xl font-bold mb-2">Ship an update to {shipChain[0].title}</h1>
 
       <p className="mb-2">
-        You are adding {projectHours <= 0 ? 'no' : projectHours} hours of work
-        to this project
+        You are adding {projectHours <= 0 ? 'no' : projectHours} hours of work to this project
       </p>
 
       <form

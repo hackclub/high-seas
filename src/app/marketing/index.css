@@ -1,6 +1,165 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@plugin 'tailwindcss-animate';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --transition-delay-8000: 8000ms;
+
+  --background-image-blues: linear-gradient(15deg, #3852cd, #013247);
+
+  --animate-trumpet1: trumpet1 1.5s alternate infinite;
+  --animate-trumpet2: trumpet2 1.5s alternate infinite;
+  --animate-trumpet3: trumpet3 1.25s alternate infinite;
+  --animate-trumpet4: trumpet4 1s alternate infinite;
+  --animate-quick_yapping: yap 0.25s alternate infinite;
+  --animate-slide_in_right: slide_in_right 0.5s ease-in-out;
+  --animate-slide_in_left: slide_in_left 0.5s ease-in-out;
+
+  --color-green: #10b981;
+  --color-pink: #f567d7;
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  @keyframes yap {
+    from {
+      transform: scale(1.01, 0.99) translateY(2%);
+    }
+    to {
+      transform: scale(0.99, 1.01) translateY(0%);
+    }
+  }
+  @keyframes slide_in_right {
+    0% {
+      transform: translateX(100px);
+    }
+    100% {
+      transform: translateX(-10px);
+      opacity: 1;
+    }
+  }
+  @keyframes slide_in_left {
+    0% {
+      transform: translateX(-100px);
+    }
+    100% {
+      transform: translateX(10px);
+      opacity: 1;
+    }
+  }
+  @keyframes trumpet1 {
+    0% {
+      transform: rotate(-2deg);
+    }
+    25% {
+      transform: rotate(2deg);
+    }
+    50% {
+      transform: rotate(-2.5deg);
+    }
+    75% {
+      transform: rotate(3.5deg);
+    }
+    100% {
+      transform: rotate(-2deg);
+    }
+  }
+  @keyframes trumpet2 {
+    0% {
+      transform: rotate(-1deg);
+    }
+    50% {
+      transform: rotate(3.5deg);
+    }
+    100% {
+      transform: rotate(-1deg);
+    }
+  }
+  @keyframes trumpet3 {
+    0% {
+      transform: rotate(-4deg);
+    }
+    45% {
+      transform: rotate(3.5deg);
+    }
+    50% {
+      transform: rotate(3.5deg);
+    }
+    95% {
+      transform: rotate(-4deg);
+    }
+    100% {
+      transform: rotate(-4deg);
+    }
+  }
+  @keyframes trumpet4 {
+    0% {
+      transform: rotate(-2deg);
+    }
+    40% {
+      transform: rotate(1deg);
+    }
+    67% {
+      transform: rotate(-1.5deg);
+    }
+    80% {
+      transform: rotate(2deg);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 @font-face {
   font-family: 'Arial MTRoundedBold';

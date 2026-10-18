@@ -4,10 +4,7 @@ import { offset } from '@floating-ui/dom'
 import Cookies from 'js-cookie'
 import { reportTourStep, safePerson } from '../../utils/airtable'
 
-const waitForElement = (
-  selector: string,
-  callback = () => {},
-): Promise<Element> => {
+const waitForElement = (selector: string, callback = () => {}): Promise<Element> => {
   return new Promise((resolve) => {
     if (document.querySelector(selector)) {
       return resolve(document.querySelector(selector)!)
@@ -28,12 +25,7 @@ const waitForElement = (
   })
 }
 
-const setCookie = (
-  name: string,
-  value: string,
-  days = 7,
-  sameSite = 'strict',
-) => {
+const setCookie = (name: string, value: string, days = 7, sameSite = 'strict') => {
   const date = new Date()
   date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
   const expires = `expires=${date.toUTCString()}`
@@ -221,9 +213,7 @@ function setupSteps(tourManager: Tour) {
         new Promise((r) => {
           controller = new AbortController()
 
-          const el: HTMLInputElement = document.querySelector(
-            'input#wakatime-project-name',
-          )!
+          const el: HTMLInputElement = document.querySelector('input#wakatime-project-name')!
 
           document.addEventListener(
             'mousedown',
@@ -258,8 +248,7 @@ function setupSteps(tourManager: Tour) {
         {
           text: 'repo, gotcha',
           action: () => {
-            const el: HTMLInputElement =
-              document.querySelector('input#repo_url')!
+            const el: HTMLInputElement = document.querySelector('input#repo_url')!
             el.value = 'https://github.com/hackclub/site'
 
             document.querySelector('input#readme_url').value =
@@ -285,9 +274,7 @@ function setupSteps(tourManager: Tour) {
         {
           text: 'a demo, aye!',
           action: () => {
-            const el: HTMLInputElement = document.querySelector(
-              '#deployment-field input',
-            )!
+            const el: HTMLInputElement = document.querySelector('#deployment-field input')!
             el.value = 'https://hackclub.com'
             tourManager.next()
           },
@@ -307,11 +294,8 @@ function setupSteps(tourManager: Tour) {
         {
           text: 'link please!',
           action: () => {
-            const el: HTMLInputElement = document.querySelector(
-              'input#screenshot_url',
-            )!
-            el.value =
-              'https://cloud-lezyvcdxr-hack-club-bot.vercel.app/0image.png'
+            const el: HTMLInputElement = document.querySelector('input#screenshot_url')!
+            el.value = 'https://cloud-lezyvcdxr-hack-club-bot.vercel.app/0image.png'
             tourManager.next()
           },
         },
@@ -342,14 +326,12 @@ function setupSteps(tourManager: Tour) {
       },
       beforeShowPromise: () =>
         new Promise((r) => {
-          document
-            .querySelector('#staged-ships-container')!
-            .addEventListener('click', (e) => {
-              if (e.target.id === 'ship-ship') {
-                tourManager.next()
-              }
-              e.stopPropagation()
-            })
+          document.querySelector('#staged-ships-container')!.addEventListener('click', (e) => {
+            if (e.target.id === 'ship-ship') {
+              tourManager.next()
+            }
+            e.stopPropagation()
+          })
           r()
         }),
       advanceOn: {
@@ -475,14 +457,12 @@ function setupSteps(tourManager: Tour) {
       beforeShowPromise: () => {
         // return new Promise((r) => setTimeout(r, 3_000));
 
-        return waitForElement(
-          '#voting-project-left button#readme-button',
-          () => {
-            document.querySelector!(
-              '#voting-project-left button#readme-button',
-            )?.setAttribute('disabled', 'true')
-          },
-        )
+        return waitForElement('#voting-project-left button#readme-button', () => {
+          document.querySelector!('#voting-project-left button#readme-button')?.setAttribute(
+            'disabled',
+            'true',
+          )
+        })
       },
       advanceOn: {
         selector: '#voting-project-left #live-demo-link',
@@ -604,9 +584,7 @@ function setupSteps(tourManager: Tour) {
   const currentStepId = getCookie('tour-step')
 
   if (currentStepId) {
-    const currentStepIndex = steps.findIndex(
-      (step) => step.id === currentStepId,
-    )
+    const currentStepIndex = steps.findIndex((step) => step.id === currentStepId)
     if (currentStepIndex !== -1) {
       steps.splice(0, currentStepIndex)
     }

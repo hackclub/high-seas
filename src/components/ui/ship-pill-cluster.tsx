@@ -17,9 +17,7 @@ export default function ShipPillCluster({
   if (!chain) return null
 
   const shipUpdateCount = chain.length - 1
-  const roundedPayout = Math.round(
-    chain.reduce((acc, curr) => (acc += curr.doubloonPayout), 0),
-  )
+  const roundedPayout = Math.round(chain.reduce((acc, curr) => (acc += curr.doubloonPayout), 0))
   const roundedHr = chain
     .reduce((acc, curr) => {
       if (!curr.reshippedToId && curr.shipStatus === 'staged') return acc
@@ -28,9 +26,7 @@ export default function ShipPillCluster({
     }, 0)
     .toFixed(1)
 
-  const allShipsHaveVoteRequirementMet = !chain.some(
-    (s) => !s.voteRequirementMet,
-  )
+  const allShipsHaveVoteRequirementMet = !chain.some((s) => !s.voteRequirementMet)
 
   return (
     <>
@@ -61,9 +57,7 @@ export default function ShipPillCluster({
                 classes={`${transparent && 'bg-white/15 text-white'} ${size === 'small' ? 'text-xs' : ''}`}
                 msg={pluralize(roundedPayout, 'doubloon', true)}
                 glyphSize={size === 'small' ? 16 : 20}
-                glyphImage={
-                  <Image src={DoubloonsImage} alt="doubloons" height={20} />
-                }
+                glyphImage={<Image src={DoubloonsImage} alt="doubloons" height={20} />}
               />
             ) : (
               <Pill

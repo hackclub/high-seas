@@ -33,9 +33,7 @@ export default function Ships({
   setShips: any
 }) {
   const [selectedShip, setSelectedShip] = useState<Ship | null>(null)
-  const [previousSelectedShip, setPreviousSelectedShip] = useState<Ship | null>(
-    null,
-  )
+  const [previousSelectedShip, setPreviousSelectedShip] = useState<Ship | null>(null)
   const [updateChainExpanded, setUpdateChainExpanded] = useState(false)
   const [readmeText, setReadmeText] = useState<string | null>(null)
   const [feedbackText, setFeedbackText] = useState<string | null>(null)
@@ -152,9 +150,7 @@ export default function Ships({
     }
   }
 
-  const selectedShipChain = selectedShip
-    ? shipChains?.get(selectedShip.id)
-    : undefined
+  const selectedShipChain = selectedShip ? shipChains?.get(selectedShip.id) : undefined
 
   const shippedShips = shipChains
     ? Object.values(Object.fromEntries(shipChains)).filter(
@@ -176,12 +172,7 @@ export default function Ships({
     const latestShip = chain?.at(-1) || s
 
     return (
-      <div
-        key={s.id}
-        id={id}
-        onClick={() => setSelectedShip(s)}
-        className="cursor-pointer"
-      >
+      <div key={s.id} id={id} onClick={() => setSelectedShip(s)} className="cursor-pointer">
         <Card
           className="flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 hover:bg-gray-100 transition-colors duration-200"
           style={
@@ -191,7 +182,7 @@ export default function Ships({
           }
         >
           <div className="flex gap-4 items-center">
-            <div className="w-16 h-16 relative mb-4 sm:mb-0 sm:mr-4 flex-shrink-0">
+            <div className="w-16 h-16 relative mb-4 sm:mb-0 sm:mr-4 shrink-0">
               <img
                 src={latestShip.screenshotUrl}
                 alt={`Screenshot of ${latestShip.title}`}
@@ -201,19 +192,15 @@ export default function Ships({
                 }}
               />
             </div>
-            <h2 className="text-xl font-semibold text-left mb-2 sm:hidden block">
-              {s.title}
-            </h2>
+            <h2 className="text-xl font-semibold text-left mb-2 sm:hidden block">{s.title}</h2>
           </div>
-          <div className="flex-grow">
+          <div className="grow">
             <h2 className="text-xl font-semibold text-left mb-2 sm:block hidden">
               {latestShip.title}
             </h2>
 
             <div className="flex flex-wrap items-start gap-2 text-sm">
-              <ShipPillCluster
-                chain={s.shipType === 'project' ? getChainFromAnyId(s.id) : [s]}
-              />
+              <ShipPillCluster chain={s.shipType === 'project' ? getChainFromAnyId(s.id) : [s]} />
             </div>
           </div>
 
@@ -223,24 +210,19 @@ export default function Ships({
                 <>
                   <Modal isOpen={shipModal} close={() => setShipModal(false)}>
                     <div className="p-4 max-h-[70vh] overflow-y-auto">
-                      <h2 className="text-3xl font-bold text-center">
-                        Confirm Shipping
-                      </h2>
+                      <h2 className="text-3xl font-bold text-center">Confirm Shipping</h2>
                       <p className="text-xl mt-5 text-center">
                         Are you sure you want to ship {latestShip.title}?
                       </p>
                       <p className="mt-3 text-center">
-                        Keep in mind that this can't be reverted! <br /> Your
-                        ship will start getting into matchups.
+                        Keep in mind that this can't be reverted! <br /> Your ship will start
+                        getting into matchups.
                       </p>
                       <div className="flex justify-center">
                         <Image src={ThinkingDino} alt="Thinking Dino" />
                       </div>
                       <div className="flex justify-end mt-5">
-                        <Button
-                          onClick={() => setShipModal(false)}
-                          className="mr-5"
-                        >
+                        <Button onClick={() => setShipModal(false)} className="mr-5">
                           Go back
                         </Button>
 
@@ -262,8 +244,7 @@ export default function Ships({
               ) : latestShip.paidOut ? (
                 !stagedShips.find(
                   (stagedShip) =>
-                    stagedShip.wakatimeProjectNames.join(',') ===
-                    s.wakatimeProjectNames.join(','),
+                    stagedShip.wakatimeProjectNames.join(',') === s.wakatimeProjectNames.join(','),
                 ) ? null : (
                   <p className="opacity-50 text-sm">Pending draft update!</p>
                 )
@@ -281,16 +262,11 @@ export default function Ships({
 
   return (
     <>
-      <canvas
-        ref={canvasRef}
-        className="fixed w-screen left-0 top-0 pointer-events-none"
-      />
+      <canvas ref={canvasRef} className="fixed w-screen left-0 top-0 pointer-events-none" />
 
       {stagedShips.length === 0 ? null : (
         <div className={`w-full mt-8`}>
-          {bareShips ? null : (
-            <h2 className="text-center text-2xl mb-2 text-blue-500">Drafts</h2>
-          )}
+          {bareShips ? null : <h2 className="text-center text-2xl mb-2 text-blue-500">Drafts</h2>}
 
           <div id="staged-ships-container" className="space-y-4">
             {/* If the ship has a reshippedFromId, we're going to fill in the editable fields from the root ship. */}
@@ -329,9 +305,7 @@ export default function Ships({
         {shipChains && shippedShips.length > 0 ? (
           <div className={`space-y-4 ${bareShips ? '' : 'mt-8'}`}>
             {bareShips ? null : (
-              <h2 className="text-center text-2xl text-blue-500">
-                Shipped Ships
-              </h2>
+              <h2 className="text-center text-2xl text-blue-500">Shipped Ships</h2>
             )}
 
             {shippedShips.map((ships: Ship[], idx: number) => (
@@ -351,9 +325,7 @@ export default function Ships({
               <img src="/curly-arrow.svg" alt="" width="64" />
               <div className="flex flex-col justify-between">
                 <p />
-                <p className="-translate-x-3 translate-y-2">
-                  Ship your first project!
-                </p>
+                <p className="-translate-x-3 translate-y-2">Ship your first project!</p>
               </div>
             </div>
             <div className="mt-24" />
@@ -374,11 +346,7 @@ export default function Ships({
         />
       </Modal>
 
-      <Modal
-        isOpen={!!selectedShip}
-        close={() => setSelectedShip(null)}
-        hideCloseButton={false}
-      >
+      <Modal isOpen={!!selectedShip} close={() => setSelectedShip(null)} hideCloseButton={false}>
         <div
           className="relative w-full max-w-2xl"
           style={{
@@ -391,8 +359,7 @@ export default function Ships({
             <Image
               src={latestShip?.screenshotUrl}
               style={{
-                maskImage:
-                  'linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0))',
+                maskImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0))',
               }}
               alt={`Screenshot of ${latestShip?.title}`}
               className="object-cover max-w-full rounded"
@@ -406,7 +373,7 @@ export default function Ships({
             />
           </div>
 
-          <div className=" flex-grow pt-32" id="selected-ship-card">
+          <div className=" grow pt-32" id="selected-ship-card">
             <div className="relative">
               <h2 className="text-3xl font-bold">{latestShip?.title}</h2>
               <p className="opacity-75">
@@ -426,15 +393,12 @@ export default function Ships({
                 <div className="flex flex-row gap-3 h-12">
                   <Link
                     id="selected-ship-play-button"
-                    className="flex items-center flex-grow"
+                    className="flex items-center grow"
                     target="_blank"
                     href={latestShip?.deploymentUrl || '#'}
                     prefetch={false}
                   >
-                    <Button
-                      className="w-full h-full text-lg"
-                      disabled={!latestShip?.deploymentUrl}
-                    >
+                    <Button className="w-full h-full text-lg" disabled={!latestShip?.deploymentUrl}>
                       Play
                       <Icon glyph="view-forward" />
                     </Button>
@@ -469,7 +433,7 @@ export default function Ships({
                         height: 0,
                       }}
                     >
-                      <Card className="p-2 mt-2 text-white !bg-white/15">
+                      <Card className="p-2 mt-2 text-white bg-white/15!">
                         <EditShipForm
                           ship={latestShip}
                           shipChain={getChainFromAnyId(selectedShip.id)}
@@ -483,10 +447,7 @@ export default function Ships({
 
                 {selectedShipChain ? (
                   <motion.div className="flex items-center gap-4 mt-4">
-                    <ShipPillCluster
-                      transparent={true}
-                      chain={selectedShipChain}
-                    />
+                    <ShipPillCluster transparent={true} chain={selectedShipChain} />
                   </motion.div>
                 ) : null}
 
@@ -496,8 +457,7 @@ export default function Ships({
                       onClick={() => setUpdateChainExpanded((p) => !p)}
                       className="mt-2 inline-flex items-center"
                     >
-                      {updateChainExpanded ? 'Hide' : 'View'}{' '}
-                      {selectedShipChain.length - 1} update
+                      {updateChainExpanded ? 'Hide' : 'View'} {selectedShipChain.length - 1} update
                       {selectedShipChain.length - 1 === 1 ? ' ' : 's '}
                       <motion.span
                         animate={{
@@ -527,40 +487,34 @@ export default function Ships({
                         >
                           <ol className="border-l-4 border-[#9AD9EE] pl-2 ml-2 rounded-lg space-y-2">
                             {selectedShipChain
-                              ? selectedShipChain.map(
-                                  (ship: Ship, idx: number) => (
-                                    <li key={idx} className="mt-2 ml-2 rounded">
-                                      <p className="inline-flex justify-between items-center w-full text-sm p-1">
-                                        <div
-                                          className="absolute left-2 w-3 h-3 rounded-full bg-[#9AD9EE]"
-                                          style={{
-                                            translate: 'calc(-50% + 2px)',
-                                          }}
-                                        ></div>
-                                        <span>
-                                          {idx === 0
-                                            ? 'Start'
-                                            : `Update ${idx + 1}`}
-                                          <span className="text-xs ml-2 text-indigo-100">
-                                            {timeAgo.format(
-                                              new Date(ship.createdTime),
-                                            )}
-                                          </span>
+                              ? selectedShipChain.map((ship: Ship, idx: number) => (
+                                  <li key={idx} className="mt-2 ml-2 rounded">
+                                    <p className="inline-flex justify-between items-center w-full text-sm p-1">
+                                      <div
+                                        className="absolute left-2 w-3 h-3 rounded-full bg-[#9AD9EE]"
+                                        style={{
+                                          translate: 'calc(-50% + 2px)',
+                                        }}
+                                      ></div>
+                                      <span>
+                                        {idx === 0 ? 'Start' : `Update ${idx + 1}`}
+                                        <span className="text-xs ml-2 text-indigo-100">
+                                          {timeAgo.format(new Date(ship.createdTime))}
                                         </span>
-                                        <span className="inline-flex gap-1">
-                                          <ShipPillCluster
-                                            transparent={true}
-                                            size="small"
-                                            chain={[ship]}
-                                          />
-                                        </span>
-                                      </p>
-                                      <p className="text-xs p-1 text-indigo-100">
-                                        {ship.updateDescription}
-                                      </p>
-                                    </li>
-                                  ),
-                                )
+                                      </span>
+                                      <span className="inline-flex gap-1">
+                                        <ShipPillCluster
+                                          transparent={true}
+                                          size="small"
+                                          chain={[ship]}
+                                        />
+                                      </span>
+                                    </p>
+                                    <p className="text-xs p-1 text-indigo-100">
+                                      {ship.updateDescription}
+                                    </p>
+                                  </li>
+                                ))
                               : null}
                           </ol>
 
@@ -610,12 +564,10 @@ export default function Ships({
                   <>
                     <Card className="p-4 m-5">
                       <h5 className="text-xl font-bold mb-2">Feedback</h5>
-                      <p className="text-base whitespace-pre-line">
-                        {latestShip.feedback}
-                      </p>
+                      <p className="text-base whitespace-pre-line">{latestShip.feedback}</p>
                       <p className="text-xs text-gray-500 mt-3 italic">
-                        This summary is auto-generated from the votes on this
-                        project and may contain occasional errors.
+                        This summary is auto-generated from the votes on this project and may
+                        contain occasional errors.
                       </p>
                     </Card>
 
@@ -635,11 +587,10 @@ export default function Ships({
                       <div className="p-2 text-center">
                         <p>RAHHHH! You entered a bad README URL.</p>
                         <p className="text-xs">
-                          Bestie you gotta click <code>Raw</code> on your README
-                          and then copy the URL
+                          Bestie you gotta click <code>Raw</code> on your README and then copy the
+                          URL
                           <br />
-                          (it should start with{' '}
-                          <code>raw.githubusercontent.com</code> and end in{' '}
+                          (it should start with <code>raw.githubusercontent.com</code> and end in{' '}
                           <code>.md</code>)
                         </p>
                         <Image
@@ -652,10 +603,7 @@ export default function Ships({
                       </div>
                     ) : (
                       <>
-                        <ReactMarkdown
-                          components={markdownComponents}
-                          rehypePlugins={[rehypeRaw]}
-                        >
+                        <ReactMarkdown components={markdownComponents} rehypePlugins={[rehypeRaw]}>
                           {readmeText}
                         </ReactMarkdown>
                       </>
@@ -673,15 +621,8 @@ export default function Ships({
       <Modal isOpen={!!errorModal} close={() => setErrorModal(undefined)}>
         <p className="text-3xl mb-4">Arrrr! Something broke.</p>
         <p className="mb-12">{errorModal}</p>
-        <img
-          src="/dino_debugging_white.svg"
-          alt="a confused dinsaur"
-          className="mx-auto"
-        />
-        <Button
-          className="block ml-auto"
-          onClick={() => setErrorModal(undefined)}
-        >
+        <img src="/dino_debugging_white.svg" alt="a confused dinsaur" className="mx-auto" />
+        <Button className="block ml-auto" onClick={() => setErrorModal(undefined)}>
           Whatever
         </Button>
       </Modal>

@@ -7,9 +7,7 @@ export default function Progress({ val, items }) {
   const currentTix = Number(Cookies.get('tickets') ?? 0)
   const favItems = items.filter((item) => val.includes(item.id))
   console.log(favItems)
-  const max = favItems.sort(
-    (a: ShopItem, b: ShopItem) => b.priceGlobal - a.priceGlobal,
-  )[0]
+  const max = favItems.sort((a: ShopItem, b: ShopItem) => b.priceGlobal - a.priceGlobal)[0]
 
   useEffect(() => {
     localStorage.setItem('favouriteItems', JSON.stringify(val))
@@ -27,9 +25,8 @@ export default function Progress({ val, items }) {
             className="w-0 h-full bg-blue-500 rounded transition-all duration-300"
             style={{
               width:
-                (currentTix <= max.priceGlobal
-                  ? (currentTix * 100) / max.priceGlobal
-                  : '100') + '%',
+                (currentTix <= max.priceGlobal ? (currentTix * 100) / max.priceGlobal : '100') +
+                '%',
             }}
           ></div>
           {favItems.map((item) => (
@@ -47,9 +44,7 @@ export default function Progress({ val, items }) {
                     alt={item.name}
                     className={
                       'rounded-full h-8 bg-white ring-2 aspect-square object-cover transition-all duration-300' +
-                      (currentTix >= item.priceGlobal
-                        ? ' ring-blue-500'
-                        : ' ring-white')
+                      (currentTix >= item.priceGlobal ? ' ring-blue-500' : ' ring-white')
                     }
                   />
                   <div className="bg-black rounded mt-1 p-1 bg-opacity-75 text-white">

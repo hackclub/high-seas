@@ -3,11 +3,7 @@
 import { useState } from 'react'
 
 import Pill from '@/components/ui/pill'
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from '@/components/ui/popover'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import Icon from '@hackclub/icons'
 
 export default function Cursed() {
@@ -29,16 +25,12 @@ export default function Cursed() {
           <p className="inline-flex text-base">Your votes have been flagged</p>
           <ul className="flex flex-col gap-1 mt-2">
             <li className="flex gap-1">
-              <Icon
-                glyph="thumbsdown"
-                size={20}
-                className="inline flex-shrink-0"
-              />{' '}
-              Be more thoughtful with your voting.
+              <Icon glyph="thumbsdown" size={20} className="inline shrink-0" /> Be more thoughtful
+              with your voting.
             </li>
             <li className="flex gap-1">
-              <Icon glyph="meh" size={20} className="inline flex-shrink-0" />{' '}
-              Write better descriptions for your choices.
+              <Icon glyph="meh" size={20} className="inline shrink-0" /> Write better descriptions
+              for your choices.
             </li>
             <li className="flex gap-1">
               <img

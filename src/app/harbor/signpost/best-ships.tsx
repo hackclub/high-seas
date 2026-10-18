@@ -31,16 +31,10 @@ export default function BestShips() {
                 <Pill
                   msg={`${partialShip.payout} doubloons`}
                   classes="bg-white/15 text-white"
-                  glyphImage={
-                    <Image src={DoubloonsImage} alt="Doubloons" height={20} />
-                  }
+                  glyphImage={<Image src={DoubloonsImage} alt="Doubloons" height={20} />}
                 />
                 <div className="flex gap-3">
-                  <a
-                    target="_blank"
-                    href={partialShip.repoUrl}
-                    rel="noreferrer"
-                  >
+                  <a target="_blank" href={partialShip.repoUrl} rel="noreferrer">
                     <Pill
                       classes="bg-white/15 text-white"
                       glyph="github"
@@ -48,11 +42,7 @@ export default function BestShips() {
                       color="gray"
                     />
                   </a>
-                  <a
-                    target="_blank"
-                    href={partialShip.deployUrl}
-                    rel="noreferrer"
-                  >
+                  <a target="_blank" href={partialShip.deployUrl} rel="noreferrer">
                     <Pill
                       classes="bg-white/15 text-white"
                       glyph="view-forward"

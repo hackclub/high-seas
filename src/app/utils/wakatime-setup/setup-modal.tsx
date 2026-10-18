@@ -15,10 +15,7 @@ function SetupModal({
 }) {
   const [wakaKey, setWakaKey] = useLocalStorageState('cache.wakaKey', '')
   const [hasHb, setHasHb] = useLocalStorageState('cache.hasHb', false)
-  const [wakaUsername, setWakaUsername] = useLocalStorageState(
-    'cache.wakaUsername',
-    '',
-  )
+  const [wakaUsername, setWakaUsername] = useLocalStorageState('cache.wakaUsername', '')
 
   useEffect(() => {
     fetchWaka().then(({ key, hasHb, username }) => {
@@ -53,9 +50,7 @@ function SetupModal({
     <Modal isOpen={isOpen} close={close}>
       {wakaKey && <Platforms wakaKey={wakaKey} />}
       {onHbDetect && (
-        <p className="mt-4 text-lg">
-          {hasHb ? 'Installed!' : 'Waiting for install...'}
-        </p>
+        <p className="mt-4 text-lg">{hasHb ? 'Installed!' : 'Waiting for install...'}</p>
       )}
     </Modal>
   )

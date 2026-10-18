@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { kv } from '@vercel/kv'
+import { kv } from '@/lib/redis'
 import { v4 as uuidv4 } from 'uuid'
 
 const LOCK_TIMEOUT = 30 * 1000 // 30 seconds
@@ -22,10 +22,7 @@ async function releaseLock(lockKey: string, lockValue: string): Promise<void> {
   }
 }
 
-export async function withLock<T>(
-  key: string,
-  action: () => Promise<T>,
-): Promise<T | null> {
+export async function withLock<T>(key: string, action: () => Promise<T>): Promise<T | null> {
   const lockValue = await aquireLock(key)
   if (!lockValue) {
     throw new Error(`Failed to acquire lock for key: ${key}`)

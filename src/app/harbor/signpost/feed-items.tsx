@@ -34,9 +34,7 @@ export default function FeedItems() {
         return (
           <a key={idx} className="block" href={item.link ?? '#'}>
             <JaggedCardSmall bgColor="white">
-              <p className="text-sm opacity-50 and">
-                {timeAgo.format(new Date(item.createdTime))}
-              </p>
+              <p className="text-sm opacity-50 and">{timeAgo.format(new Date(item.createdTime))}</p>
               <p>
                 <Markdown>{item.title}</Markdown>
               </p>

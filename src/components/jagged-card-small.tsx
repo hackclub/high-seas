@@ -42,13 +42,7 @@ const Svg = ({ color }: { color: string }) =>
     </svg>
   ) : null
 
-const JaggedCardSmall = ({
-  children,
-  className = '',
-  bgColor,
-  shadow = true,
-  ...props
-}) => {
+const JaggedCardSmall = ({ children, className = '', bgColor, shadow = true, ...props }) => {
   return (
     <div
       className="relative w-full px-6 py-4"

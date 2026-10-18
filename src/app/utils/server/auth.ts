@@ -74,9 +74,7 @@ async function hashSession(session: HsSession) {
   return hashHex
 }
 
-export async function verifySession(
-  session: HsSession,
-): Promise<HsSession | null> {
+export async function verifySession(session: HsSession): Promise<HsSession | null> {
   const hashCheck = await hashSession(session)
 
   if (session.sig === hashCheck) {
@@ -89,7 +87,8 @@ export async function verifySession(
 export async function signAndSet(session: HsSession) {
   session.sig = await hashSession(session)
 
-  cookies().set(sessionCookieName, JSON.stringify(session), {
+  const cookieStore = await cookies()
+  cookieStore.set(sessionCookieName, JSON.stringify(session), {
     secure: process.env.NODE_ENV !== 'development',
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 7,
@@ -166,7 +165,7 @@ export async function createSlackSession(slackOpenidToken: string) {
 }
 
 export async function getRedirectUri(): Promise<string> {
-  const headersList = headers()
+  const headersList = await headers()
   const host = headersList.get('host') || ''
   const proto = headersList.get('x-forwarded-proto') || 'http'
   const uri = encodeURIComponent(`${proto}://${host}/api/slack_redirect`)

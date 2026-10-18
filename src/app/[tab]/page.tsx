@@ -5,16 +5,15 @@ import Harbor from '../harbor/tabs/tabs'
 import { createMagicSession, getSession } from '../utils/auth'
 import { Card } from '@/components/ui/card'
 import { SoundButton } from '../../components/sound-button.js'
-import { useEffect } from 'react'
+import { useEffect, use } from 'react'
 import useLocalStorageState from '../../../lib/useLocalStorageState'
 
-export default function Page({
-  params,
-  searchParams,
-}: {
-  params: { tab: string }
-  searchParams: any
+export default function Page(props: {
+  params: Promise<{ tab: string }>
+  searchParams: Promise<any>
 }) {
+  const searchParams = use(props.searchParams)
+  const params = use(props.params)
   const [session, setSession] = useLocalStorageState('cache.session', {})
 
   useEffect(() => {

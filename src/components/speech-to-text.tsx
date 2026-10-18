@@ -15,8 +15,7 @@ export default function SpeechToText({
 
   const [open, setOpen] = useState(false)
 
-  const [supportsSpeechRecognition, setSupportsSpeechRecognition] =
-    useState(false)
+  const [supportsSpeechRecognition, setSupportsSpeechRecognition] = useState(false)
 
   const recognitionRef = useRef<SpeechRecognition | null>(null)
 
@@ -26,9 +25,7 @@ export default function SpeechToText({
     const hasSupport =
       typeof window !== 'undefined' &&
       ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)
-    const isMobile =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(pointer: coarse)').matches
+    const isMobile = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
 
     // unfortunately most chrome forks misreport support for this API
     const isArc = ua.includes('Arc')
@@ -36,9 +33,7 @@ export default function SpeechToText({
     const isBrave = navigator?.brave // good on brave for supporting this!
 
     // mobile keyboards already support STT, so we don't need to render in that case
-    setSupportsSpeechRecognition(
-      hasSupport && !isMobile && !isArc && !isChromium && !isBrave,
-    )
+    setSupportsSpeechRecognition(hasSupport && !isMobile && !isArc && !isChromium && !isBrave)
   }, [])
 
   const startListening = async () => {
@@ -60,8 +55,7 @@ export default function SpeechToText({
     if (!window) {
       return
     }
-    const SpeechRecognition =
-      window?.SpeechRecognition || window?.webkitSpeechRecognition
+    const SpeechRecognition = window?.SpeechRecognition || window?.webkitSpeechRecognition
     if (!SpeechRecognition) {
       return
     }
@@ -102,11 +96,7 @@ export default function SpeechToText({
               onClick={isListening ? stopListening : startListening}
               variant={isListening ? 'destructive' : 'default'}
             >
-              {isListening ? (
-                <CircleStop className="h-4 w-4" />
-              ) : (
-                <Mic className="h-4 w-4" />
-              )}
+              {isListening ? <CircleStop className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </Button>
           </PopoverTrigger>
         </Popover>

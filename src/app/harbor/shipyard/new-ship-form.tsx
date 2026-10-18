@@ -53,9 +53,7 @@ export default function NewShipForm({
   const [staging, setStaging] = useState(false)
   const confettiRef = useRef<JSConfetti | null>(null)
   const [usedRepos, setUsedRepos] = useState<string[]>([])
-  const [projects, setProjects] = useState<
-    { key: string; total: number }[] | null
-  >(null)
+  const [projects, setProjects] = useState<{ key: string; total: number }[] | null>(null)
   const [selectedProjects, setSelectedProjects] = useState<
     | [
         {
@@ -145,9 +143,7 @@ export default function NewShipForm({
 
     const deploymentUrl = formData.get('deployment_url') as string
     if (
-      ['github.com', 'gitlab.com', 'bitbucket.org'].some((domain) =>
-        deploymentUrl.includes(domain),
-      )
+      ['github.com', 'gitlab.com', 'bitbucket.org'].some((domain) => deploymentUrl.includes(domain))
     ) {
       toast({
         title: "That's not a demo link!",
@@ -213,8 +209,7 @@ export default function NewShipForm({
     if (screenshotUrl.includes('cdn.discordapp.com')) {
       toast({
         title: "That screenshot doesn't work!",
-        description:
-          'Discord links are temporary, please host your files in #cdn!',
+        description: 'Discord links are temporary, please host your files in #cdn!',
       })
       setStaging(false)
       return
@@ -229,10 +224,7 @@ export default function NewShipForm({
       setStaging(false)
       return
     }
-    if (
-      deploymentUrl.includes('localhost') ||
-      deploymentUrl.includes('127.0.0.1')
-    ) {
+    if (deploymentUrl.includes('localhost') || deploymentUrl.includes('127.0.0.1')) {
       toast({
         title: "That's not a demo link!",
         description:
@@ -245,8 +237,7 @@ export default function NewShipForm({
     if (readmeUrl.includes('github.com')) {
       toast({
         title: "This isn't a markdown link!",
-        description:
-          'Submit a link to the raw README file in your repo instead!',
+        description: 'Submit a link to the raw README file in your repo instead!',
       })
       setStaging(false)
       return
@@ -294,9 +285,7 @@ export default function NewShipForm({
       style={{ maxHeight: '75vh', overflowY: 'auto' }}
       id="new-ship-form-container-card"
     >
-      <h1 className="text-2xl font-bold mb-4">
-        {isShipUpdate ? 'Update a' : 'New'} Ship
-      </h1>
+      <h1 className="text-2xl font-bold mb-4">{isShipUpdate ? 'Update a' : 'New'} Ship</h1>
       <form action={handleForm} className="space-y-3">
         <div className="flex items-center space-x-2">
           <input
@@ -309,16 +298,13 @@ export default function NewShipForm({
             This is an update to an existing project
             <br />
             <span className="text-xs">
-              Only select this if {"it's"} a project you started before High
-              Seas and {"haven't"} submitted before.
+              Only select this if {"it's"} a project you started before High Seas and {"haven't"}{' '}
+              submitted before.
               <br />
-              For example: maybe you already built a game, and you want to ship
-              an amazing update to it! Click this box and describe the update.
-              If you {"don't"} understand this, please ask in{' '}
-              <Link
-                className="underline"
-                href="https://hackclub.slack.com/archives/C07PZNMBPBN"
-              >
+              For example: maybe you already built a game, and you want to ship an amazing update to
+              it! Click this box and describe the update. If you {"don't"} understand this, please
+              ask in{' '}
+              <Link className="underline" href="https://hackclub.slack.com/archives/C07PZNMBPBN">
                 #high-seas-help
               </Link>
               !
@@ -333,9 +319,7 @@ export default function NewShipForm({
               animate={{ height: 'fit-content', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
             >
-              <label htmlFor="updateDescription">
-                Description of the update
-              </label>
+              <label htmlFor="updateDescription">Description of the update</label>
               <textarea
                 id="updateDescription"
                 name="updateDescription"
@@ -425,9 +409,7 @@ export default function NewShipForm({
         </div>
 
         <div id="deployment-field">
-          <label htmlFor="deployment_url">
-            Demo Link (Project / Video URL)
-          </label>
+          <label htmlFor="deployment_url">Demo Link (Project / Video URL)</label>
           <input
             type="url"
             id="deployment_url"
@@ -493,8 +475,7 @@ export default function NewShipForm({
           )}
         </Button>
         <p className="text-xs opacity-50">
-          Drafting a Ship means you can preview it before sending it off to be
-          voted on!
+          Drafting a Ship means you can preview it before sending it off to be voted on!
         </p>
       </form>
     </div>

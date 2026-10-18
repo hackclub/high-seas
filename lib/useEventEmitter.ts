@@ -11,9 +11,7 @@ export function useEventEmitter() {
 
   // handy helper for shopkeeper interactions
   const emitYap = (interaction: string) => {
-    emitterRef.current.dispatchEvent(
-      new CustomEvent('shopkeeper', { detail: { interaction } }),
-    )
+    emitterRef.current.dispatchEvent(new CustomEvent('shopkeeper', { detail: { interaction } }))
   }
 
   const on = (eventName: string, callback: (event: CustomEvent) => void) => {

@@ -24,9 +24,7 @@ export default function Signpost() {
       if (Object.hasOwn(parsedCookie, 'key')) {
         wakaKey = parsedCookie.key
       } else {
-        throw new Error(
-          "The parsed waka cookie has no key 'key' (the waka api key)",
-        )
+        throw new Error("The parsed waka cookie has no key 'key' (the waka api key)")
       }
 
       if (Object.hasOwn(parsedCookie, 'hasHb')) {
@@ -39,8 +37,7 @@ export default function Signpost() {
     }
   }
 
-  const [wakaSessions, setWakaSessions] =
-    useState<{ key: string; total: number }[]>()
+  const [wakaSessions, setWakaSessions] = useState<{ key: string; total: number }[]>()
 
   useEffect(() => {
     getWakaSessions().then((s) => {
@@ -63,11 +60,7 @@ export default function Signpost() {
   const [showInstructions, setShowInstructions] = useState(!hasHb)
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="text-white"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-white">
       <h1 className="font-heading text-5xl font-bold text-white mb-2 text-center">
         The Signpost
         <img
@@ -80,10 +73,7 @@ export default function Signpost() {
 
       <p className="text-center text-white text-xs sm:text-sm mb-8">
         Have questions? Need help? Post in{' '}
-        <Link
-          className="text-blue-500"
-          href="https://hackclub.slack.com/archives/C07PZNMBPBN"
-        >
+        <Link className="text-blue-500" href="https://hackclub.slack.com/archives/C07PZNMBPBN">
           #high-seas-help
         </Link>
         !
@@ -101,14 +91,11 @@ export default function Signpost() {
               {wakaDuration ? (
                 <p>
                   <span>
-                    You've logged {pluralize(hms.hours, 'hour')},{' '}
-                    {pluralize(hms.minutes, 'minute')},{' '}
+                    You've logged {pluralize(hms.hours, 'hour')}, {pluralize(hms.minutes, 'minute')}
+                    ,{' '}
                   </span>
                   <br className="sm:hidden" />
-                  <span>
-                    and {pluralize(hms.seconds, 'second')} of coding time so
-                    far!
-                  </span>
+                  <span>and {pluralize(hms.seconds, 'second')} of coding time so far!</span>
                 </p>
               ) : (
                 'Project time loading...'
@@ -116,8 +103,7 @@ export default function Signpost() {
             </>
           ) : (
             <>
-              You have <b>NOT</b> set up Hackatime. Your hours are <b>not</b>{' '}
-              being tracked!
+              You have <b>NOT</b> set up Hackatime. Your hours are <b>not</b> being tracked!
             </>
           )}
         </p>
@@ -143,9 +129,7 @@ export default function Signpost() {
 
       {!Boolean(process.env.NEXT_PUBLIC_LOW_RATE_LIMIT) && (
         <>
-          <h2 className="mt-8 font-heading text-2xl font-bold mb-4 text-center">
-            Changelog
-          </h2>
+          <h2 className="mt-8 font-heading text-2xl font-bold mb-4 text-center">Changelog</h2>
           <FeedItems />
         </>
       )}

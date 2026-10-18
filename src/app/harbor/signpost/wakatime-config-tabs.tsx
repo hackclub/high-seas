@@ -44,17 +44,13 @@ const WakaTimeConfigTabs = ({ wakaToken }: { wakaToken: string }) => {
       </TabsList>
       <TabsContent value="unix">
         <Card className="p-2 flex items-stretch">
-          <code className="whitespace-nowrap overflow-x-auto flex-grow py-2 pr-2">
-            {unixCommand}
-          </code>
+          <code className="whitespace-nowrap overflow-x-auto grow py-2 pr-2">{unixCommand}</code>
           <CopyButton textToCopy={unixCommand} />
         </Card>
       </TabsContent>
       <TabsContent value="windows">
         <Card className="p-2 flex items-stretch">
-          <code className="whitespace-nowrap overflow-x-auto flex-grow py-2 pr-2">
-            {windowsCommand}
-          </code>
+          <code className="whitespace-nowrap overflow-x-auto grow py-2 pr-2">{windowsCommand}</code>
           <CopyButton textToCopy={windowsCommand} />
         </Card>
       </TabsContent>

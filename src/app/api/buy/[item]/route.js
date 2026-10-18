@@ -4,14 +4,12 @@ import { NextResponse } from 'next/server'
 import { getSelfPerson } from '@/app/utils/server/airtable'
 import { base } from 'airtable'
 
-export async function GET(request, { params }) {
+export async function GET(request, props) {
+  const params = await props.params
   const session = await getSession()
   const person = await getSelfPerson(session.slackId)
   if (!person) {
-    return NextResponse.json(
-      { error: "i don't even know who you are" },
-      { status: 418 },
-    )
+    return NextResponse.json({ error: "i don't even know who you are" }, { status: 418 })
   }
   const b = await base(process.env.BASE_ID)
   const items = await b('shop_items')
@@ -32,15 +30,11 @@ export async function GET(request, { params }) {
 
   if (
     !person.fields.verification_status ||
-    !['Eligible L1', 'Eligible L2'].includes(
-      person.fields.verification_status[0],
-    )
+    !['Eligible L1', 'Eligible L2'].includes(person.fields.verification_status[0])
   ) {
     await people.update(person.id, {
       shop_otp: otp,
-      shop_otp_expires_at: new Date(
-        new Date().getTime() + 60 * 60 * 1000,
-      ).toISOString(),
+      shop_otp_expires_at: new Date(new Date().getTime() + 60 * 60 * 1000).toISOString(),
     })
     return redirect(
       `https://forms.hackclub.com/eligibility?slack_id=${session.slackId}&program=High Seas&continue=${encodeURIComponent(item.fields.fillout_base_url.replace('shop-order', 'hs-order') + otp)}`,
@@ -48,11 +42,7 @@ export async function GET(request, { params }) {
   }
   await people.update(person.id, {
     shop_otp: otp,
-    shop_otp_expires_at: new Date(
-      new Date().getTime() + 5 * 60 * 1000,
-    ).toISOString(),
+    shop_otp_expires_at: new Date(new Date().getTime() + 5 * 60 * 1000).toISOString(),
   })
-  return redirect(
-    `${item.fields.fillout_base_url.replace('shop-order', 'hs-order')}${otp}`,
-  )
+  return redirect(`${item.fields.fillout_base_url.replace('shop-order', 'hs-order')}${otp}`)
 }

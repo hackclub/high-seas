@@ -1,10 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -25,8 +21,7 @@ const singleSelectVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          'border-foreground/10 text-foreground bg-card hover:bg-card/80',
+        default: 'border-foreground/10 text-foreground bg-card hover:bg-card/80',
         secondary:
           'border-foreground/10 bg-secondary text-secondary-foreground hover:bg-secondary/80',
         destructive:
@@ -41,8 +36,7 @@ const singleSelectVariants = cva(
 )
 
 interface SingleSelectProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof singleSelectVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof singleSelectVariants> {
   options: {
     label: string
     value: string
@@ -57,10 +51,7 @@ interface SingleSelectProps
   className?: string
 }
 
-export const SingleSelect = React.forwardRef<
-  HTMLButtonElement,
-  SingleSelectProps
->(
+export const SingleSelect = React.forwardRef<HTMLButtonElement, SingleSelectProps>(
   (
     {
       options,
@@ -74,13 +65,10 @@ export const SingleSelect = React.forwardRef<
     },
     ref,
   ) => {
-    const [selectedValue, setSelectedValue] =
-      React.useState<string>(defaultValue)
+    const [selectedValue, setSelectedValue] = React.useState<string>(defaultValue)
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false)
 
-    const handleInputKeyDown = (
-      event: React.KeyboardEvent<HTMLInputElement>,
-    ) => {
+    const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
         setIsPopoverOpen(true)
       }
@@ -104,11 +92,7 @@ export const SingleSelect = React.forwardRef<
     const IconComponent = option?.icon
 
     return (
-      <Popover
-        open={isPopoverOpen}
-        onOpenChange={setIsPopoverOpen}
-        modal={modalPopover}
-      >
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={modalPopover}>
         <PopoverTrigger asChild>
           <Button
             ref={ref}
@@ -122,44 +106,31 @@ export const SingleSelect = React.forwardRef<
             {selectedValue.length > 0 ? (
               <div className="flex justify-between items-center w-full">
                 <div className="flex flex-wrap items-center">
-                  <Badge
-                    key={selectedValue}
-                    className={cn(singleSelectVariants({ variant }))}
-                  >
-                    {IconComponent && (
-                      <IconComponent className="h-4 w-4 mr-2" />
-                    )}
+                  <Badge key={selectedValue} className={cn(singleSelectVariants({ variant }))}>
+                    {IconComponent && <IconComponent className="h-4 w-4 mr-2" />}
                     {option?.label}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Separator
-                    orientation="vertical"
-                    className="flex min-h-6 h-full"
-                  />
+                  <Separator orientation="vertical" className="flex min-h-6 h-full" />
                   <ChevronDown className="h-4 mx-2 cursor-pointer text-muted-foreground" />
                 </div>
               </div>
             ) : (
               <div className="flex items-center justify-between w-full mx-auto">
-                <span className="text-sm text-muted-foreground mx-3">
-                  {selectedValue}
-                </span>
+                <span className="text-sm text-muted-foreground mx-3">{selectedValue}</span>
                 <ChevronDown className="h-4 cursor-pointer text-muted-foreground mx-2" />
               </div>
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-auto p-0 z-[99999999]"
+          className="w-auto p-0 z-99999999"
           align="start"
           onEscapeKeyDown={() => setIsPopoverOpen(false)}
         >
           <Command>
-            <CommandInput
-              placeholder="Search..."
-              onKeyDown={handleInputKeyDown}
-            />
+            <CommandInput placeholder="Search..." onKeyDown={handleInputKeyDown} />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
@@ -200,10 +171,7 @@ export const SingleSelect = React.forwardRef<
                       >
                         Clear
                       </CommandItem>
-                      <Separator
-                        orientation="vertical"
-                        className="flex min-h-6 h-full"
-                      />
+                      <Separator orientation="vertical" className="flex min-h-6 h-full" />
                     </>
                   )}
                   <CommandItem

@@ -51,11 +51,7 @@ const generateKeywords = () => {
     return ''
   }
 
-  const keywords = [
-    sample(randomThings),
-    sample(randomThings),
-    sample(randomThings),
-  ]
+  const keywords = [sample(randomThings), sample(randomThings), sample(randomThings)]
   return `To give you some ideas, here are some random things you can use: ${keywords.join(', ')}`
 }
 
@@ -95,11 +91,7 @@ const generateIdeas = async () => {
   return result
 }
 
-const saveIdeaToAirtable = async (
-  idea: string,
-  model: string,
-  prompt: string,
-) => {
+const saveIdeaToAirtable = async (idea: string, model: string, prompt: string) => {
   try {
     const result = await fetch(
       'https://middleman.hackclub.com/airtable/v0/appQ6GyueRp5jqc9Q/high_seas_project_ideas',

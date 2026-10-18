@@ -91,9 +91,7 @@ export default function EditShipForm({
 
       setShips((previousShips: Ship[]) => {
         console.log('the previous ships were', previousShips)
-        const newShips = previousShips.map((s: Ship) =>
-          s.id === newShip.id ? newShip : s,
-        )
+        const newShips = previousShips.map((s: Ship) => (s.id === newShip.id ? newShip : s))
 
         setSaving(false)
         return newShips
@@ -105,8 +103,7 @@ export default function EditShipForm({
 
     toast({
       title: 'Ship updated!',
-      description:
-        editMessages[Math.floor(Math.random() * editMessages.length)],
+      description: editMessages[Math.floor(Math.random() * editMessages.length)],
     })
 
     setSaving(false)
@@ -122,9 +119,7 @@ export default function EditShipForm({
     if (setShips) {
       console.log(`Deleted ${ship.title} (${ship.id})`)
 
-      setShips((previousShips: Ship[]) =>
-        previousShips.filter((s: Ship) => s.id !== ship.id),
-      )
+      setShips((previousShips: Ship[]) => previousShips.filter((s: Ship) => s.id !== ship.id))
     } else {
       console.error("Deleted a ship but can't setShips bc you didn't pass it.")
     }
@@ -141,11 +136,7 @@ export default function EditShipForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-2"
-      id="selected-ship-edit-form"
-    >
+    <form onSubmit={handleSubmit} className="space-y-2" id="selected-ship-edit-form">
       <div>
         <label htmlFor="title">Title</label>
         <input
@@ -257,7 +248,7 @@ export default function EditShipForm({
           <div className="flex gap-1">
             <Button
               onClick={() => setOpenDeleteModal(false)}
-              className={`${buttonVariants({ variant: 'outline' })} flex-grow`}
+              className={`${buttonVariants({ variant: 'outline' })} grow`}
             >
               NNONNO WAIT ヽ(O_O )ﾉ
             </Button>

@@ -110,10 +110,7 @@ function generateCharacter(parameters) {
   let pre_desc = pickRandomOrNone('character_description', 0.6)
 
   let post_desc_chance = allow_post_desc ? (pre_desc ? 0.25 : 0.8) : 0
-  character_post_description = pickRandomOrNone(
-    'character_description_post',
-    post_desc_chance,
-  )
+  character_post_description = pickRandomOrNone('character_description_post', post_desc_chance)
 
   if (is_player) {
     character_is_group = make_group
@@ -135,8 +132,7 @@ function generateCharacter(parameters) {
   }
 
   let character = pickRandom('character')
-  let result =
-    '<a> ' + pre_desc + ' ' + character + ' ' + character_post_description
+  let result = '<a> ' + pre_desc + ' ' + character + ' ' + character_post_description
 
   return result
 }
@@ -146,10 +142,7 @@ function generateGoal() {
 
   // Avoid awkward phrasing like: you play as a zombie who is addicted to brains who wants to leave the planet
   // Instead change to: you play as a zombie who is addicted to brains and wants to leave the planet
-  if (
-    character_post_description.includes('who') ||
-    character_post_description.includes('that')
-  ) {
+  if (character_post_description.includes('who') || character_post_description.includes('that')) {
     prefix = prefix.replace('who', 'and')
   }
 
@@ -245,9 +238,7 @@ function getTextBetweenTags(text, start_tag, end_tag) {
 function replaceTextBetweenTags(text, replacement, start_tag, end_tag) {
   let start_index = text.indexOf(start_tag)
   let end_index = start_index + text.substring(start_index + 1).indexOf(end_tag)
-  return (
-    text.substring(0, start_index) + replacement + text.substring(end_index + 2)
-  )
+  return text.substring(0, start_index) + replacement + text.substring(end_index + 2)
 }
 
 function pickRandomFromList(list) {

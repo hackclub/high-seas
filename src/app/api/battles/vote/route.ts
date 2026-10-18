@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server'
-import {
-  ensureUniqueVote,
-  submitVote,
-} from '../../../../../lib/battles/airtable'
+import { ensureUniqueVote, submitVote } from '../../../../../lib/battles/airtable'
 import { getSession } from '@/app/utils/auth'
 import { verifyMatchup } from '../../../../../lib/battles/matchupGenerator'
 
@@ -17,17 +14,13 @@ export async function POST(request: Request) {
   try {
     const voteData = await request.json()
 
-    const winnerAnalytics = voteData.analytics.projectResources[
-      voteData.winner
-    ] || {
+    const winnerAnalytics = voteData.analytics.projectResources[voteData.winner] || {
       readmeOpened: false,
       repoOpened: false,
       demoOpened: false,
     }
 
-    const loserAnalytics = voteData.analytics.projectResources[
-      voteData.loser
-    ] || {
+    const loserAnalytics = voteData.analytics.projectResources[voteData.loser] || {
       readmeOpened: false,
       repoOpened: false,
       demoOpened: false,
@@ -42,10 +35,7 @@ export async function POST(request: Request) {
     // @ts-expect-error because i don't understand typescript
     const isVerified = verifyMatchup(matchup, session.slackId)
     if (!isVerified) {
-      return NextResponse.json(
-        { error: 'Invalid matchup signature' },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: 'Invalid matchup signature' }, { status: 400 })
     }
 
     voteData.winner_readme_opened = winnerAnalytics.readmeOpened
@@ -61,9 +51,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true /*, reload: isBot */ })
   } catch (error) {
     console.error('Error submitting vote:', error)
-    return NextResponse.json(
-      { error: 'Failed to submit vote' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to submit vote' }, { status: 500 })
   }
 }

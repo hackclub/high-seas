@@ -85,34 +85,29 @@ export async function reportLeaderboardParticipating(participating: boolean) {
   const session = await getSession()
 
   if (!session) {
-    const err = new Error(
-      'No session when trying to set leaderboard participation',
-    )
+    const err = new Error('No session when trying to set leaderboard participation')
     console.error(err)
     throw err
   }
 
   try {
-    const response = await fetch(
-      'https://api.airtable.com/v0/appTeNFYcUiYfGcR6/people',
-      {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          records: [
-            {
-              id: session.personId,
-              fields: {
-                show_in_leaderboard: participating,
-              },
-            },
-          ],
-        }),
+    const response = await fetch('https://api.airtable.com/v0/appTeNFYcUiYfGcR6/people', {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json',
       },
-    )
+      body: JSON.stringify({
+        records: [
+          {
+            id: session.personId,
+            fields: {
+              show_in_leaderboard: participating,
+            },
+          },
+        ],
+      }),
+    })
 
     if (!response.ok) {
       const error = new Error(

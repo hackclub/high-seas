@@ -47,9 +47,7 @@ export async function getShop(): Promise<ShopItem[]> {
     return
   }
   const person = await getSelfPerson(session.slackId)
-  const filter = person.fields.academy_completed
-    ? '{enabled_main_game}'
-    : '{enabled_high_seas}'
+  const filter = person.fields.academy_completed ? '{enabled_main_game}' : '{enabled_high_seas}'
 
   const lookup = new Promise((resolve, reject) => {
     base()('shop_items')
@@ -77,22 +75,14 @@ export async function getShop(): Promise<ShopItem[]> {
               enabledAu: Boolean(record.get('enabled_au')) as boolean,
               priceUs: Number(record.get('tickets_us')) as number,
               priceGlobal: Number(record.get('tickets_global')) as number,
-              fulfilledAtEnd: Boolean(
-                record.get('fulfilled_at_end'),
-              ) as boolean,
+              fulfilledAtEnd: Boolean(record.get('fulfilled_at_end')) as boolean,
               comingSoon: Boolean(record.get('coming_soon')) as boolean,
               outOfStock: Boolean(record.get('out_of_stock')) as boolean,
-              minimumHoursEstimated: Number(
-                record.get('minimum_hours_estimated'),
-              ),
-              maximumHoursEstimated: Number(
-                record.get('maximum_hours_estimated'),
-              ),
+              minimumHoursEstimated: Number(record.get('minimum_hours_estimated')),
+              maximumHoursEstimated: Number(record.get('maximum_hours_estimated')),
               description: record.get('description') as string | null,
               customs_likely: Boolean(record.get('customs_likely')) as boolean,
-              fulfillment_description: record.get('fulfillment_description') as
-                | string
-                | null,
+              fulfillment_description: record.get('fulfillment_description') as string | null,
               links: [
                 record.get('third_party_link_us') as string,
                 record.get('third_party_link_eu') as string,

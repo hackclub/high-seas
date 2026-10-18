@@ -1,12 +1,13 @@
 import Airtable from 'airtable'
 import { Ships, Person, Battles } from '../../types/battles/airtable'
 import createBackgroundJob from '@/app/api/cron/create-background-job'
-import { sql } from '@vercel/postgres'
+import { sql } from '@/lib/postgres'
 
-const base = new Airtable({
-  apiKey: process.env.AIRTABLE_API_KEY,
-  endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
-}).base(process.env.BASE_ID!)
+const base = (tableName: string) =>
+  new Airtable({
+    apiKey: process.env.AIRTABLE_API_KEY,
+    endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
+  }).base(process.env.BASE_ID!)(tableName)
 
 export const getProjects = async (userId: string): Promise<Ships[]> => {
   const person = await getPersonBySlackId(userId)
@@ -54,9 +55,7 @@ export const getAllProjects = async (): Promise<Ships[]> => {
   }))
 }
 
-export const createProject = async (
-  shipsData: Ships & { slackId: string },
-): Promise<Ships> => {
+export const createProject = async (shipsData: Ships & { slackId: string }): Promise<Ships> => {
   const person = await getPersonBySlackId(shipsData.slackId)
   if (!person) {
     throw new Error('User not found')
@@ -118,12 +117,8 @@ export const submitVote = async (
     1 / (1 + Math.pow(10, (loser.fields.rating - winner.fields.rating) / 400))
   const expectedScoreLoser = 1 - expectedScoreWinner
 
-  const newWinnerRating = Math.round(
-    winner.fields.rating + K * (1 - expectedScoreWinner),
-  )
-  const newLoserRating = Math.round(
-    loser.fields.rating + K * (0 - expectedScoreLoser),
-  )
+  const newWinnerRating = Math.round(winner.fields.rating + K * (1 - expectedScoreWinner))
+  const newLoserRating = Math.round(loser.fields.rating + K * (0 - expectedScoreLoser))
 
   const recordToCreate = {
     voter: [personId as string],
@@ -146,9 +141,7 @@ export const submitVote = async (
     skips_before_vote: voteData.skips_before_vote,
   }
 
-  const sqlUniquenessString = [slackId, voteData.winner, voteData.loser]
-    .sort()
-    .join('-')
+  const sqlUniquenessString = [slackId, voteData.winner, voteData.loser].sort().join('-')
   console.log('Creating background job for submit_vote', {
     sqlUniquenessString,
   })
@@ -199,9 +192,7 @@ AND status = 'pending'
   return airtableRecords.length === 0 && sqlRecords.rows.length === 0
 }
 
-export const getPersonBySlackId = async (
-  slackId: string,
-): Promise<Person | null> => {
+export const getPersonBySlackId = async (slackId: string): Promise<Person | null> => {
   const records = await base('people')
     .select({
       filterByFormula: `{slack_id} = '${slackId}'`,

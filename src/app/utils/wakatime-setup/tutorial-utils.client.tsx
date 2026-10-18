@@ -67,13 +67,7 @@ export const osFromAgent = (): Os => {
   return 'unknown'
 }
 
-export const SinglePlatform = ({
-  os,
-  wakaKey,
-}: {
-  os: Os
-  wakaKey: string
-}) => {
+export const SinglePlatform = ({ os, wakaKey }: { os: Os; wakaKey: string }) => {
   const platform = getInstallCommand(os, wakaKey)
 
   return (
@@ -88,9 +82,7 @@ export const SinglePlatform = ({
             case 'chrome':
               return (
                 <>
-                  <li>
-                    Open {platform.application} on the computer you use to code
-                  </li>
+                  <li>Open {platform.application} on the computer you use to code</li>
 
                   <li>
                     Go to the{' '}
@@ -100,8 +92,8 @@ export const SinglePlatform = ({
                     >
                       store page
                     </a>{' '}
-                    click install and then paste the API Key shown below into
-                    the textbox when it asks you to
+                    click install and then paste the API Key shown below into the textbox when it
+                    asks you to
                   </li>
                 </>
               )
@@ -109,9 +101,8 @@ export const SinglePlatform = ({
               return (
                 <>
                   <li>
-                    Make sure you have KiCad 8.99 installed (this is very
-                    important; don't continue till you have that version
-                    installed)
+                    Make sure you have KiCad 8.99 installed (this is very important; don't continue
+                    till you have that version installed)
                   </li>
                   <li>
                     Go to the{' '}
@@ -124,23 +115,20 @@ export const SinglePlatform = ({
                     repository and download the latest release.
                   </li>
                   <li>
-                    Enable the KiCAD API in KiCAD 8.99. (Settings -{'>'} Plugins
-                    -{'>'} Enable KiCAD API)
+                    Enable the KiCAD API in KiCAD 8.99. (Settings -{'>'} Plugins -{'>'} Enable KiCAD
+                    API)
                   </li>
                   <li>
-                    Extract the downloaded zip and run the program inside. It
-                    should auto fill out the API key and API URL for you if you
-                    have already ran the auto config script or manually
-                    configured your <code>.wakatime.cfg</code> file.
+                    Extract the downloaded zip and run the program inside. It should auto fill out
+                    the API key and API URL for you if you have already ran the auto config script
+                    or manually configured your <code>.wakatime.cfg</code> file.
                   </li>
                 </>
               )
             default:
               return (
                 <>
-                  <li>
-                    Open {platform.application} on the computer you code on
-                  </li>
+                  <li>Open {platform.application} on the computer you code on</li>
                   <li>Paste in the command below and hit enter</li>
                 </>
               )
@@ -149,7 +137,7 @@ export const SinglePlatform = ({
         <li>Come back here to the Harbor!</li>
       </ol>
       <div className="flex flex-col sm:flex-row items-stretch gap-2 mt-4">
-        <pre className="text-sm bg-white/20 rounded-lg p-5 overflow-x-auto w-full flex-grow relative">
+        <pre className="text-sm bg-white/20 rounded-lg p-5 overflow-x-auto w-full grow relative">
           <span className="absolute left-1.5 top-0.5 text-xs opacity-40 select-none pointer-events-none">
             {platform.lang}
           </span>

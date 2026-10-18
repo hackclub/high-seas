@@ -44,20 +44,12 @@ export default function Countdown() {
     <JaggedCardSmall bgColor="#efefef" shadow={true} className="text-white">
       <div className="text-center">
         <h2 className="text-xl">
-          {dateEnd - new Date().getTime() > 0 ? (
-            <>Time Remaining</>
-          ) : (
-            <>Ended.</>
-          )}
+          {dateEnd - new Date().getTime() > 0 ? <>Time Remaining</> : <>Ended.</>}
         </h2>
         <h1
           className={`font-black font-mono ${dateEnd - new Date().getTime() < 60 * 60 * 1000 ? 'text-6xl' : 'text-5xl'}`}
         >
-          {dateEnd - new Date().getTime() > 0 ? (
-            <>{timeLeft}</>
-          ) : (
-            <>High Seas is over!</>
-          )}
+          {dateEnd - new Date().getTime() > 0 ? <>{timeLeft}</> : <>High Seas is over!</>}
         </h1>
 
         <div className="mt-4">
@@ -65,10 +57,7 @@ export default function Countdown() {
             <>
               Arrrrr, you'd better{' '}
               <Link href="/shipyard">
-                <Button
-                  variant={'link'}
-                  className="text-white mx-0 px-0 text-base"
-                >
+                <Button variant={'link'} className="text-white mx-0 px-0 text-base">
                   ship all your ships
                 </Button>
               </Link>{' '}

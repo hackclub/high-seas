@@ -32,10 +32,7 @@ export default function Platforms({
         <AnimatePresence mode="wait">
           {hasHb && (
             <p className="text-xs mt-4">
-              <span
-                className="underline cursor-pointer"
-                onClick={() => setShowInstructions(false)}
-              >
+              <span className="underline cursor-pointer" onClick={() => setShowInstructions(false)}>
                 Hide instructions
               </span>
             </p>
@@ -58,8 +55,8 @@ export default function Platforms({
               <SinglePlatform os={'kicad'} wakaKey={wakaKey} />
               <hr className="my-8" />
               <p>
-                Script not working? High Seas is wakatime-compatible, so you can
-                configure wakatime plugins using the following:
+                Script not working? High Seas is wakatime-compatible, so you can configure wakatime
+                plugins using the following:
               </p>
               <code className="block bg-gray-800 p-2 rounded-md mt-2">
                 <pre>
@@ -87,16 +84,14 @@ api_key = ${wakaKey}`}
               <SinglePlatform os={userOs} wakaKey={wakaKey} />
               <h2 className="mt-6 text-xl">What exactly does the script do?</h2>
               <p className="mt-2">
-                This script installs and configures Hackatime, our custom fork
-                of a popular open-source coding time-tracker called Wakatime.
-                First it tries to install the Wakatime extension for VS Code,
-                and then it installs a configuration file that tells the
-                extension to send your coding hours to the Hackatime server.
+                This script installs and configures Hackatime, our custom fork of a popular
+                open-source coding time-tracker called Wakatime. First it tries to install the
+                Wakatime extension for VS Code, and then it installs a configuration file that tells
+                the extension to send your coding hours to the Hackatime server.
                 <br></br>
                 <br></br>
-                If you don't use VS Code, run the script anyway and manually
-                install the Wakatime extension for your editor. The
-                configuration will apply automatically!
+                If you don't use VS Code, run the script anyway and manually install the Wakatime
+                extension for your editor. The configuration will apply automatically!
               </p>
               <video
                 src={
@@ -110,7 +105,7 @@ api_key = ${wakaKey}`}
                 muted={true}
                 loop
                 playsInline
-                className="mt-8 rounded shadow"
+                className="mt-8 rounded shadow-sm"
               />
               <p className="text-xs mt-4">
                 Not using {userOs}?{' '}
@@ -126,10 +121,7 @@ api_key = ${wakaKey}`}
         </AnimatePresence>
       ) : (
         <p className="text-sm">
-          <span
-            className="underline cursor-pointer"
-            onClick={() => setShowInstructions(true)}
-          >
+          <span className="underline cursor-pointer" onClick={() => setShowInstructions(true)}>
             {'> Show Hackatime install instructions'}
           </span>
         </p>

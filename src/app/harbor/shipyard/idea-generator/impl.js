@@ -5,7 +5,6 @@ import { Howl } from 'howler'
 import { init, generate } from './generator'
 import Modal from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
-import { useChat } from 'ai/react'
 
 let yap_sounds = {}
 function loadYapSounds() {
@@ -46,12 +45,7 @@ const soundKeys = Object.keys(yap_sounds)
 
 async function yap(
   text,
-  {
-    letterCallback = () => {},
-    endCallback = () => {},
-    baseRate = 10,
-    rateVariance = 1,
-  } = {},
+  { letterCallback = () => {}, endCallback = () => {}, baseRate = 10, rateVariance = 1 } = {},
 ) {
   const yap_queue = []
   if (Object.keys(yap_sounds).length === 0) {
@@ -71,10 +65,7 @@ async function yap(
     } else if (lowerChar === 't' && nextLowerChar === 'h') {
       yap_queue.push({ letter: char, sound: yap_sounds['th'] })
       continue
-    } else if (
-      lowerChar === 'h' &&
-      (prevLowerChar === 's' || prevLowerChar === 't')
-    ) {
+    } else if (lowerChar === 'h' && (prevLowerChar === 's' || prevLowerChar === 't')) {
       yap_queue.push({ letter: char, sound: yap_sounds['_'] })
       continue
     } else if (',?. '.includes(char)) {
@@ -167,10 +158,7 @@ const StreamingText = ({ msg }) => {
 
       {error && <div className="text-red-500 p-4">{error}</div>}
 
-      <p
-        className="p-4 max-w-prose"
-        dangerouslySetInnerHTML={{ __html: text }}
-      />
+      <p className="p-4 max-w-prose" dangerouslySetInnerHTML={{ __html: text }} />
     </div>
   )
 }
@@ -179,10 +167,6 @@ const IdeaGenerator = () => {
   const [loading, setLoading] = useState(false)
   const [typing, setTyping] = useState(false)
   const [message, setMessage] = useState('')
-
-  const ai = useChat({
-    api: '/api/chat',
-  })
 
   useEffect(() => {
     init()
@@ -232,11 +216,7 @@ const IdeaGenerator = () => {
   }
 
   const activeClass = loading ? 'thinking' : typing ? 'typing' : 'idle'
-  const imgSrc = loading
-    ? '/thinking.png'
-    : typing
-      ? '/talking.png'
-      : '/idle.png'
+  const imgSrc = loading ? '/thinking.png' : typing ? '/talking.png' : '/idle.png'
 
   return (
     <>

@@ -11,25 +11,24 @@ function uniq(arr) {
   return Array.from(new Set(arr))
 }
 
-const base = new Airtable({
-  apiKey: process.env.AIRTABLE_API_KEY,
-  endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
-}).base('appTeNFYcUiYfGcR6')
+const base = (tableName: string) =>
+  new Airtable({
+    apiKey: process.env.AIRTABLE_API_KEY,
+    endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
+  }).base('appTeNFYcUiYfGcR6')(tableName)
 
-const yswsBase = new Airtable({
-  apiKey: process.env.AIRTABLE_API_KEY,
-  endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
-}).base('app3A5kJwYqxMLOgh')
+const yswsBase = (tableName: string) =>
+  new Airtable({
+    apiKey: process.env.AIRTABLE_API_KEY,
+    endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
+  }).base('app3A5kJwYqxMLOgh')(tableName)
 
 async function createNewShipChains(): Promise<void> {
   await withLock('create-ship-chains', async () => {
     console.log('finding ysws to update')
     const shipchainsToMake = await base('ships')
       .select({
-        filterByFormula: and(
-          'ship_chain = BLANK()',
-          'reshipped_from = BLANK()',
-        ),
+        filterByFormula: and('ship_chain = BLANK()', 'reshipped_from = BLANK()'),
         maxRecords: 10,
       })
       .all()
@@ -81,15 +80,9 @@ async function addToShipChains(): Promise<void> {
       const { chainID, shipsToUpdate } = await traceChain(parentShipId)
       if (chainID) {
         const shipsInChain = [...shipsToUpdate, leafShip.id]
-        console.log(
-          'Updating these ships',
-          shipsInChain,
-          'to use chain',
-          chainID,
-        )
+        console.log('Updating these ships', shipsInChain, 'to use chain', chainID)
         const shipChainRecord = await base('ship_chains').find(chainID)
-        const oldLinkedShips = (shipChainRecord?.fields?.ships ||
-          []) as string[]
+        const oldLinkedShips = (shipChainRecord?.fields?.ships || []) as string[]
         const mergedShips = uniq(shipsInChain.concat(oldLinkedShips))
 
         alreadyProcessed = alreadyProcessed.concat(shipsInChain)
@@ -163,20 +156,14 @@ async function updateHours(): Promise<void> {
       const submission = yswsSubmissions[i]
       console.log('submission', submission.id)
       const yswsRecordID = submission?.fields?.ysws_db_record_id
-      const submissionHours =
-        submission?.fields?.['ship__chain__credited_hours']?.[0]
+      const submissionHours = submission?.fields?.['ship__chain__credited_hours']?.[0]
       const submissionTime = submission?.fields?.['approved_at']
       if (
         !yswsRecordID ||
         !(Boolean(submissionHours) || submissionHours === 0) ||
         !submissionTime
       ) {
-        console.log(
-          'missing fields',
-          yswsRecordID,
-          submissionHours,
-          submissionTime,
-        )
+        console.log('missing fields', yswsRecordID, submissionHours, submissionTime)
         continue
       }
       new Promise((resolve) => setTimeout(resolve, 1000))
@@ -257,9 +244,7 @@ async function syncDirectedYswsGitHubLinkPresences(): Promise<void> {
           'LEN({repo_url}) < 500',
         ),
         // ASC will prioritize records will null (never synced), then prioritize oldest records
-        sort: [
-          { field: 'last_directed_ysws_gh_link_synced_at', direction: 'asc' },
-        ],
+        sort: [{ field: 'last_directed_ysws_gh_link_synced_at', direction: 'asc' }],
         maxRecords: 10,
       })
       .all()
